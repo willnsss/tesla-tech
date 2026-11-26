@@ -76,7 +76,7 @@
   ========================================================== -->
   <div class="flex-1 flex flex-col h-full min-w-0">
     <header id="standard-header" class="h-16 px-8 flex items-center justify-between shrink-0 bg-[#F4F7FA]">
-      <h1 id="page-title" class="text-[20px] font-bold text-slate-900 tracking-tight">Clientes</h1>
+      <h1 id="page-title" class="text-[20px] font-bold text-slate-900 tracking-tight">Recibir</h1>
       <button onclick="refreshView()" class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white border border-slate-200/90 rounded-lg text-[13px] font-medium text-slate-700 hover:bg-slate-50 active:scale-[0.99] transition-all shadow-2xs">
         <i id="refresh-icon" data-lucide="rotate-cw" class="w-3.5 h-3.5 text-slate-500"></i>
         Actualizar
@@ -180,10 +180,10 @@
   ========================================================== -->
   <script>
     const STEPS = ['Recibido', 'Diagnóstico', 'En Reparación', 'Listo para Entregar', 'Entregado'];
-    const STORAGE_KEY = 'teslatech_app_state_v2';
+    const STORAGE_KEY = 'teslatech_app_state_v3';
 
     const defaultState = {
-      activeRoute: 'clientes',
+      activeRoute: 'recibir',
       activeSettingsTab: 'mi-cuenta',
       isSubscribed: false,
       planName: 'Inactiva',
@@ -260,6 +260,8 @@
           technicalReport: '',
           statusIndex: 0,
           receivedDate: '24 nov 2026',
+          warrantyDays: 30,
+          serviceModality: 'En el taller',
           client: {
             name: 'DAYANA FLOREZ',
             docId: 'N/A',
@@ -283,6 +285,24 @@
         { sku: 'SCR-IP13', name: 'Pantalla OLED iPhone 13', stock: 8, price: 290000 },
         { sku: 'GLS-14P', name: 'Visor Cristal iPhone 14 Pro', stock: 20, price: 45000 }
       ]
+    };
+
+    // Estado temporal del formulario de Recibir Equipo
+    const receiveFormState = {
+      clientMode: 'Persona',
+      docType: 'CC',
+      modality: 'En el taller',
+      extraPhones: [],
+      showPass: false,
+      passPatternMode: false,
+      extraDevices: [],
+      accessoriesChecked: [],
+      customAccessories: [],
+      checklistItems: [],
+      services: [],
+      orderExpenses: [],
+      warrantyDays: 30,
+      photosCount: 0
     };
 
     function loadState() {
@@ -325,19 +345,6 @@
       { id: 'recibos', label: 'Recibos POS', icon: 'receipt', locked: true }
     ];
 
-    const settingsSubTabs = [
-      { id: 'mi-cuenta', title: 'Mi cuenta', sub: 'Tu suscripción', icon: 'crown' },
-      { id: 'perfil', title: 'Perfil del taller', sub: 'Logo, nombre, país, contacto', icon: 'store' },
-      { id: 'apariencia', title: 'Apariencia', sub: 'Color, tema, tickets, idioma', icon: 'palette' },
-      { id: 'operacion', title: 'Operación', sub: 'Impresora, caja, moneda, garantías', icon: 'briefcase' },
-      { id: 'correos', title: 'Correos automáticos', sub: 'Avisos por correo a tus clientes', icon: 'mail' },
-      { id: 'whatsapp', title: 'WhatsApp', sub: 'Avisos automáticos a tus clientes', icon: 'message-circle' },
-      { id: 'respaldos', title: 'Respaldos', sub: 'Tus datos en Excel, cada mes', icon: 'database' },
-      { id: 'sucursales', title: 'Sucursales', sub: 'Tus locales', icon: 'building-2' },
-      { id: 'seguridad', title: 'Seguridad', sub: 'Biometría, contraseña, PIN', icon: 'shield' },
-      { id: 'ayuda', title: 'Ayuda y soporte', sub: 'Asistente y WhatsApp', icon: 'help-circle' }
-    ];
-
     function formatCOP(val) {
       return 'COP ' + Number(val || 0).toLocaleString('es-CO');
     }
@@ -349,15 +356,8 @@
       return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     }
 
-    function getClientOrders(client) {
-      return state.orders.filter(o =>
-        (client.id && o.clientId === client.id) ||
-        (o.client && o.client.name && o.client.name.toLowerCase() === client.fullName.toLowerCase())
-      );
-    }
-
     // =========================================================
-    // NAVEGACIÓN Y SIDEBAR
+    // SIDEBAR Y NAVEGACIÓN
     // =========================================================
     function renderSidebar() {
       const renderGroup = (items, containerId) => {
@@ -366,8 +366,8 @@
           const isLocked = item.locked && !state.isSubscribed;
           const isActive = state.activeRoute === item.id;
           return `
-            <button onclick="handleMenuClick('${item.id}', ${isLocked})"
-              class="w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
+            <button onclick="handleMenuClick('${item.id}',${isLocked})"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors \${
                 isActive
                   ? 'bg-[#E9F5D8] text-[#2F5211] font-medium'
                   : isLocked
@@ -376,9 +376,9 @@
               }">
               <span class="flex items-center gap-3 truncate">
                 <i data-lucide="${item.icon}" class="w-4 h-4 shrink-0 ${isActive ? 'text-[#4D7C1F]' : 'text-slate-400'}"></i>
-                <span class="truncate">${item.label}</span>
+                <span class="truncate">\${item.label}</span>
               </span>
-              ${isLocked ? `<i data-lucide="lock" class="w-3 h-3 text-slate-300 shrink-0"></i>` : ''}
+              \${isLocked ? `<i data-lucide="lock" class="w-3 h-3 text-slate-300 shrink-0"></i>` : ''}
             </button>
           `;
         }).join('');
@@ -413,920 +413,224 @@
 
     function navigate(routeId) {
       state.activeRoute = routeId;
-      if (routeId !== 'clientes') {
-        state.selectedClientId = null;
-      }
       saveState();
       renderSidebar();
       renderWorkspace();
     }
 
-    // =========================================================
-    // RENDERIZADO DEL WORKSPACE
-    // =========================================================
     function renderWorkspace() {
       const ws = document.getElementById('workspace');
+      const headerEl = document.getElementById('standard-header');
       const titleEl = document.getElementById('page-title');
 
-      if (state.activeRoute === 'clientes') {
-        if (state.selectedClientId) {
-          titleEl.textContent = 'Clientes';
-          ws.innerHTML = renderClientDetailView();
-        } else {
-          titleEl.textContent = 'Clientes';
-          ws.innerHTML = renderClientesListView();
-        }
-      } else if (state.activeRoute === 'inicio') {
-        titleEl.textContent = 'Inicio';
-        ws.innerHTML = renderInicioView();
-      } else if (state.activeRoute === 'recibir') {
-        titleEl.textContent = 'Recibir Equipo';
-        ws.innerHTML = renderRecibirView();
-      } else if (state.activeRoute === 'ajustes') {
-        titleEl.textContent = 'Ajustes';
-        ws.innerHTML = renderAjustesView();
-      } else if (state.activeRoute === 'presupuestos') {
-        titleEl.textContent = 'Presupuestos';
-        ws.innerHTML = renderPresupuestosView();
-      } else if (state.activeRoute === 'inventario') {
-        titleEl.textContent = 'Inventario';
-        ws.innerHTML = renderInventarioView();
+      if (state.activeRoute === 'recibir') {
+        headerEl.classList.add('hidden');
+        ws.className = 'flex-1 overflow-y-auto px-6 py-4';
+        ws.innerHTML = renderRecibirScreen();
       } else {
-        const allItems = [...operationItems, ...posItems];
-        const found = allItems.find(i => i.id === state.activeRoute);
-        titleEl.textContent = found ? found.label : 'Módulo';
-        ws.innerHTML = `
-          <div class="bg-white rounded-2xl border border-slate-200/70 p-8 text-center max-w-xl mx-auto mt-6">
-            <div class="w-12 h-12 rounded-2xl bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center mx-auto mb-3">
-              <i data-lucide="${found ? found.icon : 'layers'}" class="w-6 h-6"></i>
-            </div>
-            <h2 class="text-base font-bold text-slate-900">Módulo ${found ? found.label : ''}</h2>
-            <p class="text-xs text-slate-500 mt-1">Listo para registrar movimientos.</p>
-          </div>
-        `;
+        headerEl.classList.remove('hidden');
+        ws.className = 'flex-1 overflow-y-auto px-8 pb-10';
+        if (state.activeRoute === 'inicio') {
+          titleEl.textContent = 'Inicio';
+          ws.innerHTML = renderInicioView();
+        } else if (state.activeRoute === 'clientes') {
+          titleEl.textContent = 'Clientes';
+          ws.innerHTML = renderClientesView();
+        } else if (state.activeRoute === 'ajustes') {
+          titleEl.textContent = 'Ajustes';
+          ws.innerHTML = renderAjustesView();
+        } else {
+          const allItems = [...operationItems, ...posItems];
+          const found = allItems.find(i => i.id === state.activeRoute);
+          titleEl.textContent = found ? found.label : 'Módulo';
+          ws.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200/70 p-8 text-center max-w-xl mx-auto mt-6 text-xs text-slate-500">Módulo <strong>\${found ? found.label : ''}</strong> listo.</div>`;
+        }
       }
 
       lucide.createIcons();
+      updateMissingBadges();
     }
 
     // =========================================================
-    // VISTA 1: MIS CLIENTES (RÉPLICA DE CAPTURA 1)
+    // PANTALLA RECIBIR EQUIPO (RÉPLICA DE LAS 3 CAPTURAS)
     // =========================================================
-    function renderClientesListView() {
-      const q = (state.clientSearch || '').trim().toLowerCase();
-      const filtered = state.clients.filter(c =>
-        c.fullName.toLowerCase().includes(q) ||
-        (c.docNumber || '').toLowerCase().includes(q) ||
-        (c.phone || '').toLowerCase().includes(q)
-      );
-
-      const frequentCount = state.clients.filter(c => getClientOrders(c).length >= 2).length;
-      const posCount = state.clients.filter(c => c.isPosClient).length;
-
-      const rowsHtml = filtered.length === 0
-        ? `<div class="bg-white rounded-2xl border border-slate-200/70 p-10 text-center text-xs text-slate-400">No se encontraron clientes con "${state.clientSearch}".</div>`
-        : filtered.map(c => `
-            <div onclick="openClientDetail('${c.id}')" class="bg-white hover:bg-slate-50/80 border border-slate-200/70 rounded-xl px-5 py-3.5 flex items-center justify-between gap-4 cursor-pointer transition-colors shadow-2xs">
-              <!-- Columna 1: Avatar + Nombre -->
-              <div class="flex items-center gap-3.5 w-1/3 min-w-[180px]">
-                <div class="w-9 h-9 rounded-full ${c.avatarBg || 'bg-emerald-100/80 text-emerald-700'} font-bold text-xs flex items-center justify-center shrink-0">
-                  ${c.initials || getInitials(c.fullName)}
-                </div>
-                <div>
-                  <div class="text-[13px] font-bold text-slate-900 leading-tight">${c.fullName}</div>
-                  ${c.conflictive ? `<span class="inline-block mt-0.5 text-[10px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">Cliente conflictivo</span>` : ''}
-                </div>
-              </div>
-
-              <!-- Columna 2: Identificación -->
-              <div class="w-1/4 text-xs text-slate-500 font-medium">
-                ${c.docNumber ? `<span class="text-slate-400 mr-1">#</span>${c.docNumber}` : ''}
-              </div>
-
-              <!-- Columna 3: Teléfono + Flecha -->
-              <div class="flex-1 flex items-center justify-end gap-6 text-xs text-slate-600 font-medium">
-                <span class="inline-flex items-center gap-1.5">
-                  <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400"></i>
-                  ${c.phone || '—'}
-                </span>
-                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 shrink-0"></i>
-              </div>
-            </div>
-          `).join('');
+    function renderRecibirScreen() {
+      const servicesSum = receiveFormState.services.reduce((acc, s) => acc + (Number(s.price) || 0), 0);
+      const expensesSum = receiveFormState.orderExpenses.reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
+      const totalVal = Number(document.getElementById('rec-total-input')?.value || servicesSum || 0);
+      const abonoVal = Number(document.getElementById('rec-abono-input')?.value || 0);
+      const descPct = Number(document.getElementById('rec-desc-input')?.value || 0);
+      const afterDiscount = Math.max(0, totalVal - (totalVal * descPct / 100));
+      const saldoPendiente = Math.max(0, afterDiscount - abonoVal);
 
       return `
-        <!-- Barra superior: Título Mis Clientes + Buscador + Contadores + Acciones -->
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-          <div class="flex flex-wrap items-center gap-2.5">
-            <div class="flex items-center gap-2 mr-1">
-              <i data-lucide="users" class="w-4 h-4 text-slate-700"></i>
-              <h2 class="text-[16px] font-bold text-slate-900">Mis Clientes</h2>
-              <button onclick="showToast('Tip: haz clic en cualquier cliente para ver su historial y saldo pendiente')" class="w-6 h-6 rounded-full bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:scale-105 transition-transform" title="Guía rápida">
-                <i data-lucide="play" class="w-3 h-3 fill-current"></i>
+        <div class="space-y-4">
+          <!-- Top Bar de Recibir Equipo -->
+          <div class="flex items-center justify-between gap-3 pb-1">
+            <div class="flex items-center gap-3">
+              <button type="button" onclick="navigate('inicio')" class="w-8 h-8 rounded-full bg-white border border-slate-200 hover:bg-slate-50 flex items-center justify-center text-slate-700 transition-colors">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              </button>
+              <div class="flex items-center gap-2">
+                <i data-lucide="smartphone" class="w-4 h-4 text-[#65A30D]"></i>
+                <span class="font-extrabold text-[15px] text-slate-900">Recibir Equipo</span>
+              </div>
+              <span class="text-[11px] text-slate-400 hidden sm:inline">* Campos obligatorios. Todo lo demás es opcional.</span>
+            </div>
+
+            <div class="flex items-center gap-2.5">
+              <button type="button" onclick="showToast('Guía rápida: llena los campos obligatorios marcados con * y presiona Guardar Orden')" class="w-8 h-8 rounded-full bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:scale-105 transition-transform">
+                <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+              </button>
+              <button type="button" onclick="submitReceiveOrder()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs shadow-2xs transition-colors">
+                <i data-lucide="save" class="w-3.5 h-3.5"></i> Guardar Orden
               </button>
             </div>
-
-            <!-- Buscador -->
-            <div class="relative">
-              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
-              <input
-                type="text"
-                value="${state.clientSearch}"
-                oninput="updateClientSearch(this.value)"
-                placeholder="Buscar por nombre, cédula, teléfon"
-                class="pl-8 pr-3 py-1.5 w-60 bg-white border border-slate-200/90 rounded-lg text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#84CC16]"
-              />
-            </div>
-
-            <!-- Pill: Total -->
-            <div class="bg-white border border-slate-200/80 rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
-              <span class="w-6 h-6 rounded-md bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
-                <i data-lucide="users" class="w-3.5 h-3.5"></i>
-              </span>
-              <div class="leading-none">
-                <div class="text-xs font-extrabold text-slate-900">${state.clients.length}</div>
-                <div class="text-[9px] font-bold uppercase text-slate-400 mt-0.5">TOTAL</div>
-              </div>
-            </div>
-
-            <!-- Pill: Frecuentes -->
-            <div class="bg-white border border-slate-200/80 rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
-              <span class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
-              </span>
-              <div class="leading-none">
-                <div class="text-xs font-extrabold text-slate-900">${frequentCount}</div>
-                <div class="text-[9px] font-bold uppercase text-slate-400 mt-0.5">FRECUENTES</div>
-              </div>
-            </div>
-
-            <!-- Pill: Clientes POS -->
-            <div class="bg-white border border-slate-200/80 rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
-              <span class="w-6 h-6 rounded-md bg-purple-50 text-purple-600 flex items-center justify-center">
-                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
-              </span>
-              <div class="leading-none">
-                <div class="text-xs font-extrabold text-slate-900">${posCount}</div>
-                <div class="text-[9px] font-bold uppercase text-slate-400 mt-0.5">CLIENTES POS</div>
-              </div>
-            </div>
           </div>
 
-          <!-- Botones Derecha -->
-          <div class="flex items-center gap-2 flex-wrap">
-            <button onclick="showToast('Selecciona un archivo .CSV para importar clientes')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#E9F5D8]/70 hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-xs transition-colors">
-              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-[#4D7C1F]"></i> Importar CSV
-            </button>
-            <button onclick="exportClientsCSV()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#E9F5D8]/70 hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-xs transition-colors">
-              <i data-lucide="download" class="w-3.5 h-3.5 text-[#4D7C1F]"></i> Exportar
-            </button>
-            <button onclick="cleanDuplicateClients()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100/80 text-amber-700 font-semibold text-xs transition-colors">
-              <i data-lucide="git-merge" class="w-3.5 h-3.5 text-amber-600"></i> Limpiar Duplicados
-            </button>
-            <button onclick="openNewClientModal()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs shadow-2xs transition-colors">
-              <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nuevo Cliente
-            </button>
-          </div>
-        </div>
+          <!-- Layout Principal: Izquierda (8 cols) + Derecha Fija Sticky (4 cols) -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
 
-        <!-- Cabeceras de Tabla -->
-        <div class="px-5 pb-2 flex items-center text-[10px] font-bold uppercase tracking-wider text-slate-400">
-          <div class="w-1/3 min-w-[180px]">CLIENTE</div>
-          <div class="w-1/4">IDENTIFICACIÓN</div>
-          <div class="flex-1">TELÉFONO</div>
-        </div>
+            <!-- COLUMNA IZQUIERDA (8 cols) -->
+            <div class="lg:col-span-8 space-y-4">
 
-        <!-- Filas de Clientes -->
-        <div class="space-y-2.5">
-          ${rowsHtml}
-        </div>
-      `;
-    }
-
-    function updateClientSearch(val) {
-      state.clientSearch = val;
-      saveState();
-      renderWorkspace();
-      // Mantener foco en el buscador
-      const input = document.querySelector('input[placeholder*="Buscar por nombre"]');
-      if (input) {
-        input.focus();
-        input.setSelectionRange(input.value.length, input.value.length);
-      }
-    }
-
-    function exportClientsCSV() {
-      const csv = ['Nombre,Documento,Telefono,Correo,Direccion']
-        .concat(state.clients.map(c => `"${c.fullName}","${c.docNumber || ''}","${c.phone || ''}","${c.email || ''}","${c.address || ''}"`))
-        .join('\n');
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'clientes_tesla_tech.csv';
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast('Listado de clientes exportado en CSV');
-    }
-
-    function cleanDuplicateClients() {
-      const seen = new Set();
-      const unique = [];
-      let removed = 0;
-      for (const c of state.clients) {
-        const key = `${c.fullName.trim().toLowerCase()}|${(c.phone || '').trim()}`;
-        if (seen.has(key)) {
-          removed++;
-        } else {
-          seen.add(key);
-          unique.push(c);
-        }
-      }
-      state.clients = unique;
-      saveState();
-      renderWorkspace();
-      showToast(removed > 0 ? `Se eliminaron ${removed} duplicados` : 'No se encontraron clientes duplicados');
-    }
-
-    // =========================================================
-    // MODAL: NUEVO CLIENTE (RÉPLICA DE CAPTURA 2)
-    // =========================================================
-    function openNewClientModal(editingClientId = null) {
-      const existing = editingClientId ? state.clients.find(c => c.id === editingClientId) : null;
-      state.newClientType = existing ? (existing.type || 'Persona') : 'Persona';
-      state.newClientDocType = existing ? (existing.docType || 'CC') : 'CC';
-
-      const isEmpresa = state.newClientType === 'Empresa';
-
-      openQuickModal(`
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
-              <i data-lucide="user-plus" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <h3 class="font-bold text-base text-slate-900 leading-tight">${existing ? 'Editar Cliente' : 'Nuevo Cliente'}</h3>
-              <p class="text-xs text-slate-400 mt-0.5">Queda guardado para la próxima orden o venta</p>
-            </div>
-          </div>
-          <button onclick="closeQuickModal()" class="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
-        </div>
-
-        <!-- Selector Persona / Empresa -->
-        <div class="grid grid-cols-2 gap-1.5 bg-slate-100/90 p-1 rounded-xl mb-4 text-xs font-bold">
-          <button type="button" onclick="setClientModalType('Persona')" class="py-2 rounded-lg transition-all ${!isEmpresa ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">
-            Persona
-          </button>
-          <button type="button" onclick="setClientModalType('Empresa')" class="py-2 rounded-lg transition-all ${isEmpresa ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">
-            Empresa
-          </button>
-        </div>
-
-        <form onsubmit="submitClientForm(event, '${existing ? existing.id : ''}')" class="space-y-3.5 text-xs">
-          ${!isEmpresa
-            ? `<div class="grid grid-cols-2 gap-3">
-                 <div>
-                   <label class="block font-bold text-slate-800 mb-1">Nombre *</label>
-                   <input id="nc-first" type="text" value="${existing ? (existing.firstName || '') : ''}" placeholder="Ej. María" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" required />
-                 </div>
-                 <div>
-                   <label class="block font-bold text-slate-800 mb-1">Apellido *</label>
-                   <input id="nc-last" type="text" value="${existing ? (existing.lastName || '') : ''}" placeholder="Ej. Pérez" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" required />
-                 </div>
-               </div>`
-            : `<div>
-                 <label class="block font-bold text-slate-800 mb-1">Razón Social / Empresa *</label>
-                 <input id="nc-company" type="text" value="${existing ? existing.fullName : ''}" placeholder="Ej. Inversiones Tech SAS" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" required />
-               </div>`
-          }
-
-          <!-- Teléfono con +57 -->
-          <div>
-            <label class="block font-bold text-slate-800 mb-1">Teléfono</label>
-            <div class="flex items-center gap-2">
-              <span class="px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 font-extrabold text-[#4D7C1F] shrink-0">+57</span>
-              <input id="nc-phone" type="text" value="${existing ? (existing.phone || '').replace(/^\+57/, '') : ''}" placeholder="4141234567" class="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-            </div>
-          </div>
-
-          <!-- Tipo de documento -->
-          <div>
-            <label class="block font-bold text-slate-800 mb-1.5">Tipo de documento</label>
-            <div class="flex items-center gap-2">
-              ${['CC', 'CE', 'Pasaporte'].map(dt => `
-                <button type="button" onclick="setClientModalDocType('${dt}')" class="px-3.5 py-1.5 rounded-lg border text-xs font-bold transition-colors ${
-                  state.newClientDocType === dt
-                    ? 'border-[#84CC16] bg-[#F2FCE2] text-[#2F5211]'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                }">${dt}</button>
-              `).join('')}
-            </div>
-          </div>
-
-          <!-- Número de documento -->
-          <div>
-            <label id="nc-doc-label" class="block font-bold text-slate-800 mb-1">${state.newClientDocType}</label>
-            <input id="nc-doc-num" type="text" value="${existing ? (existing.docNumber || '') : ''}" placeholder="1023456789" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-          </div>
-
-          <!-- Correo -->
-          <div>
-            <label class="block font-bold text-slate-800 mb-1">Correo</label>
-            <input id="nc-email" type="email" value="${existing ? (existing.email || '') : ''}" placeholder="cliente@correo.com" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-          </div>
-
-          <!-- Dirección -->
-          <div>
-            <label class="block font-bold text-slate-800 mb-1">Dirección</label>
-            <input id="nc-address" type="text" value="${existing ? (existing.address || '') : ''}" placeholder="Opcional" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-          </div>
-
-          <button type="submit" class="mt-2 w-full py-3 rounded-xl bg-[#A3E635] hover:bg-[#84CC16] text-slate-900 font-bold text-sm transition-colors shadow-2xs">
-            ${existing ? 'Actualizar Cliente' : 'Guardar Cliente'}
-          </button>
-        </form>
-      `);
-      lucide.createIcons();
-    }
-
-    function setClientModalType(type) {
-      state.newClientType = type;
-      openNewClientModal(state.selectedClientId);
-    }
-
-    function setClientModalDocType(dt) {
-      state.newClientDocType = dt;
-      const lbl = document.getElementById('nc-doc-label');
-      if (lbl) lbl.textContent = dt;
-      openNewClientModal(state.selectedClientId);
-    }
-
-    function submitClientForm(e, editId) {
-      e.preventDefault();
-      const rawPhone = (document.getElementById('nc-phone')?.value || '').trim();
-      const phone = rawPhone ? (rawPhone.startsWith('+') ? rawPhone : '+57' + rawPhone) : '';
-
-      let firstName = '';
-      let lastName = '';
-      let fullName = '';
-
-      if (state.newClientType === 'Empresa') {
-        fullName = (document.getElementById('nc-company')?.value || '').trim();
-        firstName = fullName;
-      } else {
-        firstName = (document.getElementById('nc-first')?.value || '').trim();
-        lastName = (document.getElementById('nc-last')?.value || '').trim();
-        fullName = `${firstName} ${lastName}`.trim();
-      }
-
-      if (!fullName) return;
-
-      const docNumber = (document.getElementById('nc-doc-num')?.value || '').trim();
-      const email = (document.getElementById('nc-email')?.value || '').trim();
-      const address = (document.getElementById('nc-address')?.value || '').trim();
-
-      if (editId) {
-        const cli = state.clients.find(c => c.id === editId);
-        if (cli) {
-          cli.type = state.newClientType;
-          cli.firstName = firstName;
-          cli.lastName = lastName;
-          cli.fullName = fullName;
-          cli.initials = getInitials(fullName);
-          cli.phone = phone;
-          cli.docType = state.newClientDocType;
-          cli.docNumber = docNumber;
-          cli.email = email;
-          cli.address = address;
-        }
-        showToast('Cliente actualizado');
-      } else {
-        state.clients.unshift({
-          id: 'cli-' + Date.now(),
-          type: state.newClientType,
-          firstName,
-          lastName,
-          fullName,
-          initials: getInitials(fullName),
-          avatarBg: 'bg-emerald-100/80 text-emerald-700',
-          phone,
-          docType: state.newClientDocType,
-          docNumber,
-          email,
-          address,
-          conflictive: false,
-          isPosClient: false
-        });
-        showToast(`Cliente "${fullName}" guardado`);
-      }
-
-      saveState();
-      closeQuickModal();
-      renderWorkspace();
-    }
-
-    // =========================================================
-    // VISTA 2: DETALLE DE CLIENTE (RÉPLICA DE CAPTURA 3)
-    // =========================================================
-    function openClientDetail(clientId) {
-      state.selectedClientId = clientId;
-      saveState();
-      renderWorkspace();
-    }
-
-    function backToClientsList() {
-      state.selectedClientId = null;
-      saveState();
-      renderWorkspace();
-    }
-
-    function toggleClientConflictive(clientId) {
-      const cli = state.clients.find(c => c.id === clientId);
-      if (!cli) return;
-      cli.conflictive = !cli.conflictive;
-      saveState();
-      renderWorkspace();
-      showToast(cli.conflictive ? 'Marcado como Cliente conflictivo' : 'Marca de cliente conflictivo removida');
-    }
-
-    function deleteClientById(clientId) {
-      const cli = state.clients.find(c => c.id === clientId);
-      if (!cli) return;
-      state.clients = state.clients.filter(c => c.id !== clientId);
-      state.selectedClientId = null;
-      saveState();
-      renderWorkspace();
-      showToast(`Cliente "${cli.fullName}" eliminado`);
-    }
-
-    function renderClientDetailView() {
-      const cli = state.clients.find(c => c.id === state.selectedClientId);
-      if (!cli) {
-        state.selectedClientId = null;
-        return renderClientesListView();
-      }
-
-      const clientOrders = getClientOrders(cli);
-      const pendingSum = clientOrders.reduce((acc, o) => {
-        const extra = (o.extraQuotes || []).reduce((s, q) => s + q.amount, 0);
-        const total = (o.priceTotal || 0) + extra;
-        const pend = Math.max(0, total - (o.paidAmount || 0));
-        return acc + pend;
-      }, 0);
-
-      const lastOrderDate = clientOrders.length > 0 ? clientOrders[0].receivedDate.split(' ').slice(0, 2).join(' ') : '—';
-
-      const ordersHtml = clientOrders.length === 0
-        ? `<div class="bg-white rounded-2xl border border-slate-200/70 p-8 text-center text-xs text-slate-400">Este cliente aún no tiene órdenes registradas.</div>`
-        : clientOrders.map(o => {
-            const globalIdx = state.orders.indexOf(o);
-            const extra = (o.extraQuotes || []).reduce((s, q) => s + q.amount, 0);
-            const total = (o.priceTotal || 0) + extra;
-            const pend = Math.max(0, total - (o.paidAmount || 0));
-            const statusLabel = (STEPS[o.statusIndex] || 'Recibido').toUpperCase();
-
-            return `
-              <div onclick="openOrderDetail(${globalIdx})" class="bg-white hover:border-[#84CC16] border border-slate-200/70 rounded-2xl p-4 flex items-center justify-between gap-4 cursor-pointer transition-all shadow-2xs">
-                <div class="flex items-start gap-3.5">
-                  <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0 mt-0.5">
-                    <i data-lucide="smartphone" class="w-4 h-4"></i>
+              <!-- 1. Datos del Cliente -->
+              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                    <i data-lucide="user" class="w-4 h-4"></i>
                   </div>
                   <div>
-                    <div class="font-bold text-sm text-slate-900 leading-tight">${o.device}</div>
-                    <div class="text-[11px] text-slate-400 mt-0.5">#${o.number} · ${o.receivedDate}</div>
-                    <span class="inline-block mt-2 px-2.5 py-0.5 rounded-md bg-sky-50 text-sky-600 font-bold text-[10px] tracking-wide">${statusLabel}</span>
+                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Datos del Cliente</h2>
+                    <p class="text-[11px] text-slate-400">Información del cliente</p>
                   </div>
                 </div>
 
-                <div class="flex items-center gap-3 text-right">
+                <!-- Pestañas Persona / Empresa + Botón Lupa -->
+                <div class="flex items-center gap-2">
+                  <div class="flex-1 grid grid-cols-2 bg-slate-100/90 p-1 rounded-xl text-xs font-bold">
+                    <button type="button" onclick="setReceiveClientMode('Persona')" class="py-1.5 rounded-lg transition-all \${receiveFormState.clientMode === 'Persona' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">
+                      Persona
+                    </button>
+                    <button type="button" onclick="setReceiveClientMode('Empresa')" class="py-1.5 rounded-lg transition-all \${receiveFormState.clientMode === 'Empresa' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">
+                      Empresa
+                    </button>
+                  </div>
+                  <button type="button" onclick="quickSearchClient()" class="w-9 h-9 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#4D7C1F] flex items-center justify-center shrink-0 transition-colors" title="Buscar cliente existente">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+                <!-- Tipo de documento -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tipo de documento</label>
+                  <div class="flex items-center gap-2">
+                    \${['CC', 'CE', 'Pasaporte'].map(dt => `
+                      <button type="button" onclick="setReceiveDocType('${dt}')" class="px-3.5 py-1 rounded-lg border text-xs font-semibold transition-colors ${
+                        receiveFormState.docType === dt
+                          ? 'border-[#84CC16] bg-[#F2FCE2] text-[#2F5211]'
+                          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                      }">${dt}</button>
+                    `).join('')}
+                  </div>
+                </div>
+
+                <!-- CC -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">\${receiveFormState.docType}</label>
+                  <input id="rec-doc" type="text" placeholder="1023456789" class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                </div>
+
+                <!-- Nombre * y Apellido * -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div>
-                    <div class="text-sm font-extrabold text-slate-900">${formatCOP(total)}</div>
-                    ${pend > 0 ? `<div class="text-[11px] font-bold text-rose-500 mt-0.5">Debe ${formatCOP(pend)}</div>` : `<div class="text-[11px] font-semibold text-emerald-600 mt-0.5">Pagado</div>`}
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                      <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                      <input id="rec-nombre" type="text" oninput="updateMissingBadges()" placeholder="" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    </div>
                   </div>
-                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Apellido <span class="text-rose-500">*</span></label>
+                    <input id="rec-apellido" type="text" oninput="updateMissingBadges()" placeholder="" class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  </div>
                 </div>
-              </div>
-            `;
-          }).join('');
 
-      return `
-        <!-- Sub-barra: Flecha Atrás + Título Cliente + Botones Eliminar y Editar -->
-        <div class="flex items-center justify-between gap-4 mb-5">
-          <div class="flex items-center gap-3">
-            <button onclick="backToClientsList()" class="p-1.5 rounded-lg text-slate-700 hover:bg-white transition-colors" title="Volver a Mis Clientes">
-              <i data-lucide="arrow-left" class="w-4 h-4"></i>
-            </button>
-            <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
-              <i data-lucide="user" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <h2 class="text-[16px] font-bold text-slate-900 leading-none">Cliente</h2>
-              <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1">${cli.fullName}</p>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2.5">
-            <button onclick="deleteClientById('${cli.id}')" class="w-9 h-9 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-500 flex items-center justify-center transition-colors" title="Eliminar cliente">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
-            </button>
-            <button onclick="openNewClientModal('${cli.id}')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#2F5211] font-bold text-xs transition-colors">
-              <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Editar
-            </button>
-          </div>
-        </div>
-
-        <!-- Grilla Principal de Detalle -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-
-          <!-- Columna Izquierda (5 cols) -->
-          <div class="lg:col-span-5 space-y-4">
-            <!-- Card Identidad + WhatsApp + Copiar -->
-            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
-              <div class="flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-full ${cli.avatarBg || 'bg-amber-100/80 text-amber-700'} font-extrabold text-sm flex items-center justify-center shrink-0">
-                  ${cli.initials || getInitials(cli.fullName)}
+                <!-- Teléfono * | Dirección | Correo (opcional) -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5">
+                  <div class="md:col-span-4">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Teléfono <span class="text-rose-500">*</span></label>
+                    <div class="flex items-center gap-1.5">
+                      <span class="px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-sky-600 shrink-0">+57</span>
+                      <input id="rec-telefono" type="text" oninput="updateMissingBadges()" placeholder="4141234567" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    </div>
+                  </div>
+                  <div class="md:col-span-4">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Dirección</label>
+                    <div class="relative">
+                      <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                      <input id="rec-direccion" type="text" placeholder="" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    </div>
+                  </div>
+                  <div class="md:col-span-4">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Correo (opcional)</label>
+                    <div class="relative">
+                      <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                      <input id="rec-correo" type="email" placeholder="Para avisarle por correo cómo va su equipo" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <div class="font-extrabold text-sm text-slate-900">${cli.fullName}</div>
-                  <div class="text-xs text-slate-500 mt-0.5">${cli.phone || 'Sin teléfono'}</div>
-                </div>
-              </div>
 
-              <div class="flex items-center gap-2 mt-4">
-                <button onclick="showToast('Abriendo WhatsApp con ${cli.phone || ''}')" class="w-9 h-9 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#4D7C1F] flex items-center justify-center transition-colors" title="WhatsApp">
-                  <i data-lucide="message-circle" class="w-4 h-4"></i>
+                <button type="button" onclick="addSecondaryPhoneField()" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#4D7C1F] hover:underline">
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i> Agregar teléfono secundario
                 </button>
-                <button onclick="copyToClip('${cli.phone || cli.fullName}')" class="w-9 h-9 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#4D7C1F] flex items-center justify-center transition-colors" title="Copiar datos">
-                  <i data-lucide="copy" class="w-4 h-4"></i>
-                </button>
+                <div id="extra-phones-container" class="space-y-2"></div>
               </div>
-            </div>
 
-            <!-- Card Cliente conflictivo -->
-            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 flex items-center justify-between gap-3 shadow-2xs">
-              <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
-                  <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+              <!-- 2. Modalidad del servicio -->
+              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3.5">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                    <i data-lucide="truck" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Modalidad del servicio</h2>
+                    <p class="text-[11px] text-slate-400">¿Dónde se atiende esta orden?</p>
+                  </div>
                 </div>
-                <div>
-                  <div class="font-bold text-xs text-slate-900">Cliente conflictivo</div>
-                  <div class="text-[11px] text-slate-400">Al recibirle un equipo, la app avisa.</div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5">
+                  \${[
+                    { id: 'En el taller', sub: 'El equipo queda aquí', icon: 'home' },
+                    { id: 'A domicilio / On-Site', sub: 'Voy donde el cliente', icon: 'map-pin' },
+                    { id: 'Recojo y entrega', sub: 'Lo busco y lo devuelvo', icon: 'package' },
+                    { id: 'Remoto', sub: 'Sin equipo físico', icon: 'monitor' }
+                  ].map(m => {
+                    const active = receiveFormState.modality === m.id;
+                    return `
+                      <button type="button" onclick="setReceiveModality('${m.id}')" class="p-3 rounded-xl border text-left transition-all ${
+                        active
+                          ? 'border-[#84CC16] bg-[#F9FDF3]'
+                          : 'border-slate-200/80 bg-white hover:bg-slate-50'
+                      }">
+                        <div class="flex items-center gap-1.5 text-xs font-bold ${active ? 'text-[#2F5211]' : 'text-slate-800'}">
+                          <i data-lucide="${m.icon}" class="w-3.5 h-3.5 ${active ? 'text-[#65A30D]' : 'text-slate-400'}"></i>
+                          <span>${m.id}</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 mt-1">${m.sub}</div>
+                      </button>
+                    `;
+                  }).join('')}
                 </div>
-              </div>
-              <button type="button" onclick="toggleClientConflictive('${cli.id}')" class="w-10 h-5 rounded-full transition-colors p-0.5 ${cli.conflictive ? 'bg-[#84CC16]' : 'bg-slate-200'}">
-                <div class="w-4 h-4 rounded-full bg-white shadow-2xs transition-transform ${cli.conflictive ? 'translate-x-5' : 'translate-x-0'}"></div>
-              </button>
-            </div>
 
-            <!-- 3 Mini Cards: Órdenes | Pendiente | Última -->
-            <div class="grid grid-cols-3 gap-3">
-              <div class="bg-white rounded-2xl border border-slate-200/70 p-3.5 shadow-2xs">
-                <div class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center mb-2">
-                  <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>
-                </div>
-                <div class="font-extrabold text-sm text-slate-900">${clientOrders.length}</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">Órdenes</div>
-              </div>
+                <div class="text-[11px] text-slate-400">El equipo está en el taller, sin importar cómo llegó. Es lo habitual.</div>
 
-              <div class="bg-white rounded-2xl border border-slate-200/70 p-3.5 shadow-2xs">
-                <div class="w-7 h-7 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center mb-2">
-                  <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
-                </div>
-                <div class="font-extrabold text-xs text-rose-500 truncate">${formatCOP(pendingSum)}</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">Pendiente</div>
-              </div>
-
-              <div class="bg-white rounded-2xl border border-slate-200/70 p-3.5 shadow-2xs">
-                <div class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center mb-2">
-                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-                </div>
-                <div class="font-extrabold text-sm text-slate-900">${lastOrderDate}</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">Última</div>
-              </div>
-            </div>
-
-            <!-- Card Información de Contacto -->
-            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs space-y-3">
-              <div class="flex items-center gap-2 font-bold text-xs text-slate-900">
-                <span class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
-                  <i data-lucide="contact" class="w-3.5 h-3.5"></i>
-                </span>
-                Información de Contacto
-              </div>
-
-              <div class="flex items-center gap-3 pt-1">
-                <i data-lucide="phone" class="w-4 h-4 text-slate-400 shrink-0"></i>
-                <div>
-                  <div class="text-[10px] text-slate-400">Teléfono</div>
-                  <div class="text-xs font-bold text-slate-800">${cli.phone || 'Sin teléfono'}</div>
-                </div>
-              </div>
-
-              <div class="flex items-center gap-3">
-                <i data-lucide="mail" class="w-4 h-4 text-slate-400 shrink-0"></i>
-                <div>
-                  <div class="text-[10px] text-slate-400">Correo</div>
-                  <div class="text-xs font-bold text-slate-800">${cli.email || 'Sin correo'}</div>
-                </div>
-              </div>
-
-              <div class="flex items-center gap-3">
-                <i data-lucide="map-pin" class="w-4 h-4 text-slate-400 shrink-0"></i>
-                <div>
-                  <div class="text-[10px] text-slate-400">Dirección</div>
-                  <div class="text-xs font-bold text-slate-800">${cli.address || 'Sin dirección'}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Columna Derecha: Historial de Órdenes (7 cols) -->
-          <div class="lg:col-span-7 space-y-3">
-            <div class="flex items-center justify-between px-1">
-              <h3 class="font-bold text-xs text-slate-800">Historial de Órdenes</h3>
-              <span class="text-[11px] text-slate-400">${clientOrders.length} registros</span>
-            </div>
-            <div class="space-y-2.5">
-              ${ordersHtml}
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function copyToClip(text) {
-      navigator.clipboard?.writeText(text);
-      showToast(`Copiado: ${text}`);
-    }
-
-    // =========================================================
-    // OTRAS VISTAS Y DETALLE DE ORDEN
-    // =========================================================
-    function renderInicioView() {
-      const cards = state.orders.map((o, idx) => `
-        <div onclick="openOrderDetail(${idx})" class="bg-white rounded-2xl border border-slate-200/80 p-4 hover:border-[#84CC16] transition-all cursor-pointer flex items-center justify-between gap-4">
-          <div class="flex items-center gap-3.5">
-            <div class="w-10 h-10 rounded-xl bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center">#${o.number}</div>
-            <div>
-              <div class="font-bold text-sm text-slate-900">${o.device}</div>
-              <div class="text-xs text-slate-500">${o.client.name} · ${o.issue}</div>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="text-xs font-bold text-slate-900">${formatCOP(o.priceTotal)}</div>
-            <div class="text-[11px] text-slate-400">${STEPS[o.statusIndex]}</div>
-          </div>
-        </div>
-      `).join('');
-
-      return `<div class="space-y-3">${cards}</div>`;
-    }
-
-    function renderRecibirView() {
-      const nextNum = state.orders.reduce((max, o) => Math.max(max, o.number), 0) + 1;
-      return `
-        <form onsubmit="createNewOrder(event)" class="bg-white rounded-2xl border border-slate-200/80 p-6 max-w-3xl space-y-4">
-          <h2 class="text-base font-bold text-slate-900">Nueva Orden de Recepción #${nextNum}</h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
-            <div>
-              <label class="block font-medium text-slate-700 mb-1">Nombre completo *</label>
-              <input id="rec-client-name" type="text" placeholder="Ej. DAYANA FLOREZ" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
-            </div>
-            <div>
-              <label class="block font-medium text-slate-700 mb-1">Teléfono *</label>
-              <input id="rec-client-phone" type="text" placeholder="+573226207154" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
-            </div>
-            <div>
-              <label class="block font-medium text-slate-700 mb-1">Equipo *</label>
-              <input id="rec-device" type="text" placeholder="apple iphone 13 pro max" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
-            </div>
-            <div>
-              <label class="block font-medium text-slate-700 mb-1">Color</label>
-              <input id="rec-color" type="text" placeholder="plateado" class="w-full px-3 py-2 border border-slate-200 rounded-lg" />
-            </div>
-            <div class="sm:col-span-2">
-              <label class="block font-medium text-slate-700 mb-1">Falla Reportada *</label>
-              <input id="rec-issue" type="text" placeholder="cambio bateria" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
-            </div>
-            <div>
-              <label class="block font-medium text-slate-700 mb-1">Precio Total (COP) *</label>
-              <input id="rec-price" type="number" placeholder="260000" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
-            </div>
-          </div>
-          <div class="pt-2 flex justify-end gap-2">
-            <button type="button" onclick="navigate('inicio')" class="px-4 py-2 rounded-lg border border-slate-200 text-xs">Cancelar</button>
-            <button type="submit" class="px-5 py-2 rounded-lg bg-[#84CC16] text-slate-950 font-semibold text-xs">Guardar Orden</button>
-          </div>
-        </form>
-      `;
-    }
-
-    function createNewOrder(e) {
-      e.preventDefault();
-      const clientName = document.getElementById('rec-client-name').value.trim().toUpperCase();
-      const phone = document.getElementById('rec-client-phone').value.trim();
-
-      let matchedClient = state.clients.find(c => c.fullName.toLowerCase() === clientName.toLowerCase());
-      if (!matchedClient) {
-        matchedClient = {
-          id: 'cli-' + Date.now(),
-          type: 'Persona',
-          firstName: clientName.split(' ')[0] || clientName,
-          lastName: clientName.split(' ').slice(1).join(' '),
-          fullName: clientName,
-          initials: getInitials(clientName),
-          avatarBg: 'bg-emerald-100/80 text-emerald-700',
-          phone,
-          docType: 'CC',
-          docNumber: '',
-          email: '',
-          address: '',
-          conflictive: false,
-          isPosClient: false
-        };
-        state.clients.unshift(matchedClient);
-      }
-
-      const nextNum = state.orders.reduce((max, o) => Math.max(max, o.number), 0) + 1;
-      const newOrder = {
-        number: nextNum,
-        clientId: matchedClient.id,
-        device: document.getElementById('rec-device').value,
-        color: document.getElementById('rec-color').value || 'N/A',
-        issue: document.getElementById('rec-issue').value,
-        internalNotes: 'N/A',
-        accessories: 'Ninguno',
-        technicalReport: '',
-        statusIndex: 0,
-        receivedDate: '25 nov 2026',
-        client: { name: clientName, docId: matchedClient.docNumber || 'N/A', phone, address: matchedClient.address || 'N/A' },
-        priceTotal: Number(document.getElementById('rec-price').value),
-        paidAmount: 0,
-        extraQuotes: [],
-        expenses: [],
-        photos: 0,
-        signatureDataUrl: null,
-        history: [{ status: 'Recibido', timeAgo: 'hace un momento', dateShort: '25 nov' }]
-      };
-      state.orders.unshift(newOrder);
-      saveState();
-      state.activeRoute = 'inicio';
-      renderSidebar();
-      renderWorkspace();
-      openOrderDetail(0);
-      showToast(`Orden #${newOrder.number} creada y vinculada a ${clientName}`);
-    }
-
-    function openOrderDetail(idx) {
-      state.selectedOrderIndex = idx;
-      const o = state.orders[idx];
-      if (!o) return;
-      const overlay = document.getElementById('order-detail-overlay');
-      overlay.classList.remove('hidden');
-      overlay.classList.add('flex');
-
-      document.getElementById('order-detail-header').innerHTML = `
-        <div class="flex items-center gap-3">
-          <button onclick="closeOrderDetail()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="font-bold text-[15px] text-slate-900">${o.device}</h2>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-600">${STEPS[o.statusIndex]}</span>
-            </div>
-            <p class="text-[11px] text-slate-400">#${o.number} · ${o.client.name} · recibida el ${o.receivedDate}</p>
-          </div>
-        </div>
-        <button onclick="deleteOrderFromDetail(${idx})" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold text-xs">
-          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Eliminar Orden
-        </button>
-      `;
-
-      document.getElementById('order-detail-body').innerHTML = `
-        <div class="bg-white rounded-2xl border border-slate-200/70 p-5 max-w-4xl space-y-3 text-xs">
-          <div class="font-bold text-sm text-slate-900">Detalle de Orden #${o.number}</div>
-          <div><strong>Cliente:</strong> ${o.client.name} (${o.client.phone})</div>
-          <div><strong>Equipo:</strong> ${o.device} — Color: ${o.color}</div>
-          <div><strong>Falla reportada:</strong> ${o.issue}</div>
-          <div><strong>Total:</strong> ${formatCOP(o.priceTotal)}</div>
-        </div>
-      `;
-      lucide.createIcons();
-    }
-
-    function deleteOrderFromDetail(idx) {
-      state.orders.splice(idx, 1);
-      saveState();
-      closeOrderDetail();
-      showToast('Orden eliminada');
-    }
-
-    function closeOrderDetail() {
-      state.selectedOrderIndex = null;
-      const overlay = document.getElementById('order-detail-overlay');
-      overlay.classList.add('hidden');
-      overlay.classList.remove('flex');
-      renderWorkspace();
-    }
-
-    function renderPresupuestosView() {
-      return `<div class="bg-white rounded-2xl border border-slate-200/70 p-6 max-w-xl text-xs"><h3 class="font-bold text-sm text-slate-900 mb-2">Presupuestos</h3><p class="text-slate-500">Cotizador rápido disponible para clientes.</p></div>`;
-    }
-
-    function renderInventarioView() {
-      return `<div class="bg-white rounded-2xl border border-slate-200/70 p-6 text-xs"><h3 class="font-bold text-sm text-slate-900 mb-2">Inventario</h3><p class="text-slate-500">${state.inventory.length} repuestos registrados.</p></div>`;
-    }
-
-    function renderAjustesView() {
-      return `
-        <div class="bg-white rounded-2xl border border-slate-200/70 p-6 max-w-2xl flex items-center justify-between gap-4">
-          <div>
-            <div class="text-xs font-bold uppercase text-slate-400">Suscripción</div>
-            <div class="text-base font-bold ${state.isSubscribed ? 'text-emerald-600' : 'text-rose-500'} mt-0.5">
-              ${state.isSubscribed ? `Activa — ${state.planName}` : 'Inactiva'}
-            </div>
-            <div class="text-xs text-slate-500 mt-0.5">Gestiona tu cuenta para desbloquear todos los módulos</div>
-          </div>
-          <button onclick="openSubModal()" class="px-5 py-2.5 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs">
-            Gestionar Cuenta
-          </button>
-        </div>
-      `;
-    }
-
-    function openSubModal() {
-      const modal = document.getElementById('subscription-modal');
-      const deactZone = document.getElementById('deactivate-zone');
-      state.isSubscribed ? deactZone.classList.remove('hidden') : deactZone.classList.add('hidden');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function closeSubModal() {
-      const modal = document.getElementById('subscription-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function activatePlan(planTitle) {
-      state.isSubscribed = true;
-      state.planName = planTitle;
-      saveState();
-      closeSubModal();
-      renderSidebar();
-      renderWorkspace();
-      showToast(`¡${planTitle} activado!`);
-    }
-
-    function deactivatePlan() {
-      state.isSubscribed = false;
-      state.planName = 'Inactiva';
-      saveState();
-      closeSubModal();
-      renderSidebar();
-      renderWorkspace();
-      showToast('Suscripción desactivada.');
-    }
-
-    function openQuickModal(html) {
-      const modal = document.getElementById('quick-action-modal');
-      document.getElementById('quick-action-content').innerHTML = html;
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function closeQuickModal() {
-      const modal = document.getElementById('quick-action-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function refreshView() {
-      const icon = document.getElementById('refresh-icon');
-      icon.classList.add('animate-spin');
-      setTimeout(() => {
-        icon.classList.remove('animate-spin');
-        renderWorkspace();
-        showToast('Datos sincronizados');
-      }, 350);
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toast-msg').textContent = msg;
-      toast.classList.remove('translate-y-20', 'opacity-0');
-      clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => {
-        toast.classList.add('translate-y-20', 'opacity-0');
-      }, 3000);
-    }
-
-    // Arrancar directamente en la pestaña Clientes para ver el listado al instante
-    renderSidebar();
-    renderWorkspace();
-  </script>
-</body>
-</html>
+                <!-- Individual / Lote -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div class="p-3 rounded-xl border border-[#84CC16] bg-[#F9FDF3]">
+                    <div class="flex items-center gap-1.5 text-xs font-bold text-[#2F5211]">
+                      <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#65A30D]"></i> Individual
+                    </div>
+                    <div class="text-[10px] text-[#4D7C1F] mt-0.5">Un cliente, una orden. Con fotos, seña y firma.</div>
+                  </div>
+                  <div onclick="handleMenuClick('lote', true)" class="p-3 rounded-xl border border-slate-200/
