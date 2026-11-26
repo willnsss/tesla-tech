@@ -63,8 +63,8 @@
           <button onclick="navigate('equipo')" data-nav="equipo" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors">
             <span class="flex items-center gap-3"><i data-lucide="user-plus" class="w-4 h-4 text-slate-400"></i> Mi Equipo</span>
           </button>
-          <button onclick="navigate('ajustes')" data-nav="ajustes" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg bg-[#E9F5D8] text-[#2F5211] font-medium transition-colors">
-            <span class="flex items-center gap-3"><i data-lucide="settings" class="w-4 h-4 text-[#4D7C1F]"></i> Ajustes</span>
+          <button onclick="navigate('ajustes')" data-nav="ajustes" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors">
+            <span class="flex items-center gap-3"><i data-lucide="settings" class="w-4 h-4 text-slate-400"></i> Ajustes</span>
           </button>
         </div>
       </div>
@@ -75,15 +75,7 @@
        CONTENEDOR PRINCIPAL DERECHO
   ========================================================== -->
   <div class="flex-1 flex flex-col h-full min-w-0">
-    <header id="standard-header" class="h-16 px-8 flex items-center justify-between shrink-0 bg-[#F4F7FA]">
-      <h1 id="page-title" class="text-[20px] font-bold text-slate-900 tracking-tight">Recibir</h1>
-      <button onclick="refreshView()" class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white border border-slate-200/90 rounded-lg text-[13px] font-medium text-slate-700 hover:bg-slate-50 active:scale-[0.99] transition-all shadow-2xs">
-        <i id="refresh-icon" data-lucide="rotate-cw" class="w-3.5 h-3.5 text-slate-500"></i>
-        Actualizar
-      </button>
-    </header>
-
-    <main id="workspace" class="flex-1 overflow-y-auto px-8 pb-10"></main>
+    <main id="workspace" class="flex-1 overflow-y-auto px-7 py-5"></main>
   </div>
 
   <!-- =========================================================
@@ -92,74 +84,6 @@
   <div id="order-detail-overlay" class="fixed inset-0 bg-[#F4F7FA] z-40 hidden flex-col overflow-hidden">
     <div id="order-detail-header" class="bg-white border-b border-slate-200/80 px-5 py-3 flex flex-wrap items-center justify-between gap-3 shrink-0"></div>
     <div id="order-detail-body" class="flex-1 overflow-y-auto p-5 space-y-4"></div>
-  </div>
-
-  <!-- =========================================================
-       MODAL GESTIONAR CUENTA / SUSCRIPCIÓN
-  ========================================================== -->
-  <div id="subscription-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-100">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
-            <i data-lucide="crown" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <h3 class="font-bold text-slate-900 text-base">Suscripción TESLA TECH</h3>
-            <p class="text-xs text-slate-500">Activa un plan para desbloquear todos los módulos con candado</p>
-          </div>
-        </div>
-        <button onclick="closeSubModal()" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-5">
-        <div class="border border-slate-200 rounded-xl p-4 hover:border-[#84CC16] transition-colors flex flex-col justify-between">
-          <div>
-            <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Mensual</span>
-            <h4 class="font-bold text-slate-900 text-base mt-0.5">Plan Taller Pro</h4>
-            <div class="mt-2 flex items-baseline gap-1">
-              <span class="text-2xl font-bold text-slate-900">$29</span>
-              <span class="text-xs text-slate-500">USD / mes</span>
-            </div>
-            <ul class="mt-3 space-y-1.5 text-xs text-slate-600">
-              <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-[#65A30D]"></i> Inventario y Repuestos</li>
-              <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-[#65A30D]"></i> Punto de Venta (POS)</li>
-              <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-[#65A30D]"></i> Corte de Caja y Reportes</li>
-            </ul>
-          </div>
-          <button onclick="activatePlan('Plan Taller Pro')" class="mt-4 w-full py-2 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs transition-colors">
-            Activar Plan Pro
-          </button>
-        </div>
-
-        <div class="border-2 border-[#84CC16] bg-[#F9FDF3] rounded-xl p-4 flex flex-col justify-between relative">
-          <span class="absolute -top-2.5 right-3 bg-[#84CC16] text-slate-950 text-[10px] font-bold px-2 py-0.5 rounded-full">RECOMENDADO</span>
-          <div>
-            <span class="text-[11px] font-semibold uppercase tracking-wider text-[#4D7C1F]">Anual (-20%)</span>
-            <h4 class="font-bold text-slate-900 text-base mt-0.5">Plan Multi-Sucursal</h4>
-            <div class="mt-2 flex items-baseline gap-1">
-              <span class="text-2xl font-bold text-slate-900">$24</span>
-              <span class="text-xs text-slate-500">USD / mes</span>
-            </div>
-            <ul class="mt-3 space-y-1.5 text-xs text-slate-600">
-              <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-[#65A30D]"></i> Todo lo del Plan Pro</li>
-              <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-[#65A30D]"></i> Avisos WhatsApp automáticos</li>
-              <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-[#65A30D]"></i> Comisiones y Auditoría POS</li>
-            </ul>
-          </div>
-          <button onclick="activatePlan('Plan Multi-Sucursal')" class="mt-4 w-full py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors">
-            Activar Ahora
-          </button>
-        </div>
-      </div>
-
-      <div id="deactivate-zone" class="hidden pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-        <span class="text-slate-500">¿Deseas volver al modo gratuito con candados?</span>
-        <button onclick="deactivatePlan()" class="text-rose-600 font-medium hover:underline">Desactivar suscripción</button>
-      </div>
-    </div>
   </div>
 
   <!-- =========================================================
@@ -180,72 +104,22 @@
   ========================================================== -->
   <script>
     const STEPS = ['Recibido', 'Diagnóstico', 'En Reparación', 'Listo para Entregar', 'Entregado'];
-    const STORAGE_KEY = 'teslatech_app_state_v3';
+    const STORAGE_KEY = 'teslatech_app_state_v4';
 
     const defaultState = {
-      activeRoute: 'recibir',
-      activeSettingsTab: 'mi-cuenta',
-      isSubscribed: false,
-      planName: 'Inactiva',
+      activeRoute: 'inicio',
+      homeSearch: '',
+      homeFilterTab: 'activas', // 'activas' | 'recibido' | 'hoy'
+      hideAmounts: false,
+      darkMode: false,
       selectedOrderIndex: null,
-      selectedClientId: null,
-      clientSearch: '',
-      newClientType: 'Persona',
-      newClientDocType: 'CC',
-      workshop: {
-        name: 'TESLA TECH',
-        email: 'teslatech.cox@gmail.com',
-        phone: '+57 300 123 4567',
-        city: 'Medellín, Colombia'
-      },
       clients: [
         {
           id: 'cli-1',
-          type: 'Persona',
-          firstName: 'DAYANA',
-          lastName: 'FLOREZ',
           fullName: 'DAYANA FLOREZ',
           initials: 'DF',
-          avatarBg: 'bg-amber-100/80 text-amber-700',
           phone: '+573226207154',
-          docType: 'CC',
-          docNumber: '',
-          email: '',
-          address: '',
-          conflictive: false,
-          isPosClient: false
-        },
-        {
-          id: 'cli-2',
-          type: 'Persona',
-          firstName: 'Maria',
-          lastName: 'Rodriguez',
-          fullName: 'Maria Rodriguez',
-          initials: 'MR',
-          avatarBg: 'bg-emerald-100/80 text-emerald-700',
-          phone: '+573187152134',
-          docType: 'CC',
-          docNumber: '12345678',
-          email: '',
-          address: '',
-          conflictive: false,
-          isPosClient: false
-        },
-        {
-          id: 'cli-3',
-          type: 'Persona',
-          firstName: 'Maria',
-          lastName: 'Velez',
-          fullName: 'Maria Velez',
-          initials: 'MV',
-          avatarBg: 'bg-emerald-100/80 text-emerald-700',
-          phone: '+573505659860',
-          docType: 'CC',
-          docNumber: '1034297687',
-          email: '',
-          address: '',
-          conflictive: false,
-          isPosClient: false
+          docNumber: ''
         }
       ],
       orders: [
@@ -255,13 +129,12 @@
           device: 'appple iphone 13 pro max',
           color: 'plateado',
           issue: 'cambio bateria',
-          internalNotes: 'N/A',
-          accessories: 'Ninguno',
-          technicalReport: '',
+          technician: 'Sin asig.',
+          daysElapsed: '0d',
           statusIndex: 0,
+          isToday: false,
           receivedDate: '24 nov 2026',
-          warrantyDays: 30,
-          serviceModality: 'En el taller',
+          lastOrderText: 'hace 23h',
           client: {
             name: 'DAYANA FLOREZ',
             docId: 'N/A',
@@ -272,45 +145,17 @@
           paidAmount: 0,
           extraQuotes: [],
           expenses: [],
-          photos: 0,
-          signatureDataUrl: null,
           history: [
-            { status: 'Recibido', timeAgo: 'hace 20 h 35 min', dateShort: '24 nov' }
+            { status: 'Recibido', timeAgo: 'hace 23 h', dateShort: '24 nov' }
           ]
         }
-      ],
-      inventory: [
-        { sku: 'BAT-IP13PM', name: 'Batería iPhone 13 Pro Max (Alta Capacidad)', stock: 12, price: 145000 },
-        { sku: 'BAT-IP14P', name: 'Batería iPhone 14 Pro', stock: 14, price: 155000 },
-        { sku: 'SCR-IP13', name: 'Pantalla OLED iPhone 13', stock: 8, price: 290000 },
-        { sku: 'GLS-14P', name: 'Visor Cristal iPhone 14 Pro', stock: 20, price: 45000 }
       ]
-    };
-
-    // Estado temporal del formulario de Recibir Equipo
-    const receiveFormState = {
-      clientMode: 'Persona',
-      docType: 'CC',
-      modality: 'En el taller',
-      extraPhones: [],
-      showPass: false,
-      passPatternMode: false,
-      extraDevices: [],
-      accessoriesChecked: [],
-      customAccessories: [],
-      checklistItems: [],
-      services: [],
-      orderExpenses: [],
-      warrantyDays: 30,
-      photosCount: 0
     };
 
     function loadState() {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          return { ...defaultState, ...JSON.parse(saved) };
-        }
+        if (saved) return { ...defaultState, ...JSON.parse(saved) };
       } catch (e) {}
       return JSON.parse(JSON.stringify(defaultState));
     }
@@ -346,31 +191,21 @@
     ];
 
     function formatCOP(val) {
+      if (state.hideAmounts) return 'COP ••••••';
       return 'COP ' + Number(val || 0).toLocaleString('es-CO');
     }
 
-    function getInitials(name) {
-      const parts = (name || '').trim().split(/\s+/).filter(Boolean);
-      if (parts.length === 0) return 'CL';
-      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    }
-
-    // =========================================================
-    // SIDEBAR Y NAVEGACIÓN
-    // =========================================================
     function renderSidebar() {
       const renderGroup = (items, containerId) => {
         const container = document.getElementById(containerId);
         container.innerHTML = items.map(item => {
-          const isLocked = item.locked && !state.isSubscribed;
           const isActive = state.activeRoute === item.id;
           return `
-            <button onclick="handleMenuClick('${item.id}', ${isLocked})"
+            <button onclick="navigate('${item.id}')"
               class="w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
                 isActive
                   ? 'bg-[#E9F5D8] text-[#2F5211] font-medium'
-                  : isLocked
+                  : item.locked
                     ? 'text-slate-400 hover:bg-slate-50/70'
                     : 'text-slate-600 hover:bg-slate-50'
               }">
@@ -378,7 +213,7 @@
                 <i data-lucide="${item.icon}" class="w-4 h-4 shrink-0 ${isActive ? 'text-[#4D7C1F]' : 'text-slate-400'}"></i>
                 <span class="truncate">${item.label}</span>
               </span>
-              ${isLocked ? `<i data-lucide="lock" class="w-3 h-3 text-slate-300 shrink-0"></i>` : ''}
+              ${item.locked ? `<i data-lucide="lock" class="w-3 h-3 text-slate-300 shrink-0"></i>` : ''}
             </button>
           `;
         }).join('');
@@ -402,15 +237,6 @@
       lucide.createIcons();
     }
 
-    function handleMenuClick(routeId, isLocked) {
-      if (isLocked) {
-        showToast('Módulo con candado. Activa tu cuenta en Ajustes → Gestionar Cuenta.');
-        openSubModal();
-        return;
-      }
-      navigate(routeId);
-    }
-
     function navigate(routeId) {
       state.activeRoute = routeId;
       saveState();
@@ -420,934 +246,274 @@
 
     function renderWorkspace() {
       const ws = document.getElementById('workspace');
-      const headerEl = document.getElementById('standard-header');
-      const titleEl = document.getElementById('page-title');
-
-      if (state.activeRoute === 'recibir') {
-        headerEl.classList.add('hidden');
-        ws.className = 'flex-1 overflow-y-auto px-6 py-4';
-        ws.innerHTML = renderRecibirScreen();
+      if (state.activeRoute === 'inicio') {
+        ws.innerHTML = renderInicioScreen();
       } else {
-        headerEl.classList.remove('hidden');
-        ws.className = 'flex-1 overflow-y-auto px-8 pb-10';
-        if (state.activeRoute === 'inicio') {
-          titleEl.textContent = 'Inicio';
-          ws.innerHTML = renderInicioView();
-        } else if (state.activeRoute === 'clientes') {
-          titleEl.textContent = 'Clientes';
-          ws.innerHTML = renderClientesView();
-        } else if (state.activeRoute === 'ajustes') {
-          titleEl.textContent = 'Ajustes';
-          ws.innerHTML = renderAjustesView();
-        } else {
-          const allItems = [...operationItems, ...posItems];
-          const found = allItems.find(i => i.id === state.activeRoute);
-          titleEl.textContent = found ? found.label : 'Módulo';
-          ws.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200/70 p-8 text-center max-w-xl mx-auto mt-6 text-xs text-slate-500">Módulo <strong>${found ? found.label : ''}</strong> listo.</div>`;
-        }
+        ws.innerHTML = `
+          <div class="flex items-center justify-between mb-6">
+            <h1 class="text-xl font-bold text-slate-900 capitalize">${state.activeRoute}</h1>
+            <button onclick="navigate('inicio')" class="px-3.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">
+              Volver a Inicio
+            </button>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-200/70 p-6 text-xs text-slate-500">
+            Sección <strong>${state.activeRoute}</strong> lista para continuar.
+          </div>
+        `;
       }
-
       lucide.createIcons();
-      updateMissingBadges();
     }
 
     // =========================================================
-    // PANTALLA RECIBIR EQUIPO (RÉPLICA DE LAS 3 CAPTURAS)
+    // PANTALLA INICIO (RÉPLICA DE CAPTURA, SIN BANNER DE PLAN)
     // =========================================================
-    function renderRecibirScreen() {
-      const servicesSum = receiveFormState.services.reduce((acc, s) => acc + (Number(s.price) || 0), 0);
-      const expensesSum = receiveFormState.orderExpenses.reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
-      const totalVal = Number(document.getElementById('rec-total-input')?.value || servicesSum || 0);
-      const abonoVal = Number(document.getElementById('rec-abono-input')?.value || 0);
-      const descPct = Number(document.getElementById('rec-desc-input')?.value || 0);
-      const afterDiscount = Math.max(0, totalVal - (totalVal * descPct / 100));
-      const saldoPendiente = Math.max(0, afterDiscount - abonoVal);
+    function renderInicioScreen() {
+      const q = (state.homeSearch || '').trim().toLowerCase();
 
-      return `
-        <div class="space-y-4">
-          <!-- Top Bar de Recibir Equipo -->
-          <div class="flex items-center justify-between gap-3 pb-1">
-            <div class="flex items-center gap-3">
-              <button type="button" onclick="navigate('inicio')" class="w-8 h-8 rounded-full bg-white border border-slate-200 hover:bg-slate-50 flex items-center justify-center text-slate-700 transition-colors">
-                <i data-lucide="chevron-left" class="w-4 h-4"></i>
-              </button>
-              <div class="flex items-center gap-2">
-                <i data-lucide="smartphone" class="w-4 h-4 text-[#65A30D]"></i>
-                <span class="font-extrabold text-[15px] text-slate-900">Recibir Equipo</span>
-              </div>
-              <span class="text-[11px] text-slate-400 hidden sm:inline">* Campos obligatorios. Todo lo demás es opcional.</span>
-            </div>
+      const activeOrders = state.orders.filter(o => o.statusIndex < 4);
+      const receivedOrders = state.orders.filter(o => o.statusIndex === 0);
+      const todayOrders = state.orders.filter(o => o.isToday);
 
-            <div class="flex items-center gap-2.5">
-              <button type="button" onclick="showToast('Guía rápida: llena los campos obligatorios marcados con * y presiona Guardar Orden')" class="w-8 h-8 rounded-full bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:scale-105 transition-transform">
-                <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
-              </button>
-              <button type="button" onclick="submitReceiveOrder()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs shadow-2xs transition-colors">
-                <i data-lucide="save" class="w-3.5 h-3.5"></i> Guardar Orden
-              </button>
-            </div>
-          </div>
+      const pendingTotal = activeOrders.reduce((acc, o) => {
+        const extra = (o.extraQuotes || []).reduce((s, item) => s + item.amount, 0);
+        const total = (o.priceTotal || 0) + extra;
+        return acc + Math.max(0, total - (o.paidAmount || 0));
+      }, 0);
 
-          <!-- Layout Principal: Izquierda (8 cols) + Derecha Fija Sticky (4 cols) -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+      const pendingOrdersCount = activeOrders.filter(o => {
+        const extra = (o.extraQuotes || []).reduce((s, item) => s + item.amount, 0);
+        const total = (o.priceTotal || 0) + extra;
+        return (total - (o.paidAmount || 0)) > 0;
+      }).length;
 
-            <!-- COLUMNA IZQUIERDA (8 cols) -->
-            <div class="lg:col-span-8 space-y-4">
+      let baseList = activeOrders;
+      if (state.homeFilterTab === 'recibido') baseList = receivedOrders;
+      if (state.homeFilterTab === 'hoy') baseList = todayOrders;
 
-              <!-- 1. Datos del Cliente -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+      const filteredOrders = baseList.filter(o =>
+        String(o.number).includes(q) ||
+        (o.device || '').toLowerCase().includes(q) ||
+        (o.client?.name || '').toLowerCase().includes(q) ||
+        (o.client?.phone || '').toLowerCase().includes(q)
+      );
+
+      const lastOrderText = state.orders[0]?.lastOrderText || 'hace 23h';
+
+      const rowsHtml = filteredOrders.length === 0
+        ? `<div class="py-10 text-center text-xs text-slate-400">No hay órdenes en esta vista.</div>`
+        : filteredOrders.map(o => {
+            const globalIdx = state.orders.indexOf(o);
+            const extra = (o.extraQuotes || []).reduce((s, item) => s + item.amount, 0);
+            const total = (o.priceTotal || 0) + extra;
+            const pend = Math.max(0, total - (o.paidAmount || 0));
+            const statusName = STEPS[o.statusIndex] || 'Recibido';
+
+            return `
+              <div onclick="openOrderDetail(${globalIdx})" class="px-5 py-3.5 hover:bg-slate-50/90 transition-colors cursor-pointer grid grid-cols-12 items-center gap-3 text-xs border-t border-slate-100 first:border-t-0">
+                <!-- Cliente + Equipo -->
+                <div class="col-span-5 flex items-center gap-3 min-w-0">
+                  <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
                     <i data-lucide="user" class="w-4 h-4"></i>
                   </div>
-                  <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Datos del Cliente</h2>
-                    <p class="text-[11px] text-slate-400">Información del cliente</p>
+                  <div class="truncate">
+                    <div class="font-bold text-slate-900 truncate">${o.client.name}</div>
+                    <div class="text-[11px] text-slate-400 truncate">${o.device}</div>
                   </div>
                 </div>
 
-                <!-- Pestañas Persona / Empresa + Botón Lupa -->
-                <div class="flex items-center gap-2">
-                  <div class="flex-1 grid grid-cols-2 bg-slate-100/90 p-1 rounded-xl text-xs font-bold">
-                    <button type="button" onclick="setReceiveClientMode('Persona')" class="py-1.5 rounded-lg transition-all ${receiveFormState.clientMode === 'Persona' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">
-                      Persona
-                    </button>
-                    <button type="button" onclick="setReceiveClientMode('Empresa')" class="py-1.5 rounded-lg transition-all ${receiveFormState.clientMode === 'Empresa' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">
-                      Empresa
-                    </button>
+                <!-- Estado -->
+                <div class="col-span-2">
+                  <span class="inline-block px-2.5 py-0.5 rounded-md bg-sky-50 text-sky-600 font-semibold text-[11px]">${statusName}</span>
+                </div>
+
+                <!-- Orden -->
+                <div class="col-span-1 font-bold text-slate-800">#${o.number}</div>
+
+                <!-- Técnico -->
+                <div class="col-span-1 text-slate-400 text-[11px] truncate">${o.technician || 'Sin asig.'}</div>
+
+                <!-- Tiempo -->
+                <div class="col-span-1 font-bold text-slate-800 text-[11px]">${o.daysElapsed || '0d'}</div>
+
+                <!-- Balance + Engrane -->
+                <div class="col-span-2 flex items-center justify-end gap-3 text-right">
+                  <div>
+                    <div class="font-extrabold text-slate-900 text-xs">${formatCOP(pend > 0 ? pend : total)}</div>
+                    <div class="text-[10px] ${pend > 0 ? 'text-rose-500 font-medium' : 'text-emerald-600 font-medium'}">${pend > 0 ? 'Pendiente' : 'Pagado'}</div>
                   </div>
-                  <button type="button" onclick="quickSearchClient()" class="w-9 h-9 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#4D7C1F] flex items-center justify-center shrink-0 transition-colors" title="Buscar cliente existente">
-                    <i data-lucide="search" class="w-4 h-4"></i>
+                  <button type="button" onclick="event.stopPropagation(); showToast('Opciones de la orden #${o.number}')" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100">
+                    <i data-lucide="settings" class="w-3.5 h-3.5"></i>
                   </button>
                 </div>
-
-                <!-- Tipo de documento -->
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tipo de documento</label>
-                  <div class="flex items-center gap-2">
-                    ${['CC', 'CE', 'Pasaporte'].map(dt => `
-                      <button type="button" onclick="setReceiveDocType('${dt}')" class="px-3.5 py-1 rounded-lg border text-xs font-semibold transition-colors ${
-                        receiveFormState.docType === dt
-                          ? 'border-[#84CC16] bg-[#F2FCE2] text-[#2F5211]'
-                          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                      }">${dt}</button>
-                    `).join('')}
-                  </div>
-                </div>
-
-                <!-- CC -->
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">${receiveFormState.docType}</label>
-                  <input id="rec-doc" type="text" placeholder="1023456789" class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                </div>
-
-                <!-- Nombre * y Apellido * -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre <span class="text-rose-500">*</span></label>
-                    <div class="relative">
-                      <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
-                      <input id="rec-nombre" type="text" oninput="updateMissingBadges()" placeholder="" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Apellido <span class="text-rose-500">*</span></label>
-                    <input id="rec-apellido" type="text" oninput="updateMissingBadges()" placeholder="" class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                  </div>
-                </div>
-
-                <!-- Teléfono * | Dirección | Correo (opcional) -->
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5">
-                  <div class="md:col-span-4">
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Teléfono <span class="text-rose-500">*</span></label>
-                    <div class="flex items-center gap-1.5">
-                      <span class="px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-sky-600 shrink-0">+57</span>
-                      <input id="rec-telefono" type="text" oninput="updateMissingBadges()" placeholder="4141234567" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                    </div>
-                  </div>
-                  <div class="md:col-span-4">
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Dirección</label>
-                    <div class="relative">
-                      <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
-                      <input id="rec-direccion" type="text" placeholder="" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                    </div>
-                  </div>
-                  <div class="md:col-span-4">
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Correo (opcional)</label>
-                    <div class="relative">
-                      <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
-                      <input id="rec-correo" type="email" placeholder="Para avisarle por correo cómo va su equipo" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                    </div>
-                  </div>
-                </div>
-
-                <button type="button" onclick="addSecondaryPhoneField()" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#4D7C1F] hover:underline">
-                  <i data-lucide="plus" class="w-3.5 h-3.5"></i> Agregar teléfono secundario
-                </button>
-                <div id="extra-phones-container" class="space-y-2"></div>
               </div>
-
-              <!-- 2. Modalidad del servicio -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3.5">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
-                    <i data-lucide="truck" class="w-4 h-4"></i>
-                  </div>
-                  <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Modalidad del servicio</h2>
-                    <p class="text-[11px] text-slate-400">¿Dónde se atiende esta orden?</p>
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5">
-                  ${[
-                    { id: 'En el taller', sub: 'El equipo queda aquí', icon: 'home' },
-                    { id: 'A domicilio / On-Site', sub: 'Voy donde el cliente', icon: 'map-pin' },
-                    { id: 'Recojo y entrega', sub: 'Lo busco y lo devuelvo', icon: 'package' },
-                    { id: 'Remoto', sub: 'Sin equipo físico', icon: 'monitor' }
-                  ].map(m => {
-                    const active = receiveFormState.modality === m.id;
-                    return `
-                      <button type="button" onclick="setReceiveModality('${m.id}')" class="p-3 rounded-xl border text-left transition-all ${
-                        active
-                          ? 'border-[#84CC16] bg-[#F9FDF3]'
-                          : 'border-slate-200/80 bg-white hover:bg-slate-50'
-                      }">
-                        <div class="flex items-center gap-1.5 text-xs font-bold ${active ? 'text-[#2F5211]' : 'text-slate-800'}">
-                          <i data-lucide="${m.icon}" class="w-3.5 h-3.5 ${active ? 'text-[#65A30D]' : 'text-slate-400'}"></i>
-                          <span>${m.id}</span>
-                        </div>
-                        <div class="text-[10px] text-slate-400 mt-1">${m.sub}</div>
-                      </button>
-                    `;
-                  }).join('')}
-                </div>
-
-                <div class="text-[11px] text-slate-400">El equipo está en el taller, sin importar cómo llegó. Es lo habitual.</div>
-
-                <!-- Individual / Lote -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  <div class="p-3 rounded-xl border border-[#84CC16] bg-[#F9FDF3]">
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-[#2F5211]">
-                      <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#65A30D]"></i> Individual
-                    </div>
-                    <div class="text-[10px] text-[#4D7C1F] mt-0.5">Un cliente, una orden. Con fotos, seña y firma.</div>
-                  </div>
-                  <div onclick="handleMenuClick('lote', true)" class="p-3 rounded-xl border border-slate-200/80 bg-slate-50/50 cursor-pointer hover:bg-slate-50">
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-slate-500">
-                      <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-400"></i> Lote
-                    </div>
-                    <div class="text-[10px] text-slate-400 mt-0.5">Requiere plan activo</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Botón Buscar equipo por IMEI o serie -->
-              <button type="button" onclick="showToast('Buscador de historial por IMEI / serie activado')" class="w-full py-2.5 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center gap-2 transition-colors">
-                <i data-lucide="search" class="w-3.5 h-3.5"></i> Buscar equipo por IMEI o serie
-              </button>
-
-              <!-- 3. Datos del Equipo -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
-                    <i data-lucide="smartphone" class="w-4 h-4"></i>
-                  </div>
-                  <h2 class="text-sm font-bold text-slate-900">Datos del Equipo</h2>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-                  <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Equipo (Opcional)</label>
-                    <input id="rec-tipo-equipo" type="text" placeholder="Ej: Consola, Laptop, Smartwatch..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                  </div>
-                  <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Marca <span class="text-rose-500">*</span></label>
-                    <input id="rec-marca" type="text" oninput="updateMissingBadges()" placeholder="Ej: Samsung, Apple, Sony..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                  </div>
-                  <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Modelo <span class="text-rose-500">*</span></label>
-                    <input id="rec-modelo" type="text" oninput="updateMissingBadges()" placeholder="Ej: Galaxy S24, iPhone 15 Pro..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                  <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Color</label>
-                    <input id="rec-color" type="text" placeholder="Negro, Blanco..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                  </div>
-                  <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
-                      <i data-lucide="barcode" class="w-3.5 h-3.5 text-slate-400"></i> Serial (Opcional)
-                    </label>
-                    <input id="rec-serial" type="text" placeholder="IMEI / Nro. de serie" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                  </div>
-                </div>
-
-                <!-- Contraseña (Opcional) -->
-                <div>
-                  <div class="flex items-center justify-between mb-1">
-                    <label class="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                      <i data-lucide="key-round" class="w-3.5 h-3.5 text-slate-400"></i> Contraseña (Opcional)
-                    </label>
-                    <div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg">
-                      <button type="button" onclick="receiveFormState.passPatternMode = false; renderWorkspace();" class="px-2 py-0.5 rounded text-[11px] font-bold ${!receiveFormState.passPatternMode ? 'bg-white text-slate-800 shadow-2xs' : 'text-slate-400'}">T</button>
-                      <button type="button" onclick="receiveFormState.passPatternMode = true; renderWorkspace();" class="px-2 py-0.5 rounded text-[11px] font-bold ${receiveFormState.passPatternMode ? 'bg-white text-slate-800 shadow-2xs' : 'text-slate-400'}">
-                        <i data-lucide="grid-3x3" class="w-3 h-3"></i>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="relative">
-                    <input id="rec-pass" type="${receiveFormState.showPass ? 'text' : 'password'}" placeholder="${receiveFormState.passPatternMode ? 'Ej: 1-2-5-8-9 (patrón)' : 'PIN o contraseña alfanumérica'}" class="w-full px-3.5 py-2 pr-14 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                    <button type="button" onclick="receiveFormState.showPass = !receiveFormState.showPass; renderWorkspace();" class="text-[11px] font-semibold text-slate-500 hover:text-slate-800 absolute right-3 top-1/2 -translate-y-1/2">
-                      ${receiveFormState.showPass ? 'Ocultar' : 'Mostrar'}
-                    </button>
-                  </div>
-                </div>
-
-                <!-- 1. Descripción de la Falla (Ingreso) * y Observaciones Internas -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                  <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
-                      <i data-lucide="message-square-warning" class="w-3.5 h-3.5 text-slate-400"></i>
-                      <span>1. Descripción de la Falla (Ingreso) <span class="text-rose-500">*</span></span>
-                    </label>
-                    <textarea id="rec-falla" rows="3" oninput="updateMissingBadges()" placeholder="Describe detalladamente el problema reportado por el cliente..." class="w-full p-3 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]"></textarea>
-                  </div>
-                  <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
-                      <i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-slate-400"></i>
-                      <span>Observaciones Internas (Opcional)</span>
-                    </label>
-                    <textarea id="rec-obs" rows="3" placeholder="Notas para el técnico: daños previos, piezas faltantes..." class="w-full p-3 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]"></textarea>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Botón + Agregar otro equipo -->
-              <button type="button" onclick="addExtraDeviceBlock()" class="w-full py-2.5 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center gap-1.5 transition-colors">
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i> + Agregar otro equipo
-              </button>
-              <div id="extra-devices-container" class="space-y-2"></div>
-
-              <!-- 4. Accesorios (Opcional) -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3.5">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
-                    <i data-lucide="file-box" class="w-4 h-4"></i>
-                  </div>
-                  <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Accesorios (Opcional)</h2>
-                    <p class="text-[11px] text-slate-400">Elementos incluidos</p>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-5 text-xs text-slate-700 flex-wrap">
-                  ${['SIM', 'Memoria', 'Cargador', 'Funda'].map(acc => `
-                    <label class="inline-flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" ${receiveFormState.accessoriesChecked.includes(acc) ? 'checked' : ''} onchange="toggleAccessoryCheck('${acc}')" class="rounded border-slate-300 text-[#65A30D] focus:ring-[#84CC16]" />
-                      <span>${acc}</span>
-                    </label>
-                  `).join('')}
-                </div>
-
-                <div class="flex items-center gap-2">
-                  <input id="rec-acc-input" type="text" placeholder="Agregar accesorio (ej: Caja, Audífonos)" class="flex-1 px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                  <button type="button" onclick="addCustomAccessory()" class="w-9 h-9 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold flex items-center justify-center shrink-0">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                  </button>
-                </div>
-
-                <div class="text-[10px] text-amber-600 flex items-center gap-1">
-                  <i data-lucide="lightbulb" class="w-3 h-3 shrink-0"></i>
-                  <span>Lo que agregues acá queda solo en esta orden. Para que aparezca en todas, agrégalo en Ajustes → Operación → Accesorios.</span>
-                </div>
-
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">Accesorios Incluidos</label>
-                  <textarea id="rec-acc-notes" rows="2" placeholder="Ej: Control remoto, cable de poder..." class="w-full p-3 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]">${receiveFormState.customAccessories.join(', ')}</textarea>
-                </div>
-              </div>
-
-              <!-- 5. Checklist de Reparación (Opcional) -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
-                    <i data-lucide="check-square" class="w-4 h-4"></i>
-                  </div>
-                  <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Checklist de Reparación (Opcional)</h2>
-                    <p class="text-[11px] text-slate-400">Componentes a revisar</p>
-                  </div>
-                </div>
-
-                <p class="text-xs text-slate-400">
-                  ${receiveFormState.checklistItems.length === 0
-                    ? 'Aún no tienes checklist configurado. Agrégalo abajo o desde Ajustes → Checklist de Reparación.'
-                    : receiveFormState.checklistItems.map(i => `• ${i}`).join(' · ')
-                  }
-                </p>
-
-                <div class="flex items-center gap-2">
-                  <input id="rec-chk-input" type="text" placeholder="Agregar ítem (ej: Pantalla, Batería)" class="flex-1 px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                  <button type="button" onclick="addChecklistItem()" class="w-9 h-9 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold flex items-center justify-center shrink-0">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                  </button>
-                </div>
-
-                <div class="text-[10px] text-amber-600 flex items-center gap-1">
-                  <i data-lucide="lightbulb" class="w-3 h-3 shrink-0"></i>
-                  <span>Lo que agregues acá queda solo en esta orden. Para que aparezca en todas, agrégalo en Ajustes → Operación → Checklist de Reparación.</span>
-                </div>
-              </div>
-
-              <!-- 6. Repuestos (Opcional) + Servicios / Mano de Obra -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
-                    <i data-lucide="package" class="w-4 h-4"></i>
-                  </div>
-                  <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Repuestos (Opcional)</h2>
-                    <p class="text-[11px] text-slate-400">Piezas a utilizar en la reparación</p>
-                  </div>
-                </div>
-
-                <button type="button" onclick="handleMenuClick('inventario', true)" class="w-full py-2.5 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center gap-2 transition-colors">
-                  <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i> Agregar Repuestos del Inventario
-                </button>
-
-                <!-- Servicios / Mano de Obra -->
-                <div class="pt-1 space-y-2.5">
-                  <div class="text-xs font-bold text-slate-800">
-                    Servicios / Mano de Obra <span class="text-[11px] font-normal text-slate-400">(sin stock)</span>
-                  </div>
-                  <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                    <input id="rec-srv-desc" type="text" placeholder="Descripción del servicio" class="sm:col-span-7 px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                    <input id="rec-srv-price" type="number" placeholder="Precio" class="sm:col-span-4 px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                    <button type="button" onclick="addServiceLine()" class="sm:col-span-1 h-9 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold flex items-center justify-center">
-                      <i data-lucide="plus" class="w-4 h-4"></i>
-                    </button>
-                  </div>
-                  <input id="rec-srv-detail" type="text" placeholder="Detalle (opcional)" class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-
-                  ${receiveFormState.services.length > 0
-                    ? `<div class="space-y-1.5 pt-1">
-                        ${receiveFormState.services.map(s => `
-                          <div class="flex justify-between items-center text-xs bg-slate-50 px-3 py-1.5 rounded-lg">
-                            <span class="font-medium text-slate-700">${s.desc}</span>
-                            <span class="font-bold text-slate-900">${formatCOP(s.price)}</span>
-                          </div>
-                        `).join('')}
-                       </div>`
-                    : ''
-                  }
-                </div>
-              </div>
-
-              <!-- 7. Gastos de la Orden -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
-                    <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
-                  </div>
-                  <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Gastos de la Orden</h2>
-                    <p class="text-[11px] text-slate-400">Costos de reparacion (Opcional)</p>
-                  </div>
-                </div>
-                <p class="text-xs text-slate-400">Registra los costos que tuviste para reparar este equipo (pantalla, flex, etc.)</p>
-                <button type="button" onclick="openReceiveExpenseModal()" class="w-full py-2.5 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs transition-colors">
-                  + Agregar Gasto de la Orden
-                </button>
-              </div>
-
-              <!-- 8. Evidencia Fotográfica -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
-                    <i data-lucide="camera" class="w-4 h-4"></i>
-                  </div>
-                  <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Evidencia Fotográfica</h2>
-                    <p class="text-[11px] text-slate-400">Evidencia fotográfica</p>
-                  </div>
-                </div>
-
-                <button type="button" onclick="attachReceivePhoto()" class="w-full py-3 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center gap-2 transition-colors">
-                  <i data-lucide="image-plus" class="w-4 h-4"></i> Adjuntar Fotos
-                </button>
-
-                <button type="button" onclick="showToast('QR generado para subir fotos desde el celular (${receiveFormState.photosCount}/8)')" class="w-full py-2 rounded-xl border border-[#84CC16]/60 bg-[#F9FDF3]/60 hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors">
-                  <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Subir desde el teléfono
-                </button>
-
-                <div class="text-center text-[10px] text-slate-400">Máximo 8 fotos por orden. (${receiveFormState.photosCount}/8)</div>
-              </div>
-            </div>
-
-            <!-- COLUMNA DERECHA FIJA (STICKY): GARANTÍA + FINANZAS + GUARDAR -->
-            <div class="lg:col-span-4 space-y-4 lg:sticky lg:top-4">
-
-              <!-- Días de Garantía (Opcional) -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-3">
-                <div class="flex items-center gap-2.5">
-                  <div class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
-                    <i data-lucide="shield-check" class="w-4 h-4"></i>
-                  </div>
-                  <h3 class="text-sm font-bold text-slate-900">Días de Garantía (Opcional)</h3>
-                </div>
-
-                <div class="relative">
-                  <input id="rec-warranty-days" type="number" value="${receiveFormState.warrantyDays}" oninput="receiveFormState.warrantyDays = Number(this.value || 0)" class="w-full px-3.5 py-2 pr-12 text-xs font-medium text-slate-700 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                  <span class="text-xs text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2">días</span>
-                </div>
-
-                <div class="grid grid-cols-4 gap-1.5">
-                  ${[
-                    { label: 'Sin garantía', days: 0 },
-                    { label: '30', days: 30 },
-                    { label: '90', days: 90 },
-                    { label: '180', days: 180 }
-                  ].map(btn => `
-                    <button type="button" onclick="setWarrantyPreset(${btn.days})" class="py-1.5 px-1 rounded-lg border text-[11px] font-semibold transition-colors ${
-                      receiveFormState.warrantyDays === btn.days
-                        ? 'border-[#84CC16] bg-[#F2FCE2] text-[#2F5211]'
-                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
-                    }">${btn.label}</button>
-                  `).join('')}
-                </div>
-
-                <p class="text-[10px] text-slate-400 leading-relaxed">
-                  Si lo dejas vacío se usan los 30 días configurados en Ajustes. Con 0 la orden queda sin garantía y no se imprime nada. Cambiarlo acá afecta solo a esta orden.
-                </p>
-              </div>
-
-              <!-- Finanzas -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-3">
-                <div class="flex items-center gap-2.5">
-                  <div class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
-                    <i data-lucide="credit-card" class="w-4 h-4"></i>
-                  </div>
-                  <div>
-                    <h3 class="text-sm font-bold text-slate-900 leading-tight">Finanzas</h3>
-                    <p class="text-[10px] text-slate-400">Costos y pagos</p>
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2.5">
-                  <div>
-                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Costo Total</label>
-                    <div class="relative">
-                      <span class="text-xs font-bold text-[#65A30D] absolute left-3 top-1/2 -translate-y-1/2">$</span>
-                      <input id="rec-total-input" type="number" value="${servicesSum || ''}" oninput="recalcReceiveFinance()" placeholder="" class="w-full pl-6 pr-2.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Abono</label>
-                    <div class="relative">
-                      <span class="text-xs font-bold text-[#65A30D] absolute left-3 top-1/2 -translate-y-1/2">$</span>
-                      <input id="rec-abono-input" type="number" oninput="recalcReceiveFinance()" placeholder="" class="w-full pl-6 pr-2.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                    </div>
-                  </div>
-                </div>
-
-                <div class="text-[10px] text-slate-400 leading-tight">
-                  Auto-sumado desde Servicios + Repuestos. Puedes ajustarlo.
-                </div>
-
-                <div class="grid grid-cols-12 gap-2">
-                  <div class="col-span-8">
-                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Nota de Pago (Opcional)</label>
-                    <div class="relative">
-                      <i data-lucide="file-text" class="w-3 h-3 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2"></i>
-                      <input id="rec-pay-note" type="text" placeholder="Ej: Ref. Transferencia #" class="w-full pl-7 pr-2 py-2 text-[11px] border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                    </div>
-                  </div>
-                  <div class="col-span-4">
-                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Descuento</label>
-                    <div class="relative">
-                      <span class="text-[11px] font-bold text-[#65A30D] absolute left-2.5 top-1/2 -translate-y-1/2">%</span>
-                      <input id="rec-desc-input" type="number" step="0.01" oninput="recalcReceiveFinance()" placeholder="0.00" class="w-full pl-6 pr-2 py-2 text-[11px] border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label class="block text-[11px] font-semibold text-slate-700 mb-1">Fecha Estimada de Entrega (Opcional)</label>
-                  <input id="rec-est-date" type="date" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                </div>
-
-                <!-- Saldo Pendiente -->
-                <div class="p-3 rounded-xl bg-[#F2FCE2] border border-[#D4F097] flex items-center justify-between">
-                  <div>
-                    <div class="text-xs font-bold text-[#2F5211]">Saldo Pendiente:</div>
-                    <div class="text-[10px] text-[#4D7C1F]">Pendiente por cobrar</div>
-                  </div>
-                  <div id="rec-saldo-pendiente" class="text-sm font-extrabold text-[#4D7C1F]">${formatCOP(saldoPendiente)}</div>
-                </div>
-              </div>
-
-              <!-- Para guardar hace falta -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-2.5">
-                <div class="text-xs font-bold text-slate-800">Para guardar hace falta</div>
-                <div id="missing-fields-pills" class="flex flex-wrap gap-1.5">
-                  ${['Nombre', 'Apellido', 'Teléfono', 'Marca', 'Modelo', 'Falla'].map(f => `
-                    <span data-missing="${f}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-slate-200 bg-white text-[11px] font-medium text-slate-600">
-                      <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span> ${f}
-                    </span>
-                  `).join('')}
-                </div>
-                <p class="text-[10px] text-slate-400">Lo demás es opcional: puedes completarlo después.</p>
-              </div>
-
-              <!-- Botón Verde Guardar Orden -->
-              <button type="button" onclick="submitReceiveOrder()" class="w-full py-3 rounded-xl bg-[#84CC16] hover:bg-[#73B312] active:scale-[0.99] text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-all">
-                <i data-lucide="save" class="w-4 h-4"></i> Guardar Orden
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    // =========================================================
-    // FUNCIONES INTERACTIVAS DE RECIBIR EQUIPO
-    // =========================================================
-    function setReceiveClientMode(mode) {
-      receiveFormState.clientMode = mode;
-      renderWorkspace();
-    }
-
-    function setReceiveDocType(dt) {
-      receiveFormState.docType = dt;
-      renderWorkspace();
-    }
-
-    function setReceiveModality(mod) {
-      receiveFormState.modality = mod;
-      renderWorkspace();
-    }
-
-    function setWarrantyPreset(days) {
-      receiveFormState.warrantyDays = days;
-      const inp = document.getElementById('rec-warranty-days');
-      if (inp) inp.value = days;
-      renderWorkspace();
-    }
-
-    function recalcReceiveFinance() {
-      const total = Number(document.getElementById('rec-total-input')?.value || 0);
-      const abono = Number(document.getElementById('rec-abono-input')?.value || 0);
-      const desc = Number(document.getElementById('rec-desc-input')?.value || 0);
-      const afterDesc = Math.max(0, total - (total * desc / 100));
-      const saldo = Math.max(0, afterDesc - abono);
-      const el = document.getElementById('rec-saldo-pendiente');
-      if (el) el.textContent = formatCOP(saldo);
-    }
-
-    function updateMissingBadges() {
-      const checks = {
-        'Nombre': !!(document.getElementById('rec-nombre')?.value || '').trim(),
-        'Apellido': !!(document.getElementById('rec-apellido')?.value || '').trim(),
-        'Teléfono': !!(document.getElementById('rec-telefono')?.value || '').trim(),
-        'Marca': !!(document.getElementById('rec-marca')?.value || '').trim(),
-        'Modelo': !!(document.getElementById('rec-modelo')?.value || '').trim(),
-        'Falla': !!(document.getElementById('rec-falla')?.value || '').trim()
-      };
-
-      document.querySelectorAll('[data-missing]').forEach(pill => {
-        const key = pill.getAttribute('data-missing');
-        const ok = checks[key];
-        const dot = pill.querySelector('span');
-        if (ok) {
-          pill.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-[#84CC16] bg-[#F2FCE2] text-[11px] font-semibold text-[#2F5211]';
-          if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-[#65A30D]';
-        } else {
-          pill.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-slate-200 bg-white text-[11px] font-medium text-slate-600';
-          if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-300';
-        }
-      });
-    }
-
-    function addSecondaryPhoneField() {
-      const container = document.getElementById('extra-phones-container');
-      if (!container) return;
-      const idx = container.children.length + 1;
-      const div = document.createElement('div');
-      div.className = 'flex items-center gap-2';
-      div.innerHTML = `
-        <span class="px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-sky-600">+57</span>
-        <input type="text" placeholder="Teléfono secundario ${idx}" class="flex-1 px-3 py-2 text-xs border border-slate-200 rounded-xl" />
-      `;
-      container.appendChild(div);
-    }
-
-    function quickSearchClient() {
-      if (state.clients.length === 0) {
-        showToast('No hay clientes registrados todavía');
-        return;
-      }
-      const first = state.clients[0];
-      const nomEl = document.getElementById('rec-nombre');
-      const apeEl = document.getElementById('rec-apellido');
-      const telEl = document.getElementById('rec-telefono');
-      const docEl = document.getElementById('rec-doc');
-      if (nomEl) nomEl.value = first.firstName || first.fullName;
-      if (apeEl) apeEl.value = first.lastName || '';
-      if (telEl) telEl.value = (first.phone || '').replace(/^\+57/, '');
-      if (docEl) docEl.value = first.docNumber || '';
-      updateMissingBadges();
-      showToast(`Cliente cargado: ${first.fullName}`);
-    }
-
-    function toggleAccessoryCheck(acc) {
-      const idx = receiveFormState.accessoriesChecked.indexOf(acc);
-      if (idx >= 0) receiveFormState.accessoriesChecked.splice(idx, 1);
-      else receiveFormState.accessoriesChecked.push(acc);
-    }
-
-    function addCustomAccessory() {
-      const inp = document.getElementById('rec-acc-input');
-      const val = (inp?.value || '').trim();
-      if (!val) return;
-      receiveFormState.customAccessories.push(val);
-      inp.value = '';
-      const notes = document.getElementById('rec-acc-notes');
-      if (notes) {
-        const all = [...receiveFormState.accessoriesChecked, ...receiveFormState.customAccessories];
-        notes.value = all.join(', ');
-      }
-      showToast(`Accesorio agregado: ${val}`);
-    }
-
-    function addChecklistItem() {
-      const inp = document.getElementById('rec-chk-input');
-      const val = (inp?.value || '').trim();
-      if (!val) return;
-      receiveFormState.checklistItems.push(val);
-      renderWorkspace();
-      showToast(`Ítem agregado al checklist: ${val}`);
-    }
-
-    function addServiceLine() {
-      const descEl = document.getElementById('rec-srv-desc');
-      const priceEl = document.getElementById('rec-srv-price');
-      const desc = (descEl?.value || '').trim();
-      const price = Number(priceEl?.value || 0);
-      if (!desc) return;
-      receiveFormState.services.push({ desc, price });
-      renderWorkspace();
-      showToast(`Servicio agregado: ${desc}`);
-    }
-
-    function addExtraDeviceBlock() {
-      const c = document.getElementById('extra-devices-container');
-      if (!c) return;
-      const num = c.children.length + 2;
-      const box = document.createElement('div');
-      box.className = 'bg-white rounded-2xl border border-slate-200/80 p-4 text-xs flex items-center justify-between';
-      box.innerHTML = `<span class="font-bold text-slate-700">Equipo adicional #${num} agregado</span><span class="text-[11px] text-slate-400">Listo para registrar</span>`;
-      c.appendChild(box);
-      showToast(`Bloque para equipo adicional #${num} habilitado`);
-    }
-
-    function openReceiveExpenseModal() {
-      openQuickModal(`
-        <h3 class="font-bold text-sm text-slate-900 mb-2">Gasto de la Orden</h3>
-        <form onsubmit="saveReceiveExpense(event)" class="space-y-3 text-xs">
-          <input id="r-exp-label" type="text" placeholder="Concepto (ej. Batería o Flex)" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
-          <input id="r-exp-amt" type="number" placeholder="Valor en COP" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
-          <div class="flex justify-end gap-2">
-            <button type="button" onclick="closeQuickModal()" class="px-3 py-1.5 border border-slate-200 rounded-lg">Cancelar</button>
-            <button type="submit" class="px-4 py-1.5 bg-[#84CC16] font-semibold rounded-lg">Agregar</button>
-          </div>
-        </form>
-      `);
-    }
-
-    function saveReceiveExpense(e) {
-      e.preventDefault();
-      receiveFormState.orderExpenses.push({
-        label: document.getElementById('r-exp-label').value,
-        amount: Number(document.getElementById('r-exp-amt').value)
-      });
-      closeQuickModal();
-      showToast('Gasto asociado agregado a la orden');
-    }
-
-    function attachReceivePhoto() {
-      if (receiveFormState.photosCount >= 8) {
-        showToast('Máximo 8 fotos por orden');
-        return;
-      }
-      receiveFormState.photosCount += 1;
-      renderWorkspace();
-      showToast(`Foto adjuntada (${receiveFormState.photosCount}/8)`);
-    }
-
-    function submitReceiveOrder() {
-      const nombre = (document.getElementById('rec-nombre')?.value || '').trim();
-      const apellido = (document.getElementById('rec-apellido')?.value || '').trim();
-      const telRaw = (document.getElementById('rec-telefono')?.value || '').trim();
-      const marca = (document.getElementById('rec-marca')?.value || '').trim();
-      const modelo = (document.getElementById('rec-modelo')?.value || '').trim();
-      const falla = (document.getElementById('rec-falla')?.value || '').trim();
-
-      if (!nombre || !apellido || !telRaw || !marca || !modelo || !falla) {
-        updateMissingBadges();
-        showToast('Completa los campos obligatorios marcados con * (Nombre, Apellido, Teléfono, Marca, Modelo, Falla)');
-        return;
-      }
-
-      const fullName = `${nombre} ${apellido}`.toUpperCase();
-      const phone = telRaw.startsWith('+') ? telRaw : '+57' + telRaw;
-      const docNumber = (document.getElementById('rec-doc')?.value || '').trim();
-      const address = (document.getElementById('rec-direccion')?.value || '').trim() || 'N/A';
-      const color = (document.getElementById('rec-color')?.value || '').trim() || 'N/A';
-      const notes = (document.getElementById('rec-obs')?.value || '').trim() || 'N/A';
-      const servicesSum = receiveFormState.services.reduce((a, s) => a + s.price, 0);
-      const total = Number(document.getElementById('rec-total-input')?.value || servicesSum || 0);
-      const abono = Number(document.getElementById('rec-abono-input')?.value || 0);
-
-      const allAcc = [...receiveFormState.accessoriesChecked, ...receiveFormState.customAccessories];
-      const accText = (document.getElementById('rec-acc-notes')?.value || '').trim() || (allAcc.length ? allAcc.join(', ') : 'Ninguno');
-
-      let clientObj = state.clients.find(c => c.fullName.toLowerCase() === fullName.toLowerCase());
-      if (!clientObj) {
-        clientObj = {
-          id: 'cli-' + Date.now(),
-          type: receiveFormState.clientMode,
-          firstName: nombre,
-          lastName: apellido,
-          fullName,
-          initials: getInitials(fullName),
-          avatarBg: 'bg-emerald-100/80 text-emerald-700',
-          phone,
-          docType: receiveFormState.docType,
-          docNumber,
-          email: (document.getElementById('rec-correo')?.value || '').trim(),
-          address: address === 'N/A' ? '' : address,
-          conflictive: false,
-          isPosClient: false
-        };
-        state.clients.unshift(clientObj);
-      }
-
-      const nextNum = state.orders.reduce((m, o) => Math.max(m, o.number), 0) + 1;
-      const newOrder = {
-        number: nextNum,
-        clientId: clientObj.id,
-        device: `${marca} ${modelo}`,
-        color,
-        issue: falla,
-        internalNotes: notes,
-        accessories: accText,
-        technicalReport: '',
-        statusIndex: 0,
-        receivedDate: '25 nov 2026',
-        warrantyDays: receiveFormState.warrantyDays,
-        serviceModality: receiveFormState.modality,
-        client: {
-          name: fullName,
-          docId: docNumber || 'N/A',
-          phone,
-          address
-        },
-        priceTotal: total,
-        paidAmount: abono,
-        extraQuotes: [],
-        expenses: [...receiveFormState.orderExpenses],
-        photos: receiveFormState.photosCount,
-        signatureDataUrl: null,
-        history: [{ status: 'Recibido', timeAgo: 'hace un momento', dateShort: '25 nov' }]
-      };
-
-      state.orders.unshift(newOrder);
-      saveState();
-
-      // Resetear formulario temporal
-      receiveFormState.services = [];
-      receiveFormState.orderExpenses = [];
-      receiveFormState.photosCount = 0;
-      receiveFormState.customAccessories = [];
-      receiveFormState.accessoriesChecked = [];
-      receiveFormState.checklistItems = [];
-
-      state.activeRoute = 'inicio';
-      renderSidebar();
-      renderWorkspace();
-      openOrderDetail(0);
-      showToast(`Orden #${newOrder.number} guardada`);
-    }
-
-    // =========================================================
-    // OTRAS VISTAS Y MODALES
-    // =========================================================
-    function renderInicioView() {
-      const cards = state.orders.map((o, idx) => `
-        <div onclick="openOrderDetail(${idx})" class="bg-white rounded-2xl border border-slate-200/80 p-4 hover:border-[#84CC16] transition-all cursor-pointer flex items-center justify-between gap-4">
-          <div class="flex items-center gap-3.5">
-            <div class="w-10 h-10 rounded-xl bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center">#${o.number}</div>
+            `;
+          }).join('');
+
+      return `
+        <div class="space-y-5">
+          <!-- Header Superior de Inicio -->
+          <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <div class="font-bold text-sm text-slate-900">${o.device}</div>
-              <div class="text-xs text-slate-500">${o.client.name} · ${o.issue}</div>
+              <h1 class="text-[20px] font-bold text-slate-900 leading-tight">Inicio</h1>
+              <p class="text-[11px] text-slate-400 mt-0.5">Última orden: ${lastOrderText}</p>
             </div>
-          </div>
-          <div class="text-right">
-            <div class="text-xs font-bold text-slate-900">${formatCOP(o.priceTotal)}</div>
-            <div class="text-[11px] text-slate-400">${STEPS[o.statusIndex]}</div>
-          </div>
-        </div>
-      `).join('');
 
-      return `
-        <div class="flex justify-end mb-4">
-          <button onclick="navigate('recibir')" class="px-4 py-2 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs">+ Recibir Equipo</button>
-        </div>
-        <div class="space-y-3">${cards}</div>
-      `;
-    }
-
-    function renderClientesView() {
-      return `
-        <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden max-w-3xl">
-          <div class="px-5 py-4 border-b border-slate-100 font-bold text-sm text-slate-900">Mis Clientes (${state.clients.length})</div>
-          <div class="divide-y divide-slate-100">
-            ${state.clients.map(c => `
-              <div class="px-5 py-3.5 flex items-center justify-between text-xs">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-full ${c.avatarBg || 'bg-emerald-100 text-emerald-700'} font-bold flex items-center justify-center">${c.initials || getInitials(c.fullName)}</div>
-                  <div>
-                    <div class="font-bold text-slate-900">${c.fullName}</div>
-                    <div class="text-slate-400">${c.phone || 'Sin teléfono'}</div>
-                  </div>
-                </div>
-                <span class="text-slate-500 font-medium">${c.docNumber ? '#' + c.docNumber : ''}</span>
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <!-- Buscador de órdenes o clientes -->
+              <div class="relative">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                <input
+                  type="text"
+                  value="${state.homeSearch}"
+                  oninput="updateHomeSearch(this.value)"
+                  placeholder="Buscar órdenes o clientes..."
+                  class="pl-8 pr-8 py-1.5 w-64 bg-white border border-slate-200/90 rounded-lg text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#84CC16]"
+                />
+                <button type="button" onclick="showToast('Escáner de códigos / IMEI listo')" class="text-slate-400 hover:text-slate-600 absolute right-2.5 top-1/2 -translate-y-1/2" title="Escanear código">
+                  <i data-lucide="scan-line" class="w-3.5 h-3.5"></i>
+                </button>
               </div>
-            `).join('')}
+
+              <!-- Botón Actualizar -->
+              <button type="button" onclick="refreshInicio()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200/90 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
+                <i id="inicio-refresh-icon" data-lucide="rotate-cw" class="w-3.5 h-3.5 text-slate-500"></i>
+                Actualizar
+              </button>
+
+              <!-- Botón Tema -->
+              <button type="button" onclick="toggleThemeHint()" class="w-8 h-8 rounded-lg bg-white border border-slate-200/90 hover:bg-slate-50 flex items-center justify-center text-slate-600 transition-colors" title="Alternar tema">
+                <i data-lucide="moon" class="w-3.5 h-3.5"></i>
+              </button>
+
+              <!-- Botón Verde + Recibir -->
+              <button type="button" onclick="navigate('recibir')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs shadow-2xs transition-colors">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Recibir
+              </button>
+            </div>
+          </div>
+
+          <!-- 3 Tarjetas Superiores: Pendiente (Verde) | Nuevas Hoy | Órdenes Activas -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <!-- Card Pendiente (5 cols, verde lima) -->
+            <div class="md:col-span-5 rounded-2xl bg-[#84CC16] text-slate-950 p-5 flex flex-col justify-between min-h-[126px] shadow-2xs">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-[#1E3A08]">Pendiente</span>
+                <button type="button" onclick="toggleHideAmounts()" class="text-[#2F5211] hover:text-slate-950 p-1 rounded-lg transition-colors" title="Ocultar/mostrar montos">
+                  <i data-lucide="${state.hideAmounts ? 'eye-off' : 'eye'}" class="w-4 h-4"></i>
+                </button>
+              </div>
+              <div class="mt-3">
+                <div class="text-[22px] font-extrabold tracking-tight text-slate-950">${formatCOP(pendingTotal)}</div>
+                <div class="text-xs font-medium text-[#2F5211] mt-1">Por cobrar en ${pendingOrdersCount} ${pendingOrdersCount === 1 ? 'orden' : 'órdenes'}</div>
+              </div>
+            </div>
+
+            <!-- Card Nuevas Hoy (3.5 cols) -->
+            <div class="md:col-span-3 rounded-2xl bg-white border border-slate-200/80 p-5 flex flex-col justify-between min-h-[126px] shadow-2xs">
+              <div class="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                <i data-lucide="plus-circle" class="w-4 h-4 text-[#65A30D]"></i>
+                <span>Nuevas Hoy</span>
+              </div>
+              <div class="mt-3">
+                <div class="text-[22px] font-extrabold text-slate-900 leading-none">${todayOrders.length}</div>
+                <div class="text-xs text-slate-400 mt-2">${todayOrders.length === 0 ? 'Ninguna todavía' : 'Recibidas hoy'}</div>
+              </div>
+            </div>
+
+            <!-- Card Órdenes Activas (4 cols) -->
+            <div class="md:col-span-4 rounded-2xl bg-white border border-slate-200/80 p-5 flex flex-col justify-between min-h-[126px] shadow-2xs">
+              <div class="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                <i data-lucide="clock" class="w-4 h-4 text-[#65A30D]"></i>
+                <span>Órdenes Activas</span>
+              </div>
+              <div class="mt-3 flex items-end justify-between gap-2">
+                <div>
+                  <div class="text-[22px] font-extrabold text-slate-900 leading-none">${activeOrders.length}</div>
+                  <div class="text-xs text-slate-400 mt-2">Ninguna lista para entregar</div>
+                </div>
+                <button type="button" onclick="setHomeTab('hoy')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-[#E9F5D8] hover:text-[#2F5211] text-[11px] font-semibold text-slate-600 transition-colors">
+                  Para hoy
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pestañas de Filtro: Activas 1 | Recibido 1 -->
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="setHomeTab('activas')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+              state.homeFilterTab === 'activas'
+                ? 'bg-[#E9F5D8] text-[#2F5211]'
+                : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-50'
+            }">
+              Activas ${activeOrders.length}
+            </button>
+            <button type="button" onclick="setHomeTab('recibido')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+              state.homeFilterTab === 'recibido'
+                ? 'bg-[#E9F5D8] text-[#2F5211]'
+                : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-50'
+            }">
+              Recibido ${receivedOrders.length}
+            </button>
+          </div>
+
+          <!-- Tabla de Órdenes -->
+          <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-2xs">
+            <div class="px-5 py-3 border-b border-slate-100 grid grid-cols-12 gap-3 text-[11px] font-semibold text-slate-400">
+              <div class="col-span-5">Cliente</div>
+              <div class="col-span-2">Estado</div>
+              <div class="col-span-1">Orden</div>
+              <div class="col-span-1">Técnico</div>
+              <div class="col-span-1">Tiempo</div>
+              <div class="col-span-2 text-right">Balance</div>
+            </div>
+            <div>
+              ${rowsHtml}
+            </div>
           </div>
         </div>
       `;
     }
 
-    function renderAjustesView() {
-      return `
-        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 max-w-2xl flex items-center justify-between gap-4">
-          <div>
-            <div class="text-xs font-bold uppercase text-slate-400">Suscripción</div>
-            <div class="text-base font-bold ${state.isSubscribed ? 'text-emerald-600' : 'text-rose-500'} mt-0.5">
-              ${state.isSubscribed ? `Activa — ${state.planName}` : 'Inactiva'}
-            </div>
-            <div class="text-xs text-slate-500 mt-0.5">Gestiona tu cuenta para desbloquear todos los módulos</div>
-          </div>
-          <button onclick="openSubModal()" class="px-5 py-2.5 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs">Gestionar Cuenta</button>
-        </div>
-      `;
+    function updateHomeSearch(val) {
+      state.homeSearch = val;
+      saveState();
+      renderWorkspace();
+      const input = document.querySelector('input[placeholder*="Buscar órdenes"]');
+      if (input) {
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+      }
+    }
+
+    function setHomeTab(tab) {
+      state.homeFilterTab = tab;
+      saveState();
+      renderWorkspace();
+    }
+
+    function toggleHideAmounts() {
+      state.hideAmounts = !state.hideAmounts;
+      saveState();
+      renderWorkspace();
+    }
+
+    function toggleThemeHint() {
+      state.darkMode = !state.darkMode;
+      saveState();
+      showToast(state.darkMode ? 'Modo oscuro seleccionado' : 'Modo claro activo');
+    }
+
+    function refreshInicio() {
+      const icon = document.getElementById('inicio-refresh-icon');
+      if (icon) icon.classList.add('animate-spin');
+      setTimeout(() => {
+        if (icon) icon.classList.remove('animate-spin');
+        renderWorkspace();
+        showToast('Tablero actualizado');
+      }, 350);
     }
 
     function openOrderDetail(idx) {
-      state.selectedOrderIndex = idx;
       const o = state.orders[idx];
       if (!o) return;
       const overlay = document.getElementById('order-detail-overlay');
@@ -1367,9 +533,6 @@
             <p class="text-[11px] text-slate-400">#${o.number} · ${o.client.name} · recibida el ${o.receivedDate}</p>
           </div>
         </div>
-        <button onclick="deleteOrderFromDetail(${idx})" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold text-xs">
-          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Eliminar Orden
-        </button>
       `;
 
       document.getElementById('order-detail-body').innerHTML = `
@@ -1377,85 +540,17 @@
           <div class="font-bold text-sm text-slate-900">Detalle de Orden #${o.number}</div>
           <div><strong>Cliente:</strong> ${o.client.name} (${o.client.phone})</div>
           <div><strong>Equipo:</strong> ${o.device} — Color: ${o.color}</div>
-          <div><strong>Modalidad:</strong> ${o.serviceModality || 'En el taller'} · <strong>Garantía:</strong> ${o.warrantyDays || 0} días</div>
           <div><strong>Falla reportada:</strong> ${o.issue}</div>
-          <div><strong>Accesorios:</strong> ${o.accessories}</div>
-          <div><strong>Total:</strong> ${formatCOP(o.priceTotal)} · <strong>Abono:</strong> ${formatCOP(o.paidAmount)}</div>
+          <div><strong>Total:</strong> ${formatCOP(o.priceTotal)}</div>
         </div>
       `;
       lucide.createIcons();
     }
 
-    function deleteOrderFromDetail(idx) {
-      state.orders.splice(idx, 1);
-      saveState();
-      closeOrderDetail();
-      showToast('Orden eliminada');
-    }
-
     function closeOrderDetail() {
-      state.selectedOrderIndex = null;
       const overlay = document.getElementById('order-detail-overlay');
       overlay.classList.add('hidden');
       overlay.classList.remove('flex');
-      renderWorkspace();
-    }
-
-    function openSubModal() {
-      const modal = document.getElementById('subscription-modal');
-      const deactZone = document.getElementById('deactivate-zone');
-      state.isSubscribed ? deactZone.classList.remove('hidden') : deactZone.classList.add('hidden');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function closeSubModal() {
-      const modal = document.getElementById('subscription-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function activatePlan(planTitle) {
-      state.isSubscribed = true;
-      state.planName = planTitle;
-      saveState();
-      closeSubModal();
-      renderSidebar();
-      renderWorkspace();
-      showToast(`¡${planTitle} activado!`);
-    }
-
-    function deactivatePlan() {
-      state.isSubscribed = false;
-      state.planName = 'Inactiva';
-      saveState();
-      closeSubModal();
-      renderSidebar();
-      renderWorkspace();
-      showToast('Suscripción desactivada.');
-    }
-
-    function openQuickModal(html) {
-      const modal = document.getElementById('quick-action-modal');
-      document.getElementById('quick-action-content').innerHTML = html;
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function closeQuickModal() {
-      const modal = document.getElementById('quick-action-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function refreshView() {
-      const icon = document.getElementById('refresh-icon');
-      icon.classList.add('animate-spin');
-      setTimeout(() => {
-        icon.classList.remove('animate-spin');
-        renderWorkspace();
-        showToast('Datos sincronizados');
-      }, 350);
     }
 
     function showToast(msg) {
