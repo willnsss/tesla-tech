@@ -8,17 +8,96 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-app: #F4F7FA;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #F8FAFC;
+      --bg-muted: #F1F5F9;
+      --border-subtle: #E2E8F0;
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #94A3B8;
+      --nav-active-bg: #E9F5D8;
+      --nav-active-text: #2F5211;
+      --accent-lime: #84CC16;
+      --accent-lime-hover: #73B312;
+      --accent-soft-bg: #F2FCE2;
+      --accent-soft-border: #D4F097;
+    }
+
+    html.dark {
+      --bg-app: #0A0E14;
+      --bg-surface: #121721;
+      --bg-subtle: #161C28;
+      --bg-muted: #1E2533;
+      --border-subtle: #232B3B;
+      --text-primary: #F1F5F9;
+      --text-secondary: #CBD5E1;
+      --text-muted: #64748B;
+      --nav-active-bg: #1B2818;
+      --nav-active-text: #A3E635;
+      --accent-lime: #84CC16;
+      --accent-lime-hover: #9BE324;
+      --accent-soft-bg: #152214;
+      --accent-soft-border: #2B451B;
+    }
+
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #F4F7FA;
-      color: #1E293B;
+      background-color: var(--bg-app);
+      color: var(--text-primary);
       margin: 0;
       overflow-x: hidden;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
+
+    .app-surface {
+      background-color: var(--bg-surface);
+      border-color: var(--border-subtle);
+    }
+
+    .app-subtle {
+      background-color: var(--bg-subtle);
+      border-color: var(--border-subtle);
+    }
+
+    .app-muted {
+      background-color: var(--bg-muted);
+    }
+
+    .app-border {
+      border-color: var(--border-subtle);
+    }
+
+    .text-main { color: var(--text-primary); }
+    .text-sec { color: var(--text-secondary); }
+    .text-dim { color: var(--text-muted); }
+
+    .nav-active {
+      background-color: var(--nav-active-bg);
+      color: var(--nav-active-text);
+    }
+
+    .accent-soft {
+      background-color: var(--accent-soft-bg);
+      border-color: var(--accent-soft-border);
+    }
+
+    input, textarea, select {
+      background-color: var(--bg-surface);
+      color: var(--text-primary);
+      border-color: var(--border-subtle);
+    }
+
+    html.dark input::placeholder,
+    html.dark textarea::placeholder {
+      color: #64748B;
+    }
+
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #64748B; }
   </style>
 </head>
 <body class="flex h-screen overflow-hidden select-none">
@@ -26,45 +105,45 @@
   <!-- =========================================================
        SIDEBAR IZQUIERDO (MENÚ PRINCIPAL)
   ========================================================== -->
-  <aside id="main-sidebar" class="w-60 bg-white border-r border-slate-200/80 flex flex-col h-full shrink-0 z-20">
+  <aside id="main-sidebar" class="w-60 app-surface border-r flex flex-col h-full shrink-0 z-20 transition-colors">
     <div class="h-16 px-4 flex items-center gap-3 shrink-0">
-      <div class="w-8 h-8 rounded-lg bg-[#D4F097] flex items-center justify-center text-[#2B4C12] font-bold text-base shadow-2xs">
+      <div class="w-8 h-8 rounded-lg bg-[#A3E635] flex items-center justify-center text-[#1B2E08] font-bold text-base shadow-2xs">
         T
       </div>
-      <span id="brand-name-sidebar" class="font-bold text-[15px] tracking-tight text-slate-900 uppercase">TESLA TECH</span>
+      <span id="brand-name-sidebar" class="font-bold text-[15px] tracking-tight text-main uppercase">TESLA TECH</span>
     </div>
 
     <nav id="main-nav" class="flex-1 overflow-y-auto px-3 py-2 space-y-5 text-[13px]">
       <div class="space-y-0.5">
-        <button onclick="navigate('inicio')" data-nav="inicio" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors">
-          <span class="flex items-center gap-3"><i data-lucide="home" class="w-4 h-4 text-slate-400"></i> Inicio</span>
+        <button onclick="navigate('inicio')" data-nav="inicio" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-sec hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+          <span class="flex items-center gap-3"><i data-lucide="home" class="w-4 h-4 text-dim"></i> Inicio</span>
         </button>
-        <button onclick="navigate('recibir')" data-nav="recibir" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors">
-          <span class="flex items-center gap-3"><i data-lucide="plus" class="w-4 h-4 text-slate-400"></i> Recibir</span>
+        <button onclick="navigate('recibir')" data-nav="recibir" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-sec hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+          <span class="flex items-center gap-3"><i data-lucide="plus" class="w-4 h-4 text-dim"></i> Recibir</span>
         </button>
-        <button onclick="navigate('clientes')" data-nav="clientes" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors">
-          <span class="flex items-center gap-3"><i data-lucide="users" class="w-4 h-4 text-slate-400"></i> Clientes</span>
+        <button onclick="navigate('clientes')" data-nav="clientes" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-sec hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+          <span class="flex items-center gap-3"><i data-lucide="users" class="w-4 h-4 text-dim"></i> Clientes</span>
         </button>
       </div>
 
       <div>
-        <div class="px-3 mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Operación</div>
+        <div class="px-3 mb-1.5 text-[10px] font-semibold tracking-wider text-dim uppercase">Operación</div>
         <div class="space-y-0.5" id="nav-operacion"></div>
       </div>
 
       <div>
-        <div class="px-3 mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Punto de Venta</div>
+        <div class="px-3 mb-1.5 text-[10px] font-semibold tracking-wider text-dim uppercase">Punto de Venta</div>
         <div class="space-y-0.5" id="nav-pos"></div>
       </div>
 
       <div class="pb-4">
-        <div class="px-3 mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Administración</div>
+        <div class="px-3 mb-1.5 text-[10px] font-semibold tracking-wider text-dim uppercase">Administración</div>
         <div class="space-y-0.5">
-          <button onclick="navigate('equipo')" data-nav="equipo" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors">
-            <span class="flex items-center gap-3"><i data-lucide="user-plus" class="w-4 h-4 text-slate-400"></i> Mi Equipo</span>
+          <button onclick="navigate('equipo')" data-nav="equipo" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-sec hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+            <span class="flex items-center gap-3"><i data-lucide="user-plus" class="w-4 h-4 text-dim"></i> Mi Equipo</span>
           </button>
-          <button onclick="navigate('ajustes')" data-nav="ajustes" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors">
-            <span class="flex items-center gap-3"><i data-lucide="settings" class="w-4 h-4 text-slate-400"></i> Ajustes</span>
+          <button onclick="navigate('ajustes')" data-nav="ajustes" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-sec hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+            <span class="flex items-center gap-3"><i data-lucide="settings" class="w-4 h-4 text-dim"></i> Ajustes</span>
           </button>
         </div>
       </div>
@@ -81,20 +160,20 @@
   <!-- =========================================================
        VISTA FULLSCREEN DE DETALLE DE ORDEN
   ========================================================== -->
-  <div id="order-detail-overlay" class="fixed inset-0 bg-[#F4F7FA] z-40 hidden flex-col overflow-hidden">
-    <div id="order-detail-header" class="bg-white border-b border-slate-200/80 px-5 py-3 flex flex-wrap items-center justify-between gap-3 shrink-0"></div>
+  <div id="order-detail-overlay" class="fixed inset-0 bg-[var(--bg-app)] z-40 hidden flex-col overflow-hidden transition-colors">
+    <div id="order-detail-header" class="app-surface border-b px-5 py-3 flex flex-wrap items-center justify-between gap-3 shrink-0"></div>
     <div id="order-detail-body" class="flex-1 overflow-y-auto px-6 py-4 space-y-4"></div>
   </div>
 
   <!-- =========================================================
        MODAL RÁPIDO GENÉRICO
   ========================================================== -->
-  <div id="quick-action-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] hidden items-center justify-center z-50 p-4">
-    <div id="quick-action-content" class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 max-h-[92vh] overflow-y-auto"></div>
+  <div id="quick-action-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-[2px] hidden items-center justify-center z-50 p-4">
+    <div id="quick-action-content" class="app-surface border rounded-2xl max-w-md w-full p-6 shadow-xl max-h-[92vh] overflow-y-auto"></div>
   </div>
 
   <!-- Toast Notification -->
-  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 dark:bg-slate-800 border border-slate-700/60 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
     <i data-lucide="check-circle-2" class="w-4 h-4 text-[#84CC16]"></i>
     <span id="toast-msg">Acción completada</span>
   </div>
@@ -104,7 +183,7 @@
   ========================================================== -->
   <script>
     const STEPS = ['Recibido', 'Diagnóstico', 'En Reparación', 'Listo para Entregar', 'Entregado'];
-    const STORAGE_KEY = 'teslatech_app_state_unified_v2';
+    const STORAGE_KEY = 'teslatech_app_state_unified_v3';
 
     const defaultState = {
       activeRoute: 'inicio',
@@ -125,7 +204,7 @@
           lastName: 'FLOREZ',
           fullName: 'DAYANA FLOREZ',
           initials: 'DF',
-          avatarBg: 'bg-amber-100/80 text-amber-700',
+          avatarBg: 'bg-amber-500/20 text-amber-400',
           phone: '+573226207154',
           docType: 'CC',
           docNumber: '',
@@ -141,7 +220,7 @@
           lastName: 'Rodriguez',
           fullName: 'Maria Rodriguez',
           initials: 'MR',
-          avatarBg: 'bg-emerald-100/80 text-emerald-700',
+          avatarBg: 'bg-emerald-500/20 text-emerald-400',
           phone: '+573187152134',
           docType: 'CC',
           docNumber: '12345678',
@@ -157,7 +236,7 @@
           lastName: 'Velez',
           fullName: 'Maria Velez',
           initials: 'MV',
-          avatarBg: 'bg-emerald-100/80 text-emerald-700',
+          avatarBg: 'bg-emerald-500/20 text-emerald-400',
           phone: '+573505659860',
           docType: 'CC',
           docNumber: '1034297687',
@@ -229,6 +308,10 @@
 
     const state = loadState();
 
+    function applyTheme() {
+      document.documentElement.classList.toggle('dark', !!state.darkMode);
+    }
+
     function saveState() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -288,16 +371,16 @@
             <button onclick="navigate('${item.id}')"
               class="w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
                 isActive
-                  ? 'bg-[#E9F5D8] text-[#2F5211] font-medium'
+                  ? 'nav-active font-semibold'
                   : item.locked
-                    ? 'text-slate-400 hover:bg-slate-50/70'
-                    : 'text-slate-600 hover:bg-slate-50'
+                    ? 'text-dim hover:bg-black/5 dark:hover:bg-white/5'
+                    : 'text-sec hover:bg-black/5 dark:hover:bg-white/5'
               }">
               <span class="flex items-center gap-3 truncate">
-                <i data-lucide="${item.icon}" class="w-4 h-4 shrink-0 ${isActive ? 'text-[#4D7C1F]' : 'text-slate-400'}"></i>
+                <i data-lucide="${item.icon}" class="w-4 h-4 shrink-0 ${isActive ? 'text-[#84CC16]' : 'text-dim'}"></i>
                 <span class="truncate">${item.label}</span>
               </span>
-              ${item.locked ? `<i data-lucide="lock" class="w-3 h-3 text-slate-300 shrink-0"></i>` : ''}
+              ${item.locked ? `<i data-lucide="lock" class="w-3 h-3 text-dim/70 shrink-0"></i>` : ''}
             </button>
           `;
         }).join('');
@@ -310,11 +393,11 @@
         const route = btn.getAttribute('data-nav');
         const icon = btn.querySelector('i');
         if (route === state.activeRoute) {
-          btn.className = 'nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg bg-[#E9F5D8] text-[#2F5211] font-medium transition-colors';
-          if (icon) icon.classList.replace('text-slate-400', 'text-[#4D7C1F]');
+          btn.className = 'nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg nav-active font-semibold transition-colors';
+          if (icon) icon.classList.replace('text-dim', 'text-[#84CC16]');
         } else {
-          btn.className = 'nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors';
-          if (icon) icon.classList.replace('text-[#4D7C1F]', 'text-slate-400');
+          btn.className = 'nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-sec hover:bg-black/5 dark:hover:bg-white/5 transition-colors';
+          if (icon) icon.classList.replace('text-[#84CC16]', 'text-dim');
         }
       });
 
@@ -332,6 +415,7 @@
     }
 
     function renderWorkspace() {
+      applyTheme();
       const ws = document.getElementById('workspace');
 
       if (state.activeRoute === 'inicio') {
@@ -345,12 +429,12 @@
         const found = allItems.find(i => i.id === state.activeRoute);
         ws.innerHTML = `
           <div class="flex items-center justify-between mb-6">
-            <h1 class="text-xl font-bold text-slate-900">${found ? found.label : state.activeRoute}</h1>
-            <button onclick="navigate('inicio')" class="px-3.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">
+            <h1 class="text-xl font-bold text-main">${found ? found.label : state.activeRoute}</h1>
+            <button onclick="navigate('inicio')" class="px-3.5 py-1.5 app-surface border rounded-lg text-xs font-semibold text-sec hover:opacity-90">
               Volver a Inicio
             </button>
           </div>
-          <div class="bg-white rounded-2xl border border-slate-200/70 p-6 text-xs text-slate-500">
+          <div class="app-surface rounded-2xl border p-6 text-xs text-dim">
             Sección <strong>${found ? found.label : state.activeRoute}</strong> lista para continuar.
           </div>
         `;
@@ -398,7 +482,7 @@
       const lastOrderText = state.orders[0]?.lastOrderText || 'hace 23h';
 
       const rowsHtml = filteredOrders.length === 0
-        ? `<div class="py-10 text-center text-xs text-slate-400">No hay órdenes en esta vista.</div>`
+        ? `<div class="py-10 text-center text-xs text-dim">No hay órdenes en esta vista.</div>`
         : filteredOrders.map(o => {
             const globalIdx = state.orders.indexOf(o);
             const extra = (o.extraQuotes || []).reduce((s, item) => s + item.amount, 0);
@@ -407,28 +491,28 @@
             const statusName = STEPS[o.statusIndex] || 'Recibido';
 
             return `
-              <div onclick="openOrderDetail(${globalIdx})" class="px-5 py-3.5 hover:bg-slate-50/90 transition-colors cursor-pointer grid grid-cols-12 items-center gap-3 text-xs border-t border-slate-100 first:border-t-0">
+              <div onclick="openOrderDetail(${globalIdx})" class="px-5 py-3.5 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors cursor-pointer grid grid-cols-12 items-center gap-3 text-xs border-t app-border first:border-t-0">
                 <div class="col-span-5 flex items-center gap-3 min-w-0">
-                  <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
+                  <div class="w-8 h-8 rounded-full app-muted text-dim flex items-center justify-center shrink-0">
                     <i data-lucide="user" class="w-4 h-4"></i>
                   </div>
                   <div class="truncate">
-                    <div class="font-bold text-slate-900 truncate">${o.client.name}</div>
-                    <div class="text-[11px] text-slate-400 truncate">${o.device}</div>
+                    <div class="font-bold text-main truncate">${o.client.name}</div>
+                    <div class="text-[11px] text-dim truncate">${o.device}</div>
                   </div>
                 </div>
                 <div class="col-span-2">
-                  <span class="inline-block px-2.5 py-0.5 rounded-md bg-sky-50 text-sky-600 font-semibold text-[11px]">${statusName}</span>
+                  <span class="inline-block px-2.5 py-0.5 rounded-md bg-sky-500/15 text-sky-500 dark:text-sky-400 font-semibold text-[11px]">${statusName}</span>
                 </div>
-                <div class="col-span-1 font-bold text-slate-800">#${o.number}</div>
-                <div class="col-span-1 text-slate-400 text-[11px] truncate">${o.technician || 'Sin asig.'}</div>
-                <div class="col-span-1 font-bold text-slate-800 text-[11px]">${o.daysElapsed || '0d'}</div>
+                <div class="col-span-1 font-bold text-sec">#${o.number}</div>
+                <div class="col-span-1 text-dim text-[11px] truncate">${o.technician || 'Sin asig.'}</div>
+                <div class="col-span-1 font-bold text-sec text-[11px]">${o.daysElapsed || '0d'}</div>
                 <div class="col-span-2 flex items-center justify-end gap-3 text-right">
                   <div>
-                    <div class="font-extrabold text-slate-900 text-xs">${formatCOP(pend > 0 ? pend : total)}</div>
-                    <div class="text-[10px] ${pend > 0 ? 'text-rose-500 font-medium' : 'text-emerald-600 font-medium'}">${pend > 0 ? 'Pendiente' : 'Pagado'}</div>
+                    <div class="font-extrabold text-main text-xs">${formatCOP(pend > 0 ? pend : total)}</div>
+                    <div class="text-[10px] ${pend > 0 ? 'text-rose-500 font-medium' : 'text-emerald-500 font-medium'}">${pend > 0 ? 'Pendiente' : 'Pagado'}</div>
                   </div>
-                  <button type="button" onclick="event.stopPropagation(); openOrderDetail(${globalIdx})" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100">
+                  <button type="button" onclick="event.stopPropagation(); openOrderDetail(${globalIdx})" class="text-dim hover:text-main p-1 rounded-lg">
                     <i data-lucide="settings" class="w-3.5 h-3.5"></i>
                   </button>
                 </div>
@@ -440,32 +524,32 @@
         <div class="space-y-5">
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h1 class="text-[20px] font-bold text-slate-900 leading-tight">Inicio</h1>
-              <p class="text-[11px] text-slate-400 mt-0.5">Última orden: ${lastOrderText}</p>
+              <h1 class="text-[20px] font-bold text-main leading-tight">Inicio</h1>
+              <p class="text-[11px] text-dim mt-0.5">Última orden: ${lastOrderText}</p>
             </div>
 
             <div class="flex items-center gap-2.5 flex-wrap">
               <div class="relative">
-                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                <i data-lucide="search" class="w-3.5 h-3.5 text-dim absolute left-3 top-1/2 -translate-y-1/2"></i>
                 <input
                   type="text"
                   value="${state.homeSearch}"
                   oninput="updateHomeSearch(this.value)"
                   placeholder="Buscar órdenes o clientes..."
-                  class="pl-8 pr-8 py-1.5 w-64 bg-white border border-slate-200/90 rounded-lg text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#84CC16]"
+                  class="pl-8 pr-8 py-1.5 w-64 app-surface border rounded-lg text-xs text-main focus:outline-none focus:border-[#84CC16]"
                 />
-                <button type="button" onclick="showToast('Escáner de códigos / IMEI listo')" class="text-slate-400 hover:text-slate-600 absolute right-2.5 top-1/2 -translate-y-1/2" title="Escanear código">
+                <button type="button" onclick="showToast('Escáner de códigos / IMEI listo')" class="text-dim hover:text-main absolute right-2.5 top-1/2 -translate-y-1/2" title="Escanear código">
                   <i data-lucide="scan-line" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
 
-              <button type="button" onclick="refreshInicio()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200/90 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
-                <i id="inicio-refresh-icon" data-lucide="rotate-cw" class="w-3.5 h-3.5 text-slate-500"></i>
+              <button type="button" onclick="refreshInicio()" class="inline-flex items-center gap-1.5 px-3 py-1.5 app-surface border rounded-lg text-xs font-semibold text-sec hover:opacity-90 transition-colors">
+                <i id="inicio-refresh-icon" data-lucide="rotate-cw" class="w-3.5 h-3.5 text-dim"></i>
                 Actualizar
               </button>
 
-              <button type="button" onclick="toggleThemeHint()" class="w-8 h-8 rounded-lg bg-white border border-slate-200/90 hover:bg-slate-50 flex items-center justify-center text-slate-600 transition-colors" title="Alternar tema">
-                <i data-lucide="moon" class="w-3.5 h-3.5"></i>
+              <button type="button" onclick="toggleThemeHint()" class="w-8 h-8 rounded-lg app-surface border hover:opacity-90 flex items-center justify-center text-sec transition-colors" title="Alternar tema">
+                <i data-lucide="${state.darkMode ? 'sun' : 'moon'}" class="w-3.5 h-3.5 ${state.darkMode ? 'text-amber-300' : ''}"></i>
               </button>
 
               <button type="button" onclick="navigate('recibir')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs shadow-2xs transition-colors">
@@ -488,28 +572,28 @@
               </div>
             </div>
 
-            <div class="md:col-span-3 rounded-2xl bg-white border border-slate-200/80 p-5 flex flex-col justify-between min-h-[126px] shadow-2xs">
-              <div class="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                <i data-lucide="plus-circle" class="w-4 h-4 text-[#65A30D]"></i>
+            <div class="md:col-span-3 rounded-2xl app-surface border p-5 flex flex-col justify-between min-h-[126px] shadow-2xs">
+              <div class="flex items-center gap-2 text-xs font-semibold text-sec">
+                <i data-lucide="plus-circle" class="w-4 h-4 text-[#84CC16]"></i>
                 <span>Nuevas Hoy</span>
               </div>
               <div class="mt-3">
-                <div class="text-[22px] font-extrabold text-slate-900 leading-none">${todayOrders.length}</div>
-                <div class="text-xs text-slate-400 mt-2">${todayOrders.length === 0 ? 'Ninguna todavía' : 'Recibidas hoy'}</div>
+                <div class="text-[22px] font-extrabold text-main leading-none">${todayOrders.length}</div>
+                <div class="text-xs text-dim mt-2">${todayOrders.length === 0 ? 'Ninguna todavía' : 'Recibidas hoy'}</div>
               </div>
             </div>
 
-            <div class="md:col-span-4 rounded-2xl bg-white border border-slate-200/80 p-5 flex flex-col justify-between min-h-[126px] shadow-2xs">
-              <div class="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                <i data-lucide="clock" class="w-4 h-4 text-[#65A30D]"></i>
+            <div class="md:col-span-4 rounded-2xl app-surface border p-5 flex flex-col justify-between min-h-[126px] shadow-2xs">
+              <div class="flex items-center gap-2 text-xs font-semibold text-sec">
+                <i data-lucide="clock" class="w-4 h-4 text-[#84CC16]"></i>
                 <span>Órdenes Activas</span>
               </div>
               <div class="mt-3 flex items-end justify-between gap-2">
                 <div>
-                  <div class="text-[22px] font-extrabold text-slate-900 leading-none">${activeOrders.length}</div>
-                  <div class="text-xs text-slate-400 mt-2">Ninguna lista para entregar</div>
+                  <div class="text-[22px] font-extrabold text-main leading-none">${activeOrders.length}</div>
+                  <div class="text-xs text-dim mt-2">Ninguna lista para entregar</div>
                 </div>
-                <button type="button" onclick="setHomeTab('hoy')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-[#E9F5D8] hover:text-[#2F5211] text-[11px] font-semibold text-slate-600 transition-colors">
+                <button type="button" onclick="setHomeTab('hoy')" class="px-2.5 py-1 rounded-lg app-muted hover:opacity-90 text-[11px] font-semibold text-sec transition-colors">
                   Para hoy
                 </button>
               </div>
@@ -519,22 +603,22 @@
           <div class="flex items-center gap-2">
             <button type="button" onclick="setHomeTab('activas')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
               state.homeFilterTab === 'activas'
-                ? 'bg-[#E9F5D8] text-[#2F5211]'
-                : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-50'
+                ? 'bg-[#84CC16] text-slate-950'
+                : 'app-surface border text-dim hover:text-main'
             }">
               Activas ${activeOrders.length}
             </button>
             <button type="button" onclick="setHomeTab('recibido')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
               state.homeFilterTab === 'recibido'
-                ? 'bg-[#E9F5D8] text-[#2F5211]'
-                : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-50'
+                ? 'bg-[#84CC16] text-slate-950'
+                : 'app-surface border text-dim hover:text-main'
             }">
               Recibido ${receivedOrders.length}
             </button>
           </div>
 
-          <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-2xs">
-            <div class="px-5 py-3 border-b border-slate-100 grid grid-cols-12 gap-3 text-[11px] font-semibold text-slate-400">
+          <div class="app-surface rounded-2xl border overflow-hidden shadow-2xs">
+            <div class="px-5 py-3 border-b app-border grid grid-cols-12 gap-3 text-[11px] font-semibold text-dim">
               <div class="col-span-5">Cliente</div>
               <div class="col-span-2">Estado</div>
               <div class="col-span-1">Orden</div>
@@ -575,8 +659,14 @@
 
     function toggleThemeHint() {
       state.darkMode = !state.darkMode;
+      applyTheme();
       saveState();
-      showToast(state.darkMode ? 'Modo oscuro seleccionado' : 'Modo claro activo');
+      renderSidebar();
+      renderWorkspace();
+      if (state.selectedOrderIndex !== null && state.orders[state.selectedOrderIndex]) {
+        openOrderDetail(state.selectedOrderIndex);
+      }
+      showToast(state.darkMode ? 'Modo oscuro activado' : 'Modo claro activado');
     }
 
     function refreshInicio() {
@@ -604,100 +694,100 @@
       const posCount = state.clients.filter(c => c.isPosClient).length;
 
       const rowsHtml = filtered.length === 0
-        ? `<div class="bg-white rounded-2xl border border-slate-200/70 p-10 text-center text-xs text-slate-400">No se encontraron clientes con "${state.clientSearch}".</div>`
+        ? `<div class="app-surface rounded-2xl border p-10 text-center text-xs text-dim">No se encontraron clientes con "${state.clientSearch}".</div>`
         : filtered.map(c => `
-            <div onclick="openClientDetail('${c.id}')" class="bg-white hover:bg-slate-50/80 border border-slate-200/70 rounded-xl px-5 py-3.5 flex items-center justify-between gap-4 cursor-pointer transition-colors shadow-2xs">
+            <div onclick="openClientDetail('${c.id}')" class="app-surface hover:border-[#84CC16] border rounded-xl px-5 py-3.5 flex items-center justify-between gap-4 cursor-pointer transition-colors shadow-2xs">
               <div class="flex items-center gap-3.5 w-1/3 min-w-[180px]">
-                <div class="w-9 h-9 rounded-full ${c.avatarBg || 'bg-emerald-100/80 text-emerald-700'} font-bold text-xs flex items-center justify-center shrink-0">
+                <div class="w-9 h-9 rounded-full ${c.avatarBg || 'bg-emerald-500/20 text-emerald-400'} font-bold text-xs flex items-center justify-center shrink-0">
                   ${c.initials || getInitials(c.fullName)}
                 </div>
                 <div>
-                  <div class="text-[13px] font-bold text-slate-900 leading-tight">${c.fullName}</div>
-                  ${c.conflictive ? `<span class="inline-block mt-0.5 text-[10px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">Cliente conflictivo</span>` : ''}
+                  <div class="text-[13px] font-bold text-main leading-tight">${c.fullName}</div>
+                  ${c.conflictive ? `<span class="inline-block mt-0.5 text-[10px] font-semibold text-rose-500 bg-rose-500/15 px-1.5 py-0.5 rounded">Cliente conflictivo</span>` : ''}
                 </div>
               </div>
-              <div class="w-1/4 text-xs text-slate-500 font-medium">
-                ${c.docNumber ? `<span class="text-slate-400 mr-1">#</span>${c.docNumber}` : ''}
+              <div class="w-1/4 text-xs text-dim font-medium">
+                ${c.docNumber ? `<span class="opacity-70 mr-1">#</span>${c.docNumber}` : ''}
               </div>
-              <div class="flex-1 flex items-center justify-end gap-6 text-xs text-slate-600 font-medium">
+              <div class="flex-1 flex items-center justify-end gap-6 text-xs text-sec font-medium">
                 <span class="inline-flex items-center gap-1.5">
-                  <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400"></i>
+                  <i data-lucide="phone" class="w-3.5 h-3.5 text-dim"></i>
                   ${c.phone || '—'}
                 </span>
-                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-dim shrink-0"></i>
               </div>
             </div>
           `).join('');
 
       return `
         <div class="flex items-center justify-between mb-4">
-          <h1 class="text-[20px] font-bold text-slate-900">Clientes</h1>
-          <button onclick="refreshInicio()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">
-            <i data-lucide="rotate-cw" class="w-3.5 h-3.5 text-slate-500"></i> Actualizar
+          <h1 class="text-[20px] font-bold text-main">Clientes</h1>
+          <button onclick="refreshInicio()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 app-surface border rounded-lg text-xs font-semibold text-sec hover:opacity-90">
+            <i data-lucide="rotate-cw" class="w-3.5 h-3.5 text-dim"></i> Actualizar
           </button>
         </div>
 
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div class="flex flex-wrap items-center gap-2.5">
             <div class="flex items-center gap-2 mr-1">
-              <i data-lucide="users" class="w-4 h-4 text-slate-700"></i>
-              <h2 class="text-[16px] font-bold text-slate-900">Mis Clientes</h2>
-              <button onclick="showToast('Haz clic en cualquier cliente para ver su historial y saldo pendiente')" class="w-6 h-6 rounded-full bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:scale-105 transition-transform">
+              <i data-lucide="users" class="w-4 h-4 text-main"></i>
+              <h2 class="text-[16px] font-bold text-main">Mis Clientes</h2>
+              <button onclick="showToast('Haz clic en cualquier cliente para ver su historial y saldo pendiente')" class="w-6 h-6 rounded-full accent-soft text-[#84CC16] flex items-center justify-center hover:scale-105 transition-transform">
                 <i data-lucide="play" class="w-3 h-3 fill-current"></i>
               </button>
             </div>
 
             <div class="relative">
-              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+              <i data-lucide="search" class="w-3.5 h-3.5 text-dim absolute left-3 top-1/2 -translate-y-1/2"></i>
               <input
                 type="text"
                 value="${state.clientSearch}"
                 oninput="updateClientSearch(this.value)"
                 placeholder="Buscar por nombre, cédula, teléfon"
-                class="pl-8 pr-3 py-1.5 w-60 bg-white border border-slate-200/90 rounded-lg text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#84CC16]"
+                class="pl-8 pr-3 py-1.5 w-60 app-surface border rounded-lg text-xs text-main focus:outline-none focus:border-[#84CC16]"
               />
             </div>
 
-            <div class="bg-white border border-slate-200/80 rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
-              <span class="w-6 h-6 rounded-md bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
+            <div class="app-surface border rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
+              <span class="w-6 h-6 rounded-md accent-soft text-[#84CC16] flex items-center justify-center">
                 <i data-lucide="users" class="w-3.5 h-3.5"></i>
               </span>
               <div class="leading-none">
-                <div class="text-xs font-extrabold text-slate-900">${state.clients.length}</div>
-                <div class="text-[9px] font-bold uppercase text-slate-400 mt-0.5">TOTAL</div>
+                <div class="text-xs font-extrabold text-main">${state.clients.length}</div>
+                <div class="text-[9px] font-bold uppercase text-dim mt-0.5">TOTAL</div>
               </div>
             </div>
 
-            <div class="bg-white border border-slate-200/80 rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
-              <span class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div class="app-surface border rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
+              <span class="w-6 h-6 rounded-md bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
                 <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
               </span>
               <div class="leading-none">
-                <div class="text-xs font-extrabold text-slate-900">${frequentCount}</div>
-                <div class="text-[9px] font-bold uppercase text-slate-400 mt-0.5">FRECUENTES</div>
+                <div class="text-xs font-extrabold text-main">${frequentCount}</div>
+                <div class="text-[9px] font-bold uppercase text-dim mt-0.5">FRECUENTES</div>
               </div>
             </div>
 
-            <div class="bg-white border border-slate-200/80 rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
-              <span class="w-6 h-6 rounded-md bg-purple-50 text-purple-600 flex items-center justify-center">
+            <div class="app-surface border rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
+              <span class="w-6 h-6 rounded-md bg-purple-500/15 text-purple-400 flex items-center justify-center">
                 <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
               </span>
               <div class="leading-none">
-                <div class="text-xs font-extrabold text-slate-900">${posCount}</div>
-                <div class="text-[9px] font-bold uppercase text-slate-400 mt-0.5">CLIENTES POS</div>
+                <div class="text-xs font-extrabold text-main">${posCount}</div>
+                <div class="text-[9px] font-bold uppercase text-dim mt-0.5">CLIENTES POS</div>
               </div>
             </div>
           </div>
 
           <div class="flex items-center gap-2 flex-wrap">
-            <button onclick="showToast('Selecciona un archivo .CSV para importar clientes')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#E9F5D8]/70 hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-xs transition-colors">
-              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-[#4D7C1F]"></i> Importar CSV
+            <button onclick="showToast('Selecciona un archivo .CSV para importar clientes')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg accent-soft border text-[#84CC16] font-semibold text-xs transition-colors">
+              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Importar CSV
             </button>
-            <button onclick="exportClientsCSV()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#E9F5D8]/70 hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-xs transition-colors">
-              <i data-lucide="download" class="w-3.5 h-3.5 text-[#4D7C1F]"></i> Exportar
+            <button onclick="exportClientsCSV()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg accent-soft border text-[#84CC16] font-semibold text-xs transition-colors">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Exportar
             </button>
-            <button onclick="cleanDuplicateClients()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100/80 text-amber-700 font-semibold text-xs transition-colors">
-              <i data-lucide="git-merge" class="w-3.5 h-3.5 text-amber-600"></i> Limpiar Duplicados
+            <button onclick="cleanDuplicateClients()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/15 text-amber-400 font-semibold text-xs transition-colors">
+              <i data-lucide="git-merge" class="w-3.5 h-3.5"></i> Limpiar Duplicados
             </button>
             <button onclick="openNewClientModal()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs shadow-2xs transition-colors">
               <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nuevo Cliente
@@ -705,7 +795,7 @@
           </div>
         </div>
 
-        <div class="px-5 pb-2 flex items-center text-[10px] font-bold uppercase tracking-wider text-slate-400">
+        <div class="px-5 pb-2 flex items-center text-[10px] font-bold uppercase tracking-wider text-dim">
           <div class="w-1/3 min-w-[180px]">CLIENTE</div>
           <div class="w-1/4">IDENTIFICACIÓN</div>
           <div class="flex-1">TELÉFONO</div>
@@ -769,79 +859,79 @@
       openQuickModal(`
         <div class="flex items-start justify-between mb-4">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+            <div class="w-10 h-10 rounded-xl accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
               <i data-lucide="user-plus" class="w-5 h-5"></i>
             </div>
             <div>
-              <h3 class="font-bold text-base text-slate-900 leading-tight">${existing ? 'Editar Cliente' : 'Nuevo Cliente'}</h3>
-              <p class="text-xs text-slate-400 mt-0.5">Queda guardado para la próxima orden o venta</p>
+              <h3 class="font-bold text-base text-main leading-tight">${existing ? 'Editar Cliente' : 'Nuevo Cliente'}</h3>
+              <p class="text-xs text-dim mt-0.5">Queda guardado para la próxima orden o venta</p>
             </div>
           </div>
-          <button onclick="closeQuickModal()" class="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100">
+          <button onclick="closeQuickModal()" class="p-1 text-dim hover:text-main rounded-lg">
             <i data-lucide="x" class="w-4 h-4"></i>
           </button>
         </div>
 
-        <div class="grid grid-cols-2 gap-1.5 bg-slate-100/90 p-1 rounded-xl mb-4 text-xs font-bold">
-          <button type="button" onclick="setClientModalType('Persona')" class="py-2 rounded-lg transition-all ${!isEmpresa ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">Persona</button>
-          <button type="button" onclick="setClientModalType('Empresa')" class="py-2 rounded-lg transition-all ${isEmpresa ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">Empresa</button>
+        <div class="grid grid-cols-2 gap-1.5 app-muted p-1 rounded-xl mb-4 text-xs font-bold">
+          <button type="button" onclick="setClientModalType('Persona')" class="py-2 rounded-lg transition-all ${!isEmpresa ? 'app-surface text-main shadow-2xs' : 'text-dim'}">Persona</button>
+          <button type="button" onclick="setClientModalType('Empresa')" class="py-2 rounded-lg transition-all ${isEmpresa ? 'app-surface text-main shadow-2xs' : 'text-dim'}">Empresa</button>
         </div>
 
         <form onsubmit="submitClientForm(event, '${existing ? existing.id : ''}')" class="space-y-3.5 text-xs">
           ${!isEmpresa
             ? `<div class="grid grid-cols-2 gap-3">
                  <div>
-                   <label class="block font-bold text-slate-800 mb-1">Nombre *</label>
-                   <input id="nc-first" type="text" value="${existing ? (existing.firstName || '') : ''}" placeholder="Ej. María" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" required />
+                   <label class="block font-bold text-sec mb-1">Nombre *</label>
+                   <input id="nc-first" type="text" value="${existing ? (existing.firstName || '') : ''}" placeholder="Ej. María" class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:border-[#84CC16]" required />
                  </div>
                  <div>
-                   <label class="block font-bold text-slate-800 mb-1">Apellido *</label>
-                   <input id="nc-last" type="text" value="${existing ? (existing.lastName || '') : ''}" placeholder="Ej. Pérez" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" required />
+                   <label class="block font-bold text-sec mb-1">Apellido *</label>
+                   <input id="nc-last" type="text" value="${existing ? (existing.lastName || '') : ''}" placeholder="Ej. Pérez" class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:border-[#84CC16]" required />
                  </div>
                </div>`
             : `<div>
-                 <label class="block font-bold text-slate-800 mb-1">Razón Social / Empresa *</label>
-                 <input id="nc-company" type="text" value="${existing ? existing.fullName : ''}" placeholder="Ej. Inversiones Tech SAS" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" required />
+                 <label class="block font-bold text-sec mb-1">Razón Social / Empresa *</label>
+                 <input id="nc-company" type="text" value="${existing ? existing.fullName : ''}" placeholder="Ej. Inversiones Tech SAS" class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:border-[#84CC16]" required />
                </div>`
           }
 
           <div>
-            <label class="block font-bold text-slate-800 mb-1">Teléfono</label>
+            <label class="block font-bold text-sec mb-1">Teléfono</label>
             <div class="flex items-center gap-2">
-              <span class="px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 font-extrabold text-[#4D7C1F] shrink-0">+57</span>
-              <input id="nc-phone" type="text" value="${existing ? (existing.phone || '').replace(/^\+57/, '') : ''}" placeholder="4141234567" class="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+              <span class="px-3 py-2.5 rounded-xl app-subtle border font-extrabold text-[#84CC16] shrink-0">+57</span>
+              <input id="nc-phone" type="text" value="${existing ? (existing.phone || '').replace(/^\+57/, '') : ''}" placeholder="4141234567" class="flex-1 px-3 py-2.5 border rounded-xl focus:outline-none focus:border-[#84CC16]" />
             </div>
           </div>
 
           <div>
-            <label class="block font-bold text-slate-800 mb-1.5">Tipo de documento</label>
+            <label class="block font-bold text-sec mb-1.5">Tipo de documento</label>
             <div class="flex items-center gap-2">
               ${['CC', 'CE', 'Pasaporte'].map(dt => `
                 <button type="button" onclick="setClientModalDocType('${dt}')" class="px-3.5 py-1.5 rounded-lg border text-xs font-bold transition-colors ${
                   state.newClientDocType === dt
-                    ? 'border-[#84CC16] bg-[#F2FCE2] text-[#2F5211]'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                    ? 'border-[#84CC16] accent-soft text-[#84CC16]'
+                    : 'app-surface text-sec'
                 }">${dt}</button>
               `).join('')}
             </div>
           </div>
 
           <div>
-            <label class="block font-bold text-slate-800 mb-1">${state.newClientDocType}</label>
-            <input id="nc-doc-num" type="text" value="${existing ? (existing.docNumber || '') : ''}" placeholder="1023456789" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+            <label class="block font-bold text-sec mb-1">${state.newClientDocType}</label>
+            <input id="nc-doc-num" type="text" value="${existing ? (existing.docNumber || '') : ''}" placeholder="1023456789" class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:border-[#84CC16]" />
           </div>
 
           <div>
-            <label class="block font-bold text-slate-800 mb-1">Correo</label>
-            <input id="nc-email" type="email" value="${existing ? (existing.email || '') : ''}" placeholder="cliente@correo.com" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+            <label class="block font-bold text-sec mb-1">Correo</label>
+            <input id="nc-email" type="email" value="${existing ? (existing.email || '') : ''}" placeholder="cliente@correo.com" class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:border-[#84CC16]" />
           </div>
 
           <div>
-            <label class="block font-bold text-slate-800 mb-1">Dirección</label>
-            <input id="nc-address" type="text" value="${existing ? (existing.address || '') : ''}" placeholder="Opcional" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+            <label class="block font-bold text-sec mb-1">Dirección</label>
+            <input id="nc-address" type="text" value="${existing ? (existing.address || '') : ''}" placeholder="Opcional" class="w-full px-3 py-2.5 border rounded-xl focus:outline-none focus:border-[#84CC16]" />
           </div>
 
-          <button type="submit" class="mt-2 w-full py-3 rounded-xl bg-[#A3E635] hover:bg-[#84CC16] text-slate-900 font-bold text-sm transition-colors shadow-2xs">
+          <button type="submit" class="mt-2 w-full py-3 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-sm transition-colors shadow-2xs">
             ${existing ? 'Actualizar Cliente' : 'Guardar Cliente'}
           </button>
         </form>
@@ -892,7 +982,7 @@
       } else {
         state.clients.unshift({
           id: 'cli-' + Date.now(), type: state.newClientType, firstName, lastName, fullName,
-          initials: getInitials(fullName), avatarBg: 'bg-emerald-100/80 text-emerald-700',
+          initials: getInitials(fullName), avatarBg: 'bg-emerald-500/20 text-emerald-400',
           phone, docType: state.newClientDocType, docNumber, email, address,
           conflictive: false, isPosClient: false
         });
@@ -950,30 +1040,30 @@
       const lastOrderDate = clientOrders.length > 0 ? clientOrders[0].receivedDate.split(' ').slice(0, 2).join(' ') : '—';
 
       const ordersHtml = clientOrders.length === 0
-        ? `<div class="bg-white rounded-2xl border border-slate-200/70 p-8 text-center text-xs text-slate-400">Este cliente aún no tiene órdenes registradas.</div>`
+        ? `<div class="app-surface rounded-2xl border p-8 text-center text-xs text-dim">Este cliente aún no tiene órdenes registradas.</div>`
         : clientOrders.map(o => {
             const globalIdx = state.orders.indexOf(o);
             const extra = (o.extraQuotes || []).reduce((s, q) => s + q.amount, 0);
             const total = (o.priceTotal || 0) + extra;
             const pend = Math.max(0, total - (o.paidAmount || 0));
             return `
-              <div onclick="openOrderDetail(${globalIdx})" class="bg-white hover:border-[#84CC16] border border-slate-200/70 rounded-2xl p-4 flex items-center justify-between gap-4 cursor-pointer transition-all shadow-2xs">
+              <div onclick="openOrderDetail(${globalIdx})" class="app-surface hover:border-[#84CC16] border rounded-2xl p-4 flex items-center justify-between gap-4 cursor-pointer transition-all shadow-2xs">
                 <div class="flex items-start gap-3.5">
-                  <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0 mt-0.5">
+                  <div class="w-9 h-9 rounded-xl app-muted text-dim flex items-center justify-center shrink-0 mt-0.5">
                     <i data-lucide="smartphone" class="w-4 h-4"></i>
                   </div>
                   <div>
-                    <div class="font-bold text-sm text-slate-900 leading-tight">${o.device}</div>
-                    <div class="text-[11px] text-slate-400 mt-0.5">#${o.number} · ${o.receivedDate}</div>
-                    <span class="inline-block mt-2 px-2.5 py-0.5 rounded-md bg-sky-50 text-sky-600 font-bold text-[10px] tracking-wide">${(STEPS[o.statusIndex] || 'Recibido').toUpperCase()}</span>
+                    <div class="font-bold text-sm text-main leading-tight">${o.device}</div>
+                    <div class="text-[11px] text-dim mt-0.5">#${o.number} · ${o.receivedDate}</div>
+                    <span class="inline-block mt-2 px-2.5 py-0.5 rounded-md bg-sky-500/15 text-sky-500 dark:text-sky-400 font-bold text-[10px] tracking-wide">${(STEPS[o.statusIndex] || 'Recibido').toUpperCase()}</span>
                   </div>
                 </div>
                 <div class="flex items-center gap-3 text-right">
                   <div>
-                    <div class="text-sm font-extrabold text-slate-900">${formatCOP(total)}</div>
-                    ${pend > 0 ? `<div class="text-[11px] font-bold text-rose-500 mt-0.5">Debe ${formatCOP(pend)}</div>` : `<div class="text-[11px] font-semibold text-emerald-600 mt-0.5">Pagado</div>`}
+                    <div class="text-sm font-extrabold text-main">${formatCOP(total)}</div>
+                    ${pend > 0 ? `<div class="text-[11px] font-bold text-rose-500 mt-0.5">Debe ${formatCOP(pend)}</div>` : `<div class="text-[11px] font-semibold text-emerald-500 mt-0.5">Pagado</div>`}
                   </div>
-                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-dim"></i>
                 </div>
               </div>
             `;
@@ -982,23 +1072,23 @@
       return `
         <div class="flex items-center justify-between gap-4 mb-5">
           <div class="flex items-center gap-3">
-            <button onclick="backToClientsList()" class="p-1.5 rounded-lg text-slate-700 hover:bg-white transition-colors">
+            <button onclick="backToClientsList()" class="p-1.5 rounded-lg text-sec hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
               <i data-lucide="arrow-left" class="w-4 h-4"></i>
             </button>
-            <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
+            <div class="w-8 h-8 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center">
               <i data-lucide="user" class="w-4 h-4"></i>
             </div>
             <div>
-              <h2 class="text-[16px] font-bold text-slate-900 leading-none">Cliente</h2>
-              <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1">${cli.fullName}</p>
+              <h2 class="text-[16px] font-bold text-main leading-none">Cliente</h2>
+              <p class="text-[10px] font-bold uppercase tracking-wider text-dim mt-1">${cli.fullName}</p>
             </div>
           </div>
 
           <div class="flex items-center gap-2.5">
-            <button onclick="deleteClientById('${cli.id}')" class="w-9 h-9 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-500 flex items-center justify-center transition-colors">
+            <button onclick="deleteClientById('${cli.id}')" class="w-9 h-9 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-500 flex items-center justify-center transition-colors">
               <i data-lucide="trash-2" class="w-4 h-4"></i>
             </button>
-            <button onclick="openNewClientModal('${cli.id}')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#2F5211] font-bold text-xs transition-colors">
+            <button onclick="openNewClientModal('${cli.id}')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl accent-soft border text-[#84CC16] font-bold text-xs transition-colors">
               <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Editar
             </button>
           </div>
@@ -1006,91 +1096,91 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
           <div class="lg:col-span-5 space-y-4">
-            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
+            <div class="app-surface rounded-2xl border p-4 shadow-2xs">
               <div class="flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-full ${cli.avatarBg || 'bg-amber-100/80 text-amber-700'} font-extrabold text-sm flex items-center justify-center shrink-0">
+                <div class="w-12 h-12 rounded-full ${cli.avatarBg || 'bg-amber-500/20 text-amber-400'} font-extrabold text-sm flex items-center justify-center shrink-0">
                   ${cli.initials || getInitials(cli.fullName)}
                 </div>
                 <div>
-                  <div class="font-extrabold text-sm text-slate-900">${cli.fullName}</div>
-                  <div class="text-xs text-slate-500 mt-0.5">${cli.phone || 'Sin teléfono'}</div>
+                  <div class="font-extrabold text-sm text-main">${cli.fullName}</div>
+                  <div class="text-xs text-dim mt-0.5">${cli.phone || 'Sin teléfono'}</div>
                 </div>
               </div>
               <div class="flex items-center gap-2 mt-4">
-                <button onclick="showToast('WhatsApp: ${cli.phone || ''}')" class="w-9 h-9 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#4D7C1F] flex items-center justify-center transition-colors">
+                <button onclick="showToast('WhatsApp: ${cli.phone || ''}')" class="w-9 h-9 rounded-xl accent-soft border text-[#84CC16] flex items-center justify-center transition-colors">
                   <i data-lucide="message-circle" class="w-4 h-4"></i>
                 </button>
-                <button onclick="copyToClip('${cli.phone || cli.fullName}')" class="w-9 h-9 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#4D7C1F] flex items-center justify-center transition-colors">
+                <button onclick="copyToClip('${cli.phone || cli.fullName}')" class="w-9 h-9 rounded-xl accent-soft border text-[#84CC16] flex items-center justify-center transition-colors">
                   <i data-lucide="copy" class="w-4 h-4"></i>
                 </button>
               </div>
             </div>
 
-            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 flex items-center justify-between gap-3 shadow-2xs">
+            <div class="app-surface rounded-2xl border p-4 flex items-center justify-between gap-3 shadow-2xs">
               <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0">
                   <i data-lucide="alert-triangle" class="w-4 h-4"></i>
                 </div>
                 <div>
-                  <div class="font-bold text-xs text-slate-900">Cliente conflictivo</div>
-                  <div class="text-[11px] text-slate-400">Al recibirle un equipo, la app avisa.</div>
+                  <div class="font-bold text-xs text-main">Cliente conflictivo</div>
+                  <div class="text-[11px] text-dim">Al recibirle un equipo, la app avisa.</div>
                 </div>
               </div>
-              <button type="button" onclick="toggleClientConflictive('${cli.id}')" class="w-10 h-5 rounded-full transition-colors p-0.5 ${cli.conflictive ? 'bg-[#84CC16]' : 'bg-slate-200'}">
+              <button type="button" onclick="toggleClientConflictive('${cli.id}')" class="w-10 h-5 rounded-full transition-colors p-0.5 ${cli.conflictive ? 'bg-[#84CC16]' : 'bg-slate-600/40'}">
                 <div class="w-4 h-4 rounded-full bg-white shadow-2xs transition-transform ${cli.conflictive ? 'translate-x-5' : 'translate-x-0'}"></div>
               </button>
             </div>
 
             <div class="grid grid-cols-3 gap-3">
-              <div class="bg-white rounded-2xl border border-slate-200/70 p-3.5 shadow-2xs">
-                <div class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center mb-2">
+              <div class="app-surface rounded-2xl border p-3.5 shadow-2xs">
+                <div class="w-7 h-7 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center mb-2">
                   <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>
                 </div>
-                <div class="font-extrabold text-sm text-slate-900">${clientOrders.length}</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">Órdenes</div>
+                <div class="font-extrabold text-sm text-main">${clientOrders.length}</div>
+                <div class="text-[10px] text-dim mt-0.5">Órdenes</div>
               </div>
-              <div class="bg-white rounded-2xl border border-slate-200/70 p-3.5 shadow-2xs">
-                <div class="w-7 h-7 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center mb-2">
+              <div class="app-surface rounded-2xl border p-3.5 shadow-2xs">
+                <div class="w-7 h-7 rounded-lg bg-rose-500/15 text-rose-500 flex items-center justify-center mb-2">
                   <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
                 </div>
                 <div class="font-extrabold text-xs text-rose-500 truncate">${formatCOP(pendingSum)}</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">Pendiente</div>
+                <div class="text-[10px] text-dim mt-0.5">Pendiente</div>
               </div>
-              <div class="bg-white rounded-2xl border border-slate-200/70 p-3.5 shadow-2xs">
-                <div class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center mb-2">
+              <div class="app-surface rounded-2xl border p-3.5 shadow-2xs">
+                <div class="w-7 h-7 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center mb-2">
                   <i data-lucide="clock" class="w-3.5 h-3.5"></i>
                 </div>
-                <div class="font-extrabold text-sm text-slate-900">${lastOrderDate}</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">Última</div>
+                <div class="font-extrabold text-sm text-main">${lastOrderDate}</div>
+                <div class="text-[10px] text-dim mt-0.5">Última</div>
               </div>
             </div>
 
-            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs space-y-3">
-              <div class="flex items-center gap-2 font-bold text-xs text-slate-900">
-                <span class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
+            <div class="app-surface rounded-2xl border p-4 shadow-2xs space-y-3">
+              <div class="flex items-center gap-2 font-bold text-xs text-main">
+                <span class="w-7 h-7 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center">
                   <i data-lucide="contact" class="w-3.5 h-3.5"></i>
                 </span>
                 Información de Contacto
               </div>
               <div class="flex items-center gap-3 pt-1">
-                <i data-lucide="phone" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                <i data-lucide="phone" class="w-4 h-4 text-dim shrink-0"></i>
                 <div>
-                  <div class="text-[10px] text-slate-400">Teléfono</div>
-                  <div class="text-xs font-bold text-slate-800">${cli.phone || 'Sin teléfono'}</div>
+                  <div class="text-[10px] text-dim">Teléfono</div>
+                  <div class="text-xs font-bold text-sec">${cli.phone || 'Sin teléfono'}</div>
                 </div>
               </div>
               <div class="flex items-center gap-3">
-                <i data-lucide="mail" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                <i data-lucide="mail" class="w-4 h-4 text-dim shrink-0"></i>
                 <div>
-                  <div class="text-[10px] text-slate-400">Correo</div>
-                  <div class="text-xs font-bold text-slate-800">${cli.email || 'Sin correo'}</div>
+                  <div class="text-[10px] text-dim">Correo</div>
+                  <div class="text-xs font-bold text-sec">${cli.email || 'Sin correo'}</div>
                 </div>
               </div>
               <div class="flex items-center gap-3">
-                <i data-lucide="map-pin" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                <i data-lucide="map-pin" class="w-4 h-4 text-dim shrink-0"></i>
                 <div>
-                  <div class="text-[10px] text-slate-400">Dirección</div>
-                  <div class="text-xs font-bold text-slate-800">${cli.address || 'Sin dirección'}</div>
+                  <div class="text-[10px] text-dim">Dirección</div>
+                  <div class="text-xs font-bold text-sec">${cli.address || 'Sin dirección'}</div>
                 </div>
               </div>
             </div>
@@ -1098,8 +1188,8 @@
 
           <div class="lg:col-span-7 space-y-3">
             <div class="flex items-center justify-between px-1">
-              <h3 class="font-bold text-xs text-slate-800">Historial de Órdenes</h3>
-              <span class="text-[11px] text-slate-400">${clientOrders.length} registros</span>
+              <h3 class="font-bold text-xs text-sec">Historial de Órdenes</h3>
+              <span class="text-[11px] text-dim">${clientOrders.length} registros</span>
             </div>
             <div class="space-y-2.5">${ordersHtml}</div>
           </div>
@@ -1113,7 +1203,7 @@
     }
 
     // =========================================================
-    // VISTA RECIBIR EQUIPO (COLUMNA DERECHA STICKY)
+    // VISTA RECIBIR EQUIPO
     // =========================================================
     function renderRecibirScreen() {
       const servicesSum = receiveFormState.services.reduce((acc, s) => acc + (Number(s.price) || 0), 0);
@@ -1127,18 +1217,18 @@
         <div class="space-y-4">
           <div class="flex items-center justify-between gap-3 pb-1">
             <div class="flex items-center gap-3">
-              <button type="button" onclick="navigate('inicio')" class="w-8 h-8 rounded-full bg-white border border-slate-200 hover:bg-slate-50 flex items-center justify-center text-slate-700 transition-colors">
+              <button type="button" onclick="navigate('inicio')" class="w-8 h-8 rounded-full app-surface border hover:opacity-90 flex items-center justify-center text-sec transition-colors">
                 <i data-lucide="chevron-left" class="w-4 h-4"></i>
               </button>
               <div class="flex items-center gap-2">
-                <i data-lucide="smartphone" class="w-4 h-4 text-[#65A30D]"></i>
-                <span class="font-extrabold text-[15px] text-slate-900">Recibir Equipo</span>
+                <i data-lucide="smartphone" class="w-4 h-4 text-[#84CC16]"></i>
+                <span class="font-extrabold text-[15px] text-main">Recibir Equipo</span>
               </div>
-              <span class="text-[11px] text-slate-400 hidden sm:inline">* Campos obligatorios. Todo lo demás es opcional.</span>
+              <span class="text-[11px] text-dim hidden sm:inline">* Campos obligatorios. Todo lo demás es opcional.</span>
             </div>
 
             <div class="flex items-center gap-2.5">
-              <button type="button" onclick="showToast('Completa los campos con * y presiona Guardar Orden')" class="w-8 h-8 rounded-full bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:scale-105 transition-transform">
+              <button type="button" onclick="showToast('Completa los campos con * y presiona Guardar Orden')" class="w-8 h-8 rounded-full accent-soft text-[#84CC16] flex items-center justify-center hover:scale-105 transition-transform">
                 <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
               </button>
               <button type="button" onclick="submitReceiveOrder()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs shadow-2xs transition-colors">
@@ -1149,88 +1239,88 @@
 
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             <div class="lg:col-span-8 space-y-4">
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-4">
+              <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-4">
                 <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                  <div class="w-8 h-8 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
                     <i data-lucide="user" class="w-4 h-4"></i>
                   </div>
                   <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Datos del Cliente</h2>
-                    <p class="text-[11px] text-slate-400">Información del cliente</p>
+                    <h2 class="text-sm font-bold text-main leading-tight">Datos del Cliente</h2>
+                    <p class="text-[11px] text-dim">Información del cliente</p>
                   </div>
                 </div>
 
                 <div class="flex items-center gap-2">
-                  <div class="flex-1 grid grid-cols-2 bg-slate-100/90 p-1 rounded-xl text-xs font-bold">
-                    <button type="button" onclick="receiveFormState.clientMode='Persona'; renderWorkspace();" class="py-1.5 rounded-lg transition-all ${receiveFormState.clientMode === 'Persona' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">Persona</button>
-                    <button type="button" onclick="receiveFormState.clientMode='Empresa'; renderWorkspace();" class="py-1.5 rounded-lg transition-all ${receiveFormState.clientMode === 'Empresa' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">Empresa</button>
+                  <div class="flex-1 grid grid-cols-2 app-muted p-1 rounded-xl text-xs font-bold">
+                    <button type="button" onclick="receiveFormState.clientMode='Persona'; renderWorkspace();" class="py-1.5 rounded-lg transition-all ${receiveFormState.clientMode === 'Persona' ? 'app-surface text-main shadow-2xs' : 'text-dim'}">Persona</button>
+                    <button type="button" onclick="receiveFormState.clientMode='Empresa'; renderWorkspace();" class="py-1.5 rounded-lg transition-all ${receiveFormState.clientMode === 'Empresa' ? 'app-surface text-main shadow-2xs' : 'text-dim'}">Empresa</button>
                   </div>
-                  <button type="button" onclick="quickSearchClient()" class="w-9 h-9 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#4D7C1F] flex items-center justify-center shrink-0 transition-colors" title="Cargar primer cliente">
+                  <button type="button" onclick="quickSearchClient()" class="w-9 h-9 rounded-xl accent-soft text-[#84CC16] flex items-center justify-center shrink-0 transition-colors" title="Cargar primer cliente">
                     <i data-lucide="search" class="w-4 h-4"></i>
                   </button>
                 </div>
 
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tipo de documento</label>
+                  <label class="block text-xs font-semibold text-sec mb-1.5">Tipo de documento</label>
                   <div class="flex items-center gap-2">
                     ${['CC', 'CE', 'Pasaporte'].map(dt => `
                       <button type="button" onclick="receiveFormState.docType='${dt}'; renderWorkspace();" class="px-3.5 py-1 rounded-lg border text-xs font-semibold transition-colors ${
                         receiveFormState.docType === dt
-                          ? 'border-[#84CC16] bg-[#F2FCE2] text-[#2F5211]'
-                          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                          ? 'border-[#84CC16] accent-soft text-[#84CC16]'
+                          : 'app-surface text-sec'
                       }">${dt}</button>
                     `).join('')}
                   </div>
                 </div>
 
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">${receiveFormState.docType}</label>
-                  <input id="rec-doc" type="text" placeholder="1023456789" class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  <label class="block text-xs font-semibold text-sec mb-1">${receiveFormState.docType}</label>
+                  <input id="rec-doc" type="text" placeholder="1023456789" class="w-full px-3.5 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre <span class="text-rose-500">*</span></label>
-                    <input id="rec-nombre" type="text" oninput="updateMissingBadges()" class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <label class="block text-xs font-semibold text-sec mb-1">Nombre <span class="text-rose-500">*</span></label>
+                    <input id="rec-nombre" type="text" oninput="updateMissingBadges()" class="w-full px-3.5 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                   </div>
                   <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Apellido <span class="text-rose-500">*</span></label>
-                    <input id="rec-apellido" type="text" oninput="updateMissingBadges()" class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <label class="block text-xs font-semibold text-sec mb-1">Apellido <span class="text-rose-500">*</span></label>
+                    <input id="rec-apellido" type="text" oninput="updateMissingBadges()" class="w-full px-3.5 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                   </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5">
                   <div class="md:col-span-4">
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Teléfono <span class="text-rose-500">*</span></label>
+                    <label class="block text-xs font-semibold text-sec mb-1">Teléfono <span class="text-rose-500">*</span></label>
                     <div class="flex items-center gap-1.5">
-                      <span class="px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-sky-600 shrink-0">+57</span>
-                      <input id="rec-telefono" type="text" oninput="updateMissingBadges()" placeholder="4141234567" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                      <span class="px-2.5 py-2 rounded-xl app-subtle border text-xs font-bold text-sky-400 shrink-0">+57</span>
+                      <input id="rec-telefono" type="text" oninput="updateMissingBadges()" placeholder="4141234567" class="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                     </div>
                   </div>
                   <div class="md:col-span-4">
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Dirección</label>
-                    <input id="rec-direccion" type="text" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <label class="block text-xs font-semibold text-sec mb-1">Dirección</label>
+                    <input id="rec-direccion" type="text" class="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                   </div>
                   <div class="md:col-span-4">
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Correo (opcional)</label>
-                    <input id="rec-correo" type="email" placeholder="Para avisarle por correo cómo va su equipo" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <label class="block text-xs font-semibold text-sec mb-1">Correo (opcional)</label>
+                    <input id="rec-correo" type="email" placeholder="Para avisarle por correo cómo va su equipo" class="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                   </div>
                 </div>
 
-                <button type="button" onclick="addSecondaryPhoneField()" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#4D7C1F] hover:underline">
+                <button type="button" onclick="addSecondaryPhoneField()" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#84CC16] hover:underline">
                   <i data-lucide="plus" class="w-3.5 h-3.5"></i> Agregar teléfono secundario
                 </button>
                 <div id="extra-phones-container" class="space-y-2"></div>
               </div>
 
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3.5">
+              <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-3.5">
                 <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                  <div class="w-8 h-8 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
                     <i data-lucide="truck" class="w-4 h-4"></i>
                   </div>
                   <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Modalidad del servicio</h2>
-                    <p class="text-[11px] text-slate-400">¿Dónde se atiende esta orden?</p>
+                    <h2 class="text-sm font-bold text-main leading-tight">Modalidad del servicio</h2>
+                    <p class="text-[11px] text-dim">¿Dónde se atiende esta orden?</p>
                   </div>
                 </div>
 
@@ -1244,85 +1334,85 @@
                     const active = receiveFormState.modality === m.id;
                     return `
                       <button type="button" onclick="receiveFormState.modality='${m.id}'; renderWorkspace();" class="p-3 rounded-xl border text-left transition-all ${
-                        active ? 'border-[#84CC16] bg-[#F9FDF3]' : 'border-slate-200/80 bg-white hover:bg-slate-50'
+                        active ? 'border-[#84CC16] accent-soft' : 'app-surface hover:opacity-90'
                       }">
-                        <div class="flex items-center gap-1.5 text-xs font-bold ${active ? 'text-[#2F5211]' : 'text-slate-800'}">
-                          <i data-lucide="${m.icon}" class="w-3.5 h-3.5 ${active ? 'text-[#65A30D]' : 'text-slate-400'}"></i>
+                        <div class="flex items-center gap-1.5 text-xs font-bold ${active ? 'text-[#84CC16]' : 'text-main'}">
+                          <i data-lucide="${m.icon}" class="w-3.5 h-3.5 ${active ? 'text-[#84CC16]' : 'text-dim'}"></i>
                           <span>${m.id}</span>
                         </div>
-                        <div class="text-[10px] text-slate-400 mt-1">${m.sub}</div>
+                        <div class="text-[10px] text-dim mt-1">${m.sub}</div>
                       </button>
                     `;
                   }).join('')}
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  <div class="p-3 rounded-xl border border-[#84CC16] bg-[#F9FDF3]">
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-[#2F5211]">
-                      <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#65A30D]"></i> Individual
+                  <div class="p-3 rounded-xl border border-[#84CC16] accent-soft">
+                    <div class="flex items-center gap-1.5 text-xs font-bold text-[#84CC16]">
+                      <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Individual
                     </div>
-                    <div class="text-[10px] text-[#4D7C1F] mt-0.5">Un cliente, una orden. Con fotos, seña y firma.</div>
+                    <div class="text-[10px] text-sec mt-0.5">Un cliente, una orden. Con fotos, seña y firma.</div>
                   </div>
-                  <div onclick="showToast('Lote requiere plan activo')" class="p-3 rounded-xl border border-slate-200/80 bg-slate-50/50 cursor-pointer">
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-slate-500">
-                      <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-400"></i> Lote
+                  <div onclick="showToast('Lote requiere plan activo')" class="p-3 rounded-xl border app-subtle cursor-pointer">
+                    <div class="flex items-center gap-1.5 text-xs font-bold text-dim">
+                      <i data-lucide="layers" class="w-3.5 h-3.5"></i> Lote
                     </div>
-                    <div class="text-[10px] text-slate-400 mt-0.5">Requiere plan activo</div>
+                    <div class="text-[10px] text-dim mt-0.5">Requiere plan activo</div>
                   </div>
                 </div>
               </div>
 
-              <button type="button" onclick="showToast('Buscador de historial por IMEI / serie activado')" class="w-full py-2.5 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center gap-2 transition-colors">
+              <button type="button" onclick="showToast('Buscador de historial por IMEI / serie activado')" class="w-full py-2.5 rounded-xl border border-[#84CC16] accent-soft text-[#84CC16] font-bold text-xs flex items-center justify-center gap-2 transition-colors">
                 <i data-lucide="search" class="w-3.5 h-3.5"></i> Buscar equipo por IMEI o serie
               </button>
 
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-4">
+              <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-4">
                 <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                  <div class="w-8 h-8 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
                     <i data-lucide="smartphone" class="w-4 h-4"></i>
                   </div>
-                  <h2 class="text-sm font-bold text-slate-900">Datos del Equipo</h2>
+                  <h2 class="text-sm font-bold text-main">Datos del Equipo</h2>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
                   <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Equipo (Opcional)</label>
-                    <input id="rec-tipo-equipo" type="text" placeholder="Ej: Consola, Laptop, Smartwatch..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <label class="block text-xs font-semibold text-sec mb-1">Tipo de Equipo (Opcional)</label>
+                    <input id="rec-tipo-equipo" type="text" placeholder="Ej: Consola, Laptop, Smartwatch..." class="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                   </div>
                   <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Marca <span class="text-rose-500">*</span></label>
-                    <input id="rec-marca" type="text" oninput="updateMissingBadges()" placeholder="Ej: Samsung, Apple, Sony..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <label class="block text-xs font-semibold text-sec mb-1">Marca <span class="text-rose-500">*</span></label>
+                    <input id="rec-marca" type="text" oninput="updateMissingBadges()" placeholder="Ej: Samsung, Apple, Sony..." class="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                   </div>
                   <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Modelo <span class="text-rose-500">*</span></label>
-                    <input id="rec-modelo" type="text" oninput="updateMissingBadges()" placeholder="Ej: Galaxy S24, iPhone 15 Pro..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <label class="block text-xs font-semibold text-sec mb-1">Modelo <span class="text-rose-500">*</span></label>
+                    <input id="rec-modelo" type="text" oninput="updateMissingBadges()" placeholder="Ej: Galaxy S24, iPhone 15 Pro..." class="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                   </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                   <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Color</label>
-                    <input id="rec-color" type="text" placeholder="Negro, Blanco..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <label class="block text-xs font-semibold text-sec mb-1">Color</label>
+                    <input id="rec-color" type="text" placeholder="Negro, Blanco..." class="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                   </div>
                   <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Serial (Opcional)</label>
-                    <input id="rec-serial" type="text" placeholder="IMEI / Nro. de serie" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <label class="block text-xs font-semibold text-sec mb-1">Serial (Opcional)</label>
+                    <input id="rec-serial" type="text" placeholder="IMEI / Nro. de serie" class="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                   </div>
                 </div>
 
                 <div>
                   <div class="flex items-center justify-between mb-1">
-                    <label class="text-xs font-semibold text-slate-700">Contraseña (Opcional)</label>
-                    <div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg">
-                      <button type="button" onclick="receiveFormState.passPatternMode=false; renderWorkspace();" class="px-2 py-0.5 rounded text-[11px] font-bold ${!receiveFormState.passPatternMode ? 'bg-white text-slate-800 shadow-2xs' : 'text-slate-400'}">T</button>
-                      <button type="button" onclick="receiveFormState.passPatternMode=true; renderWorkspace();" class="px-2 py-0.5 rounded text-[11px] font-bold ${receiveFormState.passPatternMode ? 'bg-white text-slate-800 shadow-2xs' : 'text-slate-400'}">
+                    <label class="text-xs font-semibold text-sec">Contraseña (Opcional)</label>
+                    <div class="flex items-center gap-1 app-muted p-0.5 rounded-lg">
+                      <button type="button" onclick="receiveFormState.passPatternMode=false; renderWorkspace();" class="px-2 py-0.5 rounded text-[11px] font-bold ${!receiveFormState.passPatternMode ? 'app-surface text-main shadow-2xs' : 'text-dim'}">T</button>
+                      <button type="button" onclick="receiveFormState.passPatternMode=true; renderWorkspace();" class="px-2 py-0.5 rounded text-[11px] font-bold ${receiveFormState.passPatternMode ? 'app-surface text-main shadow-2xs' : 'text-dim'}">
                         <i data-lucide="grid-3x3" class="w-3 h-3"></i>
                       </button>
                     </div>
                   </div>
                   <div class="relative">
-                    <input id="rec-pass" type="${receiveFormState.showPass ? 'text' : 'password'}" placeholder="${receiveFormState.passPatternMode ? 'Ej: 1-2-5-8-9 (patrón)' : 'PIN o contraseña alfanumérica'}" class="w-full px-3.5 py-2 pr-14 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                    <button type="button" onclick="receiveFormState.showPass=!receiveFormState.showPass; renderWorkspace();" class="text-[11px] font-semibold text-slate-500 hover:text-slate-800 absolute right-3 top-1/2 -translate-y-1/2">
+                    <input id="rec-pass" type="${receiveFormState.showPass ? 'text' : 'password'}" placeholder="${receiveFormState.passPatternMode ? 'Ej: 1-2-5-8-9 (patrón)' : 'PIN o contraseña alfanumérica'}" class="w-full px-3.5 py-2 pr-14 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <button type="button" onclick="receiveFormState.showPass=!receiveFormState.showPass; renderWorkspace();" class="text-[11px] font-semibold text-dim hover:text-main absolute right-3 top-1/2 -translate-y-1/2">
                       ${receiveFormState.showPass ? 'Ocultar' : 'Mostrar'}
                     </button>
                   </div>
@@ -1330,66 +1420,66 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                   <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">1. Descripción de la Falla (Ingreso) <span class="text-rose-500">*</span></label>
-                    <textarea id="rec-falla" rows="3" oninput="updateMissingBadges()" placeholder="Describe detalladamente el problema reportado por el cliente..." class="w-full p-3 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]"></textarea>
+                    <label class="block text-xs font-semibold text-sec mb-1">1. Descripción de la Falla (Ingreso) <span class="text-rose-500">*</span></label>
+                    <textarea id="rec-falla" rows="3" oninput="updateMissingBadges()" placeholder="Describe detalladamente el problema reportado por el cliente..." class="w-full p-3 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]"></textarea>
                   </div>
                   <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Observaciones Internas (Opcional)</label>
-                    <textarea id="rec-obs" rows="3" placeholder="Notas para el técnico: daños previos, piezas faltantes..." class="w-full p-3 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]"></textarea>
+                    <label class="block text-xs font-semibold text-sec mb-1">Observaciones Internas (Opcional)</label>
+                    <textarea id="rec-obs" rows="3" placeholder="Notas para el técnico: daños previos, piezas faltantes..." class="w-full p-3 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]"></textarea>
                   </div>
                 </div>
               </div>
 
-              <button type="button" onclick="addExtraDeviceBlock()" class="w-full py-2.5 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center gap-1.5 transition-colors">
+              <button type="button" onclick="addExtraDeviceBlock()" class="w-full py-2.5 rounded-xl border border-[#84CC16] accent-soft text-[#84CC16] font-bold text-xs flex items-center justify-center gap-1.5 transition-colors">
                 <i data-lucide="plus" class="w-3.5 h-3.5"></i> + Agregar otro equipo
               </button>
               <div id="extra-devices-container" class="space-y-2"></div>
 
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3.5">
+              <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-3.5">
                 <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                  <div class="w-8 h-8 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
                     <i data-lucide="file-box" class="w-4 h-4"></i>
                   </div>
                   <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Accesorios (Opcional)</h2>
-                    <p class="text-[11px] text-slate-400">Elementos incluidos</p>
+                    <h2 class="text-sm font-bold text-main leading-tight">Accesorios (Opcional)</h2>
+                    <p class="text-[11px] text-dim">Elementos incluidos</p>
                   </div>
                 </div>
 
-                <div class="flex items-center gap-5 text-xs text-slate-700 flex-wrap">
+                <div class="flex items-center gap-5 text-xs text-sec flex-wrap">
                   ${['SIM', 'Memoria', 'Cargador', 'Funda'].map(acc => `
                     <label class="inline-flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" ${receiveFormState.accessoriesChecked.includes(acc) ? 'checked' : ''} onchange="toggleAccessoryCheck('${acc}')" class="rounded border-slate-300 text-[#65A30D] focus:ring-[#84CC16]" />
+                      <input type="checkbox" ${receiveFormState.accessoriesChecked.includes(acc) ? 'checked' : ''} onchange="toggleAccessoryCheck('${acc}')" class="rounded border-slate-400 text-[#84CC16]" />
                       <span>${acc}</span>
                     </label>
                   `).join('')}
                 </div>
 
                 <div class="flex items-center gap-2">
-                  <input id="rec-acc-input" type="text" placeholder="Agregar accesorio (ej: Caja, Audífonos)" class="flex-1 px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  <input id="rec-acc-input" type="text" placeholder="Agregar accesorio (ej: Caja, Audífonos)" class="flex-1 px-3.5 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                   <button type="button" onclick="addCustomAccessory()" class="w-9 h-9 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold flex items-center justify-center shrink-0">
                     <i data-lucide="plus" class="w-4 h-4"></i>
                   </button>
                 </div>
 
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">Accesorios Incluidos</label>
-                  <textarea id="rec-acc-notes" rows="2" placeholder="Ej: Control remoto, cable de poder..." class="w-full p-3 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]">${receiveFormState.customAccessories.join(', ')}</textarea>
+                  <label class="block text-xs font-semibold text-sec mb-1">Accesorios Incluidos</label>
+                  <textarea id="rec-acc-notes" rows="2" placeholder="Ej: Control remoto, cable de poder..." class="w-full p-3 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]">${receiveFormState.customAccessories.join(', ')}</textarea>
                 </div>
               </div>
 
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3">
+              <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-3">
                 <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                  <div class="w-8 h-8 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
                     <i data-lucide="check-square" class="w-4 h-4"></i>
                   </div>
                   <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Checklist de Reparación (Opcional)</h2>
-                    <p class="text-[11px] text-slate-400">Componentes a revisar</p>
+                    <h2 class="text-sm font-bold text-main leading-tight">Checklist de Reparación (Opcional)</h2>
+                    <p class="text-[11px] text-dim">Componentes a revisar</p>
                   </div>
                 </div>
 
-                <p class="text-xs text-slate-400">
+                <p class="text-xs text-dim">
                   ${receiveFormState.checklistItems.length === 0
                     ? 'Aún no tienes checklist configurado. Agrégalo abajo o desde Ajustes → Checklist de Reparación.'
                     : receiveFormState.checklistItems.map(i => `• ${i}`).join(' · ')
@@ -1397,95 +1487,95 @@
                 </p>
 
                 <div class="flex items-center gap-2">
-                  <input id="rec-chk-input" type="text" placeholder="Agregar ítem (ej: Pantalla, Batería)" class="flex-1 px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  <input id="rec-chk-input" type="text" placeholder="Agregar ítem (ej: Pantalla, Batería)" class="flex-1 px-3.5 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                   <button type="button" onclick="addChecklistItem()" class="w-9 h-9 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold flex items-center justify-center shrink-0">
                     <i data-lucide="plus" class="w-4 h-4"></i>
                   </button>
                 </div>
               </div>
 
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-4">
+              <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-4">
                 <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                  <div class="w-8 h-8 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
                     <i data-lucide="package" class="w-4 h-4"></i>
                   </div>
                   <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Repuestos (Opcional)</h2>
-                    <p class="text-[11px] text-slate-400">Piezas a utilizar en la reparación</p>
+                    <h2 class="text-sm font-bold text-main leading-tight">Repuestos (Opcional)</h2>
+                    <p class="text-[11px] text-dim">Piezas a utilizar en la reparación</p>
                   </div>
                 </div>
 
-                <button type="button" onclick="showToast('Catálogo de inventario disponible')" class="w-full py-2.5 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center gap-2 transition-colors">
+                <button type="button" onclick="showToast('Catálogo de inventario disponible')" class="w-full py-2.5 rounded-xl border border-[#84CC16] accent-soft text-[#84CC16] font-bold text-xs flex items-center justify-center gap-2 transition-colors">
                   <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i> Agregar Repuestos del Inventario
                 </button>
 
                 <div class="pt-1 space-y-2.5">
-                  <div class="text-xs font-bold text-slate-800">
-                    Servicios / Mano de Obra <span class="text-[11px] font-normal text-slate-400">(sin stock)</span>
+                  <div class="text-xs font-bold text-sec">
+                    Servicios / Mano de Obra <span class="text-[11px] font-normal text-dim">(sin stock)</span>
                   </div>
                   <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                    <input id="rec-srv-desc" type="text" placeholder="Descripción del servicio" class="sm:col-span-7 px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                    <input id="rec-srv-price" type="number" placeholder="Precio" class="sm:col-span-4 px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <input id="rec-srv-desc" type="text" placeholder="Descripción del servicio" class="sm:col-span-7 px-3.5 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <input id="rec-srv-price" type="number" placeholder="Precio" class="sm:col-span-4 px-3.5 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                     <button type="button" onclick="addServiceLine()" class="sm:col-span-1 h-9 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold flex items-center justify-center">
                       <i data-lucide="plus" class="w-4 h-4"></i>
                     </button>
                   </div>
-                  <input id="rec-srv-detail" type="text" placeholder="Detalle (opcional)" class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  <input id="rec-srv-detail" type="text" placeholder="Detalle (opcional)" class="w-full px-3.5 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                 </div>
               </div>
 
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3">
+              <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-3">
                 <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                  <div class="w-8 h-8 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
                     <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
                   </div>
                   <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Gastos de la Orden</h2>
-                    <p class="text-[11px] text-slate-400">Costos de reparacion (Opcional)</p>
+                    <h2 class="text-sm font-bold text-main leading-tight">Gastos de la Orden</h2>
+                    <p class="text-[11px] text-dim">Costos de reparacion (Opcional)</p>
                   </div>
                 </div>
-                <p class="text-xs text-slate-400">Registra los costos que tuviste para reparar este equipo (pantalla, flex, etc.)</p>
-                <button type="button" onclick="openReceiveExpenseModal()" class="w-full py-2.5 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs transition-colors">
+                <p class="text-xs text-dim">Registra los costos que tuviste para reparar este equipo (pantalla, flex, etc.)</p>
+                <button type="button" onclick="openReceiveExpenseModal()" class="w-full py-2.5 rounded-xl border border-[#84CC16] accent-soft text-[#84CC16] font-bold text-xs transition-colors">
                   + Agregar Gasto de la Orden
                 </button>
               </div>
 
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3">
+              <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-3">
                 <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                  <div class="w-8 h-8 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
                     <i data-lucide="camera" class="w-4 h-4"></i>
                   </div>
                   <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Evidencia Fotográfica</h2>
-                    <p class="text-[11px] text-slate-400">Evidencia fotográfica</p>
+                    <h2 class="text-sm font-bold text-main leading-tight">Evidencia Fotográfica</h2>
+                    <p class="text-[11px] text-dim">Evidencia fotográfica</p>
                   </div>
                 </div>
 
-                <button type="button" onclick="attachReceivePhoto()" class="w-full py-3 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center gap-2 transition-colors">
+                <button type="button" onclick="attachReceivePhoto()" class="w-full py-3 rounded-xl border border-[#84CC16] accent-soft text-[#84CC16] font-bold text-xs flex items-center justify-center gap-2 transition-colors">
                   <i data-lucide="image-plus" class="w-4 h-4"></i> Adjuntar Fotos
                 </button>
 
-                <button type="button" onclick="showToast('QR generado para subir fotos desde el celular (${receiveFormState.photosCount}/8)')" class="w-full py-2 rounded-xl border border-[#84CC16]/60 bg-[#F9FDF3]/60 hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors">
+                <button type="button" onclick="showToast('QR generado para subir fotos desde el celular (${receiveFormState.photosCount}/8)')" class="w-full py-2 rounded-xl border accent-soft text-[#84CC16] font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors">
                   <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Subir desde el teléfono
                 </button>
 
-                <div class="text-center text-[10px] text-slate-400">Máximo 8 fotos por orden. (${receiveFormState.photosCount}/8)</div>
+                <div class="text-center text-[10px] text-dim">Máximo 8 fotos por orden. (${receiveFormState.photosCount}/8)</div>
               </div>
             </div>
 
             <!-- COLUMNA DERECHA FIJA (STICKY) -->
             <div class="lg:col-span-4 space-y-4 lg:sticky lg:top-4">
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-3">
+              <div class="app-surface rounded-2xl border p-4 shadow-2xs space-y-3">
                 <div class="flex items-center gap-2.5">
-                  <div class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                  <div class="w-7 h-7 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
                     <i data-lucide="shield-check" class="w-4 h-4"></i>
                   </div>
-                  <h3 class="text-sm font-bold text-slate-900">Días de Garantía (Opcional)</h3>
+                  <h3 class="text-sm font-bold text-main">Días de Garantía (Opcional)</h3>
                 </div>
 
                 <div class="relative">
-                  <input id="rec-warranty-days" type="number" value="${receiveFormState.warrantyDays}" oninput="receiveFormState.warrantyDays = Number(this.value || 0)" class="w-full px-3.5 py-2 pr-12 text-xs font-medium text-slate-700 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
-                  <span class="text-xs text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2">días</span>
+                  <input id="rec-warranty-days" type="number" value="${receiveFormState.warrantyDays}" oninput="receiveFormState.warrantyDays = Number(this.value || 0)" class="w-full px-3.5 py-2 pr-12 text-xs font-medium text-main border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  <span class="text-xs text-dim absolute right-3.5 top-1/2 -translate-y-1/2">días</span>
                 </div>
 
                 <div class="grid grid-cols-4 gap-1.5">
@@ -1497,87 +1587,87 @@
                   ].map(btn => `
                     <button type="button" onclick="receiveFormState.warrantyDays=${btn.days}; renderWorkspace();" class="py-1.5 px-1 rounded-lg border text-[11px] font-semibold transition-colors ${
                       receiveFormState.warrantyDays === btn.days
-                        ? 'border-[#84CC16] bg-[#F2FCE2] text-[#2F5211]'
-                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                        ? 'border-[#84CC16] accent-soft text-[#84CC16]'
+                        : 'app-surface text-sec'
                     }">${btn.label}</button>
                   `).join('')}
                 </div>
 
-                <p class="text-[10px] text-slate-400 leading-relaxed">
+                <p class="text-[10px] text-dim leading-relaxed">
                   Si lo dejas vacío se usan los 30 días configurados en Ajustes. Con 0 la orden queda sin garantía y no se imprime nada. Cambiarlo acá afecta solo a esta orden.
                 </p>
               </div>
 
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-3">
+              <div class="app-surface rounded-2xl border p-4 shadow-2xs space-y-3">
                 <div class="flex items-center gap-2.5">
-                  <div class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                  <div class="w-7 h-7 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
                     <i data-lucide="credit-card" class="w-4 h-4"></i>
                   </div>
                   <div>
-                    <h3 class="text-sm font-bold text-slate-900 leading-tight">Finanzas</h3>
-                    <p class="text-[10px] text-slate-400">Costos y pagos</p>
+                    <h3 class="text-sm font-bold text-main leading-tight">Finanzas</h3>
+                    <p class="text-[10px] text-dim">Costos y pagos</p>
                   </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2.5">
                   <div>
-                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Costo Total</label>
+                    <label class="block text-[11px] font-semibold text-sec mb-1">Costo Total</label>
                     <div class="relative">
-                      <span class="text-xs font-bold text-[#65A30D] absolute left-3 top-1/2 -translate-y-1/2">$</span>
-                      <input id="rec-total-input" type="number" value="${servicesSum || ''}" oninput="recalcReceiveFinance()" class="w-full pl-6 pr-2.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                      <span class="text-xs font-bold text-[#84CC16] absolute left-3 top-1/2 -translate-y-1/2">$</span>
+                      <input id="rec-total-input" type="number" value="${servicesSum || ''}" oninput="recalcReceiveFinance()" class="w-full pl-6 pr-2.5 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                     </div>
                   </div>
                   <div>
-                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Abono</label>
+                    <label class="block text-[11px] font-semibold text-sec mb-1">Abono</label>
                     <div class="relative">
-                      <span class="text-xs font-bold text-[#65A30D] absolute left-3 top-1/2 -translate-y-1/2">$</span>
-                      <input id="rec-abono-input" type="number" oninput="recalcReceiveFinance()" class="w-full pl-6 pr-2.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                      <span class="text-xs font-bold text-[#84CC16] absolute left-3 top-1/2 -translate-y-1/2">$</span>
+                      <input id="rec-abono-input" type="number" oninput="recalcReceiveFinance()" class="w-full pl-6 pr-2.5 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                     </div>
                   </div>
                 </div>
 
-                <div class="text-[10px] text-slate-400 leading-tight">
+                <div class="text-[10px] text-dim leading-tight">
                   Auto-sumado desde Servicios + Repuestos. Puedes ajustarlo.
                 </div>
 
                 <div class="grid grid-cols-12 gap-2">
                   <div class="col-span-8">
-                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Nota de Pago (Opcional)</label>
-                    <input id="rec-pay-note" type="text" placeholder="Ej: Ref. Transferencia #" class="w-full px-2.5 py-2 text-[11px] border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <label class="block text-[11px] font-semibold text-sec mb-1">Nota de Pago (Opcional)</label>
+                    <input id="rec-pay-note" type="text" placeholder="Ej: Ref. Transferencia #" class="w-full px-2.5 py-2 text-[11px] border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                   </div>
                   <div class="col-span-4">
-                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Descuento</label>
+                    <label class="block text-[11px] font-semibold text-sec mb-1">Descuento</label>
                     <div class="relative">
-                      <span class="text-[11px] font-bold text-[#65A30D] absolute left-2.5 top-1/2 -translate-y-1/2">%</span>
-                      <input id="rec-desc-input" type="number" step="0.01" oninput="recalcReceiveFinance()" placeholder="0.00" class="w-full pl-6 pr-2 py-2 text-[11px] border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                      <span class="text-[11px] font-bold text-[#84CC16] absolute left-2.5 top-1/2 -translate-y-1/2">%</span>
+                      <input id="rec-desc-input" type="number" step="0.01" oninput="recalcReceiveFinance()" placeholder="0.00" class="w-full pl-6 pr-2 py-2 text-[11px] border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <label class="block text-[11px] font-semibold text-slate-700 mb-1">Fecha Estimada de Entrega (Opcional)</label>
-                  <input id="rec-est-date" type="date" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  <label class="block text-[11px] font-semibold text-sec mb-1">Fecha Estimada de Entrega (Opcional)</label>
+                  <input id="rec-est-date" type="date" class="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
                 </div>
 
-                <div class="p-3 rounded-xl bg-[#F2FCE2] border border-[#D4F097] flex items-center justify-between">
+                <div class="p-3 rounded-xl accent-soft border flex items-center justify-between">
                   <div>
-                    <div class="text-xs font-bold text-[#2F5211]">Saldo Pendiente:</div>
-                    <div class="text-[10px] text-[#4D7C1F]">Pendiente por cobrar</div>
+                    <div class="text-xs font-bold text-[#84CC16]">Saldo Pendiente:</div>
+                    <div class="text-[10px] text-dim">Pendiente por cobrar</div>
                   </div>
-                  <div id="rec-saldo-pendiente" class="text-sm font-extrabold text-[#4D7C1F]">${formatCOP(saldoPendiente)}</div>
+                  <div id="rec-saldo-pendiente" class="text-sm font-extrabold text-[#84CC16]">${formatCOP(saldoPendiente)}</div>
                 </div>
               </div>
 
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-2.5">
-                <div class="text-xs font-bold text-slate-800">Para guardar hace falta</div>
+              <div class="app-surface rounded-2xl border p-4 shadow-2xs space-y-2.5">
+                <div class="text-xs font-bold text-sec">Para guardar hace falta</div>
                 <div id="missing-fields-pills" class="flex flex-wrap gap-1.5">
                   ${['Nombre', 'Apellido', 'Teléfono', 'Marca', 'Modelo', 'Falla'].map(f => `
-                    <span data-missing="${f}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-slate-200 bg-white text-[11px] font-medium text-slate-600">
-                      <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span> ${f}
+                    <span data-missing="${f}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border app-surface text-[11px] font-medium text-sec">
+                      <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span> ${f}
                     </span>
                   `).join('')}
                 </div>
-                <p class="text-[10px] text-slate-400">Lo demás es opcional: puedes completarlo después.</p>
+                <p class="text-[10px] text-dim">Lo demás es opcional: puedes completarlo después.</p>
               </div>
 
               <button type="button" onclick="submitReceiveOrder()" class="w-full py-3 rounded-xl bg-[#84CC16] hover:bg-[#73B312] active:scale-[0.99] text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-all">
@@ -1614,11 +1704,11 @@
         const ok = checks[key];
         const dot = pill.querySelector('span');
         if (ok) {
-          pill.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-[#84CC16] bg-[#F2FCE2] text-[11px] font-semibold text-[#2F5211]';
-          if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-[#65A30D]';
+          pill.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-[#84CC16] accent-soft text-[11px] font-semibold text-[#84CC16]';
+          if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-[#84CC16]';
         } else {
-          pill.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-slate-200 bg-white text-[11px] font-medium text-slate-600';
-          if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-300';
+          pill.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full border app-surface text-[11px] font-medium text-sec';
+          if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-500';
         }
       });
     }
@@ -1628,7 +1718,7 @@
       if (!container) return;
       const div = document.createElement('div');
       div.className = 'flex items-center gap-2';
-      div.innerHTML = `<span class="px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-sky-600">+57</span><input type="text" placeholder="Teléfono secundario" class="flex-1 px-3 py-2 text-xs border border-slate-200 rounded-xl" />`;
+      div.innerHTML = `<span class="px-2.5 py-2 rounded-xl app-subtle border text-xs font-bold text-sky-400">+57</span><input type="text" placeholder="Teléfono secundario" class="flex-1 px-3 py-2 text-xs border rounded-xl" />`;
       container.appendChild(div);
     }
 
@@ -1681,20 +1771,20 @@
       const c = document.getElementById('extra-devices-container');
       if (!c) return;
       const div = document.createElement('div');
-      div.className = 'bg-white rounded-2xl border border-slate-200/80 p-4 text-xs font-bold text-slate-700';
+      div.className = 'app-surface rounded-2xl border p-4 text-xs font-bold text-sec';
       div.textContent = `Equipo adicional #${c.children.length + 2} agregado`;
       c.appendChild(div);
     }
 
     function openReceiveExpenseModal() {
       openQuickModal(`
-        <h3 class="font-bold text-sm text-slate-900 mb-2">Gasto de la Orden</h3>
+        <h3 class="font-bold text-sm text-main mb-2">Gasto de la Orden</h3>
         <form onsubmit="saveReceiveExpense(event)" class="space-y-3 text-xs">
-          <input id="r-exp-label" type="text" placeholder="Concepto" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
-          <input id="r-exp-amt" type="number" placeholder="Valor en COP" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
+          <input id="r-exp-label" type="text" placeholder="Concepto" class="w-full px-3 py-2 border rounded-lg" required />
+          <input id="r-exp-amt" type="number" placeholder="Valor en COP" class="w-full px-3 py-2 border rounded-lg" required />
           <div class="flex justify-end gap-2">
-            <button type="button" onclick="closeQuickModal()" class="px-3 py-1.5 border border-slate-200 rounded-lg">Cancelar</button>
-            <button type="submit" class="px-4 py-1.5 bg-[#84CC16] font-semibold rounded-lg">Agregar</button>
+            <button type="button" onclick="closeQuickModal()" class="px-3 py-1.5 border rounded-lg text-sec">Cancelar</button>
+            <button type="submit" class="px-4 py-1.5 bg-[#84CC16] text-slate-950 font-semibold rounded-lg">Agregar</button>
           </div>
         </form>
       `);
@@ -1747,7 +1837,7 @@
       if (!clientObj) {
         clientObj = {
           id: 'cli-' + Date.now(), type: receiveFormState.clientMode, firstName: nombre, lastName: apellido,
-          fullName, initials: getInitials(fullName), avatarBg: 'bg-emerald-100/80 text-emerald-700',
+          fullName, initials: getInitials(fullName), avatarBg: 'bg-emerald-500/20 text-emerald-400',
           phone, docType: receiveFormState.docType, docNumber,
           email: (document.getElementById('rec-correo')?.value || '').trim(),
           address: address === 'N/A' ? '' : address, conflictive: false, isPosClient: false
@@ -1798,7 +1888,7 @@
     }
 
     // =========================================================
-    // DETALLE DE ORDEN (RÉPLICA DE LAS 2 CAPTURAS)
+    // DETALLE DE ORDEN
     // =========================================================
     function openOrderDetail(idx) {
       state.selectedOrderIndex = idx;
@@ -1818,33 +1908,33 @@
 
       document.getElementById('order-detail-header').innerHTML = `
         <div class="flex items-center gap-3">
-          <button onclick="closeOrderDetail()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors" title="Cerrar orden">
+          <button onclick="closeOrderDetail()" class="w-8 h-8 rounded-full app-muted hover:opacity-80 flex items-center justify-center text-sec transition-colors" title="Cerrar orden">
             <i data-lucide="x" class="w-4 h-4"></i>
           </button>
           <div>
             <div class="flex items-center gap-2">
-              <h2 class="font-bold text-[15px] text-slate-900 leading-tight">${o.device}</h2>
-              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-50 text-sky-600">${currentStepName}</span>
+              <h2 class="font-bold text-[15px] text-main leading-tight">${o.device}</h2>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-500/15 text-sky-500 dark:text-sky-400">${currentStepName}</span>
             </div>
-            <p class="text-[11px] text-slate-400 mt-0.5">#${o.number} · ${o.client.name} · recibida el ${o.receivedDate}</p>
+            <p class="text-[11px] text-dim mt-0.5">#${o.number} · ${o.client.name} · recibida el ${o.receivedDate}</p>
           </div>
         </div>
 
         <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="showToast('Guía de gestión de orden')" class="w-7 h-7 rounded-full bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:scale-105 transition-transform">
+          <button onclick="showToast('Guía de gestión de orden')" class="w-7 h-7 rounded-full accent-soft text-[#84CC16] flex items-center justify-center hover:scale-105 transition-transform">
             <i data-lucide="play" class="w-3 h-3 fill-current"></i>
           </button>
-          <button onclick="showToast('Código QR de orden #${o.number} generado')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F9FDF3] hover:bg-[#E9F5D8] border border-[#D4F097] text-[#2F5211] font-semibold text-xs transition-colors">
-            <i data-lucide="qr-code" class="w-3.5 h-3.5 text-[#4D7C1F]"></i> QR
+          <button onclick="showToast('Código QR de orden #${o.number} generado')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg accent-soft border text-[#84CC16] font-semibold text-xs transition-colors">
+            <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> QR
           </button>
-          <button onclick="showToast('Etiqueta de orden #${o.number} enviada a impresión')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F9FDF3] hover:bg-[#E9F5D8] border border-[#D4F097] text-[#2F5211] font-semibold text-xs transition-colors">
-            <i data-lucide="tag" class="w-3.5 h-3.5 text-[#4D7C1F]"></i> Etiqueta
+          <button onclick="showToast('Etiqueta de orden #${o.number} enviada a impresión')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg accent-soft border text-[#84CC16] font-semibold text-xs transition-colors">
+            <i data-lucide="tag" class="w-3.5 h-3.5"></i> Etiqueta
           </button>
-          <button onclick="showToast('Ticket de recepción #${o.number} listo')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F9FDF3] hover:bg-[#E9F5D8] border border-[#D4F097] text-[#2F5211] font-semibold text-xs transition-colors">
-            <i data-lucide="badge-dollar-sign" class="w-3.5 h-3.5 text-[#4D7C1F]"></i> Ticket
+          <button onclick="showToast('Ticket de recepción #${o.number} listo')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg accent-soft border text-[#84CC16] font-semibold text-xs transition-colors">
+            <i data-lucide="badge-dollar-sign" class="w-3.5 h-3.5"></i> Ticket
           </button>
-          <button onclick="showToast('Recibo de orden #${o.number} listo')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F9FDF3] hover:bg-[#E9F5D8] border border-[#D4F097] text-[#2F5211] font-semibold text-xs transition-colors">
-            <i data-lucide="printer" class="w-3.5 h-3.5 text-[#4D7C1F]"></i> Recibo
+          <button onclick="showToast('Recibo de orden #${o.number} listo')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg accent-soft border text-[#84CC16] font-semibold text-xs transition-colors">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i> Recibo
           </button>
           <button onclick="openEditOrderModal(${idx})" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs shadow-2xs transition-colors">
             <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Editar orden
@@ -1859,13 +1949,13 @@
           <div class="flex flex-col items-center text-center relative z-10 min-w-[90px]">
             <button type="button" onclick="setOrderStatus(${idx}, ${sIdx})" class="w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center transition-all ${
               isCurrent
-                ? 'bg-[#84CC16] text-slate-950 ring-4 ring-[#E9F5D8]'
+                ? 'bg-[#84CC16] text-slate-950 ring-4 ring-[#84CC16]/25'
                 : isDone
                   ? 'bg-[#65A30D] text-white'
-                  : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+                  : 'app-muted text-dim hover:opacity-80'
             }">${sIdx + 1}</button>
-            <span class="text-[11px] font-semibold mt-1.5 ${isCurrent ? 'text-[#2F5211]' : 'text-slate-400'}">${step}</span>
-            ${sIdx === 0 ? `<span class="text-[10px] text-slate-400">${o.receivedDate.split(' ').slice(0, 2).join(' ')}</span>` : ''}
+            <span class="text-[11px] font-semibold mt-1.5 ${isCurrent ? 'text-[#84CC16]' : 'text-dim'}">${step}</span>
+            ${sIdx === 0 ? `<span class="text-[10px] text-dim">${o.receivedDate.split(' ').slice(0, 2).join(' ')}</span>` : ''}
           </div>
         `;
       }).join('');
@@ -1874,8 +1964,8 @@
         <div class="flex items-start gap-2.5 text-xs">
           <span class="w-2 h-2 rounded-full bg-[#84CC16] mt-1 shrink-0"></span>
           <div>
-            <div class="font-bold text-slate-800 leading-tight">${h.status}</div>
-            <div class="text-[10px] text-slate-400 mt-0.5">${h.timeAgo}</div>
+            <div class="font-bold text-sec leading-tight">${h.status}</div>
+            <div class="text-[10px] text-dim mt-0.5">${h.timeAgo}</div>
           </div>
         </div>
       `).join('');
@@ -1884,263 +1974,263 @@
         <div class="space-y-3.5 max-w-[1440px] mx-auto">
 
           <!-- Estado Actual -->
-          <div class="bg-white rounded-2xl border border-slate-200/80 p-4 flex items-center justify-between gap-4 shadow-2xs">
+          <div class="app-surface rounded-2xl border p-4 flex items-center justify-between gap-4 shadow-2xs">
             <div>
-              <div class="text-sm font-bold text-slate-900">Estado Actual</div>
-              <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-2">FECHA DE RECEPCIÓN</div>
-              <div class="text-xs font-bold text-slate-800 mt-0.5">${o.receivedDate}</div>
+              <div class="text-sm font-bold text-main">Estado Actual</div>
+              <div class="text-[10px] font-bold uppercase tracking-wider text-dim mt-2">FECHA DE RECEPCIÓN</div>
+              <div class="text-xs font-bold text-sec mt-0.5">${o.receivedDate}</div>
             </div>
-            <span class="px-3 py-1 rounded-md bg-sky-50 text-sky-600 font-bold text-[10px] tracking-wider uppercase">${currentStepName}</span>
+            <span class="px-3 py-1 rounded-md bg-sky-500/15 text-sky-500 dark:text-sky-400 font-bold text-[10px] tracking-wider uppercase">${currentStepName}</span>
           </div>
 
           <!-- Progreso (5 pasos) -->
-          <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs">
-            <div class="flex items-center gap-2 text-xs font-bold text-slate-800 mb-3">
-              <i data-lucide="trending-up" class="w-4 h-4 text-[#65A30D]"></i>
+          <div class="app-surface rounded-2xl border p-4 shadow-2xs">
+            <div class="flex items-center gap-2 text-xs font-bold text-sec mb-3">
+              <i data-lucide="trending-up" class="w-4 h-4 text-[#84CC16]"></i>
               <span>Progreso</span>
             </div>
             <div class="relative flex items-start justify-between px-4">
-              <div class="absolute top-3 left-10 right-10 h-[2px] bg-slate-100 z-0"></div>
+              <div class="absolute top-3 left-10 right-10 h-[2px] app-muted z-0"></div>
               ${stepsHtml}
             </div>
           </div>
 
           <!-- Banner: Cambiar estado / Entregar -->
-          <div onclick="advanceOrderStatus(${idx})" class="rounded-2xl bg-[#F2FCE2] hover:bg-[#E9F5D8] border border-[#D4F097] px-4 py-3 flex items-center justify-between gap-3 cursor-pointer transition-colors">
+          <div onclick="advanceOrderStatus(${idx})" class="rounded-2xl accent-soft hover:opacity-95 border px-4 py-3 flex items-center justify-between gap-3 cursor-pointer transition-colors">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-lg bg-[#84CC16] text-slate-950 flex items-center justify-center shrink-0">
                 <i data-lucide="refresh-cw" class="w-4 h-4"></i>
               </div>
               <div>
-                <div class="text-xs font-bold text-[#2F5211]">Cambiar estado / Entregar</div>
-                <div class="text-[11px] text-[#4D7C1F]">Actualiza el estado o entrega el equipo y cobra el saldo</div>
+                <div class="text-xs font-bold text-[#84CC16]">Cambiar estado / Entregar</div>
+                <div class="text-[11px] text-sec">Actualiza el estado o entrega el equipo y cobra el saldo</div>
               </div>
             </div>
-            <i data-lucide="arrow-right" class="w-4 h-4 text-[#4D7C1F] shrink-0"></i>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-[#84CC16] shrink-0"></i>
           </div>
 
           <!-- Banner: Informe Completo de la Orden -->
-          <div onclick="showToast('Generando Informe Completo en PDF de la orden #${o.number}')" class="rounded-2xl bg-[#F2FCE2] hover:bg-[#E9F5D8] border border-[#D4F097] px-4 py-3 flex items-center justify-between gap-3 cursor-pointer transition-colors">
+          <div onclick="showToast('Generando Informe Completo en PDF de la orden #${o.number}')" class="rounded-2xl accent-soft hover:opacity-95 border px-4 py-3 flex items-center justify-between gap-3 cursor-pointer transition-colors">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-lg bg-[#84CC16] text-slate-950 flex items-center justify-center shrink-0">
                 <i data-lucide="clipboard-check" class="w-4 h-4"></i>
               </div>
               <div>
-                <div class="text-xs font-bold text-[#2F5211]">Informe Completo de la Orden</div>
-                <div class="text-[11px] text-[#4D7C1F]">PDF compatible: diagnóstico, checklist, firma y fotos</div>
+                <div class="text-xs font-bold text-[#84CC16]">Informe Completo de la Orden</div>
+                <div class="text-[11px] text-sec">PDF compatible: diagnóstico, checklist, firma y fotos</div>
               </div>
             </div>
-            <i data-lucide="arrow-right" class="w-4 h-4 text-[#4D7C1F] shrink-0"></i>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-[#84CC16] shrink-0"></i>
           </div>
 
-          <!-- Grilla Principal: Izquierda (8 cols) + Derecha (4 cols) -->
+          <!-- Grilla Principal -->
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
 
-            <!-- COLUMNA IZQUIERDA (8 cols) -->
+            <!-- COLUMNA IZQUIERDA -->
             <div class="lg:col-span-8 space-y-4">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
                 <!-- Datos del Cliente -->
-                <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs flex flex-col justify-between space-y-3">
+                <div class="app-surface rounded-2xl border p-4 shadow-2xs flex flex-col justify-between space-y-3">
                   <div>
-                    <div class="flex items-center gap-2 text-xs font-bold text-slate-900 mb-3">
-                      <i data-lucide="user" class="w-4 h-4 text-[#65A30D]"></i>
+                    <div class="flex items-center gap-2 text-xs font-bold text-main mb-3">
+                      <i data-lucide="user" class="w-4 h-4 text-[#84CC16]"></i>
                       <span>Datos del Cliente</span>
                     </div>
                     <div class="space-y-2.5">
                       <div>
-                        <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400">NOMBRE</div>
-                        <div class="text-xs font-bold text-slate-800 mt-0.5">${o.client.name}</div>
+                        <div class="text-[9px] font-bold uppercase tracking-wider text-dim">NOMBRE</div>
+                        <div class="text-xs font-bold text-sec mt-0.5">${o.client.name}</div>
                       </div>
                       <div>
-                        <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400">CÉDULA/ID</div>
-                        <div class="text-xs font-bold text-slate-800 mt-0.5">${o.client.docId || 'N/A'}</div>
+                        <div class="text-[9px] font-bold uppercase tracking-wider text-dim">CÉDULA/ID</div>
+                        <div class="text-xs font-bold text-sec mt-0.5">${o.client.docId || 'N/A'}</div>
                       </div>
                       <div>
-                        <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400">TELÉFONO</div>
-                        <div class="text-xs font-bold text-slate-800 mt-0.5">${o.client.phone}</div>
+                        <div class="text-[9px] font-bold uppercase tracking-wider text-dim">TELÉFONO</div>
+                        <div class="text-xs font-bold text-sec mt-0.5">${o.client.phone}</div>
                       </div>
                       <div>
-                        <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400">DIRECCIÓN</div>
-                        <div class="text-xs font-bold text-slate-800 mt-0.5">${o.client.address || 'N/A'}</div>
+                        <div class="text-[9px] font-bold uppercase tracking-wider text-dim">DIRECCIÓN</div>
+                        <div class="text-xs font-bold text-sec mt-0.5">${o.client.address || 'N/A'}</div>
                       </div>
                     </div>
                   </div>
 
                   <div class="flex items-center justify-end gap-2 pt-1">
-                    <button onclick="showToast('Mensaje WhatsApp a ${o.client.phone}')" class="relative w-8 h-8 rounded-lg bg-[#F2FCE2] hover:bg-[#E9F5D8] border border-[#D4F097] text-[#4D7C1F] flex items-center justify-center transition-colors">
+                    <button onclick="showToast('Mensaje WhatsApp a ${o.client.phone}')" class="relative w-8 h-8 rounded-lg accent-soft border text-[#84CC16] flex items-center justify-center transition-colors">
                       <i data-lucide="message-circle" class="w-4 h-4"></i>
-                      <i data-lucide="lock" class="w-2.5 h-2.5 text-slate-400 absolute -top-1 -right-1"></i>
+                      <i data-lucide="lock" class="w-2.5 h-2.5 text-dim absolute -top-1 -right-1"></i>
                     </button>
-                    <button onclick="copyToClip('${o.client.phone}')" class="w-8 h-8 rounded-lg bg-[#F2FCE2] hover:bg-[#E9F5D8] border border-[#D4F097] text-[#4D7C1F] flex items-center justify-center transition-colors">
+                    <button onclick="copyToClip('${o.client.phone}')" class="w-8 h-8 rounded-lg accent-soft border text-[#84CC16] flex items-center justify-center transition-colors">
                       <i data-lucide="copy" class="w-4 h-4"></i>
                     </button>
                   </div>
                 </div>
 
                 <!-- Datos del Equipo -->
-                <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-2.5">
-                  <div class="flex items-center gap-2 text-xs font-bold text-slate-900 mb-3">
-                    <i data-lucide="smartphone" class="w-4 h-4 text-[#65A30D]"></i>
+                <div class="app-surface rounded-2xl border p-4 shadow-2xs space-y-2.5">
+                  <div class="flex items-center gap-2 text-xs font-bold text-main mb-3">
+                    <i data-lucide="smartphone" class="w-4 h-4 text-[#84CC16]"></i>
                     <span>Datos del Equipo</span>
                   </div>
                   <div>
-                    <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400">DATOS DEL EQUIPO</div>
-                    <div class="text-xs font-bold text-slate-800 mt-0.5">${o.device}</div>
+                    <div class="text-[9px] font-bold uppercase tracking-wider text-dim">DATOS DEL EQUIPO</div>
+                    <div class="text-xs font-bold text-sec mt-0.5">${o.device}</div>
                   </div>
                   <div>
-                    <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400">COLOR</div>
-                    <div class="text-xs font-bold text-slate-800 mt-0.5">${o.color}</div>
+                    <div class="text-[9px] font-bold uppercase tracking-wider text-dim">COLOR</div>
+                    <div class="text-xs font-bold text-sec mt-0.5">${o.color}</div>
                   </div>
                   <div>
-                    <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400">FALLA REPORTADA</div>
-                    <div class="text-xs font-bold text-slate-800 mt-0.5">${o.issue}</div>
+                    <div class="text-[9px] font-bold uppercase tracking-wider text-dim">FALLA REPORTADA</div>
+                    <div class="text-xs font-bold text-sec mt-0.5">${o.issue}</div>
                   </div>
                   <div>
-                    <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400">NOTAS INTERNAS</div>
-                    <div class="text-xs font-bold text-slate-800 mt-0.5">${o.internalNotes || 'N/A'}</div>
+                    <div class="text-[9px] font-bold uppercase tracking-wider text-dim">NOTAS INTERNAS</div>
+                    <div class="text-xs font-bold text-sec mt-0.5">${o.internalNotes || 'N/A'}</div>
                   </div>
                 </div>
               </div>
 
               <!-- Fila Reporte Técnico + Accesorios -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div onclick="openTechnicalReportModal(${idx})" class="bg-white hover:border-[#84CC16] rounded-2xl border border-slate-200/80 p-4 shadow-2xs cursor-pointer transition-colors">
-                  <div class="flex items-center gap-2 text-xs font-bold text-slate-900">
-                    <i data-lucide="clipboard-list" class="w-4 h-4 text-[#65A30D]"></i>
+                <div onclick="openTechnicalReportModal(${idx})" class="app-surface hover:border-[#84CC16] rounded-2xl border p-4 shadow-2xs cursor-pointer transition-colors">
+                  <div class="flex items-center gap-2 text-xs font-bold text-main">
+                    <i data-lucide="clipboard-list" class="w-4 h-4 text-[#84CC16]"></i>
                     <span>Reporte Técnico</span>
                   </div>
-                  ${o.technicalReport ? `<p class="text-xs text-slate-600 mt-2">${o.technicalReport}</p>` : ''}
+                  ${o.technicalReport ? `<p class="text-xs text-sec mt-2">${o.technicalReport}</p>` : ''}
                 </div>
 
-                <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs">
-                  <div class="flex items-center gap-2 text-xs font-bold text-slate-900 mb-2.5">
-                    <i data-lucide="file-box" class="w-4 h-4 text-[#65A30D]"></i>
+                <div class="app-surface rounded-2xl border p-4 shadow-2xs">
+                  <div class="flex items-center gap-2 text-xs font-bold text-main mb-2.5">
+                    <i data-lucide="file-box" class="w-4 h-4 text-[#84CC16]"></i>
                     <span>Accesorios</span>
                   </div>
-                  <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400">ACCESORIOS INCLUIDOS</div>
-                  <div class="text-xs font-bold text-slate-800 mt-0.5">${o.accessories || 'Ninguno'}</div>
+                  <div class="text-[9px] font-bold uppercase tracking-wider text-dim">ACCESORIOS INCLUIDOS</div>
+                  <div class="text-xs font-bold text-sec mt-0.5">${o.accessories || 'Ninguno'}</div>
                 </div>
               </div>
 
               <!-- Recorrido del equipo -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-3">
-                <div class="flex items-center gap-2 text-xs font-bold text-slate-900">
-                  <i data-lucide="clock" class="w-4 h-4 text-[#65A30D]"></i>
+              <div class="app-surface rounded-2xl border p-4 shadow-2xs space-y-3">
+                <div class="flex items-center gap-2 text-xs font-bold text-main">
+                  <i data-lucide="clock" class="w-4 h-4 text-[#84CC16]"></i>
                   <span>Recorrido del equipo</span>
                 </div>
                 <div class="space-y-2">${historyHtml}</div>
               </div>
 
               <!-- Evidencia Fotográfica -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3">
-                <div class="flex items-center gap-2 text-xs font-bold text-slate-900">
-                  <i data-lucide="camera" class="w-4 h-4 text-[#65A30D]"></i>
+              <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-3">
+                <div class="flex items-center gap-2 text-xs font-bold text-main">
+                  <i data-lucide="camera" class="w-4 h-4 text-[#84CC16]"></i>
                   <span>Evidencia Fotográfica</span>
                 </div>
 
-                <button type="button" onclick="addOrderPhoto(${idx})" class="w-full py-3 rounded-xl bg-[#F9FDF3] hover:bg-[#E9F5D8] border border-[#84CC16] text-[#2F5211] font-bold text-xs flex items-center justify-center gap-2 transition-colors">
+                <button type="button" onclick="addOrderPhoto(${idx})" class="w-full py-3 rounded-xl accent-soft hover:opacity-95 border border-[#84CC16] text-[#84CC16] font-bold text-xs flex items-center justify-center gap-2 transition-colors">
                   <i data-lucide="camera" class="w-4 h-4"></i> Agregar Fotos
                 </button>
 
-                <div class="text-center text-[10px] text-slate-400">${o.photos || 0}/8</div>
+                <div class="text-center text-[10px] text-dim">${o.photos || 0}/8</div>
 
-                <button type="button" onclick="showToast('Código QR para subir fotos desde el teléfono (${o.photos || 0}/8)')" class="w-full py-2.5 rounded-xl bg-[#F9FDF3]/70 hover:bg-[#E9F5D8] border border-[#D4F097] text-[#2F5211] font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors">
+                <button type="button" onclick="showToast('Código QR para subir fotos desde el teléfono (${o.photos || 0}/8)')" class="w-full py-2.5 rounded-xl accent-soft hover:opacity-95 border text-[#84CC16] font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors">
                   <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Subir desde el teléfono
                 </button>
               </div>
 
               <!-- Firma del Cliente -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3">
-                <div class="flex items-center gap-2 text-xs font-bold text-slate-900">
-                  <i data-lucide="pen-tool" class="w-4 h-4 text-[#65A30D]"></i>
+              <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-3">
+                <div class="flex items-center gap-2 text-xs font-bold text-main">
+                  <i data-lucide="pen-tool" class="w-4 h-4 text-[#84CC16]"></i>
                   <span>Firma del Cliente</span>
                 </div>
 
-                <div onclick="captureClientSignature(${idx})" class="w-full h-24 rounded-xl border border-dashed border-[#84CC16] bg-[#FAFDF7] hover:bg-[#F2FCE2] flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-colors">
-                  <i data-lucide="pen-tool" class="w-4 h-4 text-[#65A30D]"></i>
-                  <span class="text-xs font-bold text-slate-800">${o.signatureText ? `Firmado por: ${o.signatureText}` : 'Capturar Firma'}</span>
+                <div onclick="captureClientSignature(${idx})" class="w-full h-24 rounded-xl border border-dashed border-[#84CC16] app-subtle hover:opacity-90 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-colors">
+                  <i data-lucide="pen-tool" class="w-4 h-4 text-[#84CC16]"></i>
+                  <span class="text-xs font-bold text-sec">${o.signatureText ? `Firmado por: ${o.signatureText}` : 'Capturar Firma'}</span>
                 </div>
 
                 <div>
-                  <button type="button" onclick="showToast('Enlace enviado para firmar en celular')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-[#84CC16] text-[#2F5211] font-semibold text-xs transition-colors">
-                    <i data-lucide="smartphone" class="w-3.5 h-3.5 text-[#65A30D]"></i> Firmar en mi celular
+                  <button type="button" onclick="showToast('Enlace enviado para firmar en celular')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg app-surface hover:opacity-90 border border-[#84CC16] text-[#84CC16] font-semibold text-xs transition-colors">
+                    <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> Firmar en mi celular
                   </button>
                 </div>
               </div>
             </div>
 
-            <!-- COLUMNA DERECHA: FINANZAS + PRESUPUESTOS ADICIONALES + GASTOS ASOCIADOS (4 cols) -->
+            <!-- COLUMNA DERECHA -->
             <div class="lg:col-span-4 space-y-4">
               <!-- Finanzas -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-3">
+              <div class="app-surface rounded-2xl border p-4 shadow-2xs space-y-3">
                 <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2 text-xs font-bold text-slate-900">
-                    <i data-lucide="credit-card" class="w-4 h-4 text-[#65A30D]"></i>
+                  <div class="flex items-center gap-2 text-xs font-bold text-main">
+                    <i data-lucide="credit-card" class="w-4 h-4 text-[#84CC16]"></i>
                     <span>Finanzas</span>
                   </div>
-                  <span class="text-xs font-bold text-slate-400">#${o.number}</span>
+                  <span class="text-xs font-bold text-dim">#${o.number}</span>
                 </div>
 
-                <div class="p-3 rounded-xl bg-slate-50/90 border border-slate-100 space-y-2.5 text-center">
+                <div class="p-3 rounded-xl app-subtle border space-y-2.5 text-center">
                   <div class="grid grid-cols-2 gap-2">
                     <div>
-                      <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400">PRECIO TOTAL</div>
-                      <div class="text-xs font-extrabold text-slate-900 mt-0.5">${formatCOP(totalOrder)}</div>
+                      <div class="text-[9px] font-bold uppercase tracking-wider text-dim">PRECIO TOTAL</div>
+                      <div class="text-xs font-extrabold text-main mt-0.5">${formatCOP(totalOrder)}</div>
                     </div>
                     <div>
-                      <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400">TOTAL</div>
-                      <div class="text-xs font-extrabold text-slate-900 mt-0.5">${formatCOP(totalOrder)}</div>
+                      <div class="text-[9px] font-bold uppercase tracking-wider text-dim">TOTAL</div>
+                      <div class="text-xs font-extrabold text-main mt-0.5">${formatCOP(totalOrder)}</div>
                     </div>
                   </div>
-                  <div class="pt-1 border-t border-slate-200/60">
-                    <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400">SALDO PENDIENTE</div>
-                    <div class="text-sm font-extrabold text-[#65A30D] mt-0.5">${formatCOP(saldoPend)}</div>
+                  <div class="pt-1 border-t app-border">
+                    <div class="text-[9px] font-bold uppercase tracking-wider text-dim">SALDO PENDIENTE</div>
+                    <div class="text-sm font-extrabold text-[#84CC16] mt-0.5">${formatCOP(saldoPend)}</div>
                   </div>
                 </div>
               </div>
 
               <!-- Presupuestos adicionales -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-3">
-                <div class="flex items-center gap-2 text-xs font-bold text-slate-900">
-                  <i data-lucide="file-text" class="w-4 h-4 text-[#65A30D]"></i>
+              <div class="app-surface rounded-2xl border p-4 shadow-2xs space-y-3">
+                <div class="flex items-center gap-2 text-xs font-bold text-main">
+                  <i data-lucide="file-text" class="w-4 h-4 text-[#84CC16]"></i>
                   <span>Presupuestos adicionales</span>
                 </div>
 
-                <p class="text-[11px] text-slate-400 leading-relaxed">
+                <p class="text-[11px] text-dim leading-relaxed">
                   Sin presupuestos adicionales. Si al revisar el equipo aparecen repuestos o trabajos no contemplados, emite uno y el cliente lo aprueba desde su celular.
                 </p>
 
                 ${(o.extraQuotes || []).map(q => `
-                  <div class="flex justify-between items-center text-xs bg-slate-50 px-3 py-2 rounded-lg">
-                    <span class="text-slate-700 font-medium">${q.label}</span>
-                    <span class="font-bold text-slate-900">${formatCOP(q.amount)}</span>
+                  <div class="flex justify-between items-center text-xs app-subtle px-3 py-2 rounded-lg">
+                    <span class="text-sec font-medium">${q.label}</span>
+                    <span class="font-bold text-main">${formatCOP(q.amount)}</span>
                   </div>
                 `).join('')}
 
-                <button type="button" onclick="openExtraQuoteModal(${idx})" class="w-full py-2.5 rounded-xl bg-[#F9FDF3] hover:bg-[#E9F5D8] border border-[#84CC16] text-[#2F5211] font-bold text-xs transition-colors">
+                <button type="button" onclick="openExtraQuoteModal(${idx})" class="w-full py-2.5 rounded-xl accent-soft hover:opacity-95 border border-[#84CC16] text-[#84CC16] font-bold text-xs transition-colors">
                   + Agregar Presupuesto Adicional
                 </button>
               </div>
 
               <!-- Gastos Asociados -->
-              <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-3">
-                <div class="flex items-center gap-2 text-xs font-bold text-slate-900">
-                  <i data-lucide="trending-up" class="w-4 h-4 text-[#65A30D]"></i>
+              <div class="app-surface rounded-2xl border p-4 shadow-2xs space-y-3">
+                <div class="flex items-center gap-2 text-xs font-bold text-main">
+                  <i data-lucide="trending-up" class="w-4 h-4 text-[#84CC16]"></i>
                   <span>Gastos Asociados</span>
                 </div>
 
-                <div class="text-center text-[11px] text-slate-400 py-1">
+                <div class="text-center text-[11px] text-dim py-1">
                   ${(o.expenses || []).length === 0 ? 'Sin gastos registrados' : (o.expenses || []).map(e => `${e.label}: ${formatCOP(e.amount)}`).join(' · ')}
                 </div>
 
-                <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-100">
-                  <span class="text-slate-600 font-medium">Total Gastos</span>
+                <div class="flex items-center justify-between text-xs pt-1 border-t app-border">
+                  <span class="text-sec font-medium">Total Gastos</span>
                   <span class="font-bold text-rose-500">-${formatCOP(expensesSum)}</span>
                 </div>
 
-                <div class="p-3 rounded-xl bg-[#F2FCE2] border border-[#D4F097] flex items-center justify-between">
-                  <span class="text-xs font-bold text-[#4D7C1F]">Ganancia Neta</span>
-                  <span class="text-sm font-extrabold text-[#4D7C1F]">${formatCOP(gananciaNeta)}</span>
+                <div class="p-3 rounded-xl accent-soft border flex items-center justify-between">
+                  <span class="text-xs font-bold text-[#84CC16]">Ganancia Neta</span>
+                  <span class="text-sm font-extrabold text-[#84CC16]">${formatCOP(gananciaNeta)}</span>
                 </div>
               </div>
             </div>
@@ -2148,7 +2238,7 @@
 
           <!-- Acción Inferior: Eliminar Orden -->
           <div class="pt-2 pb-4 flex justify-center">
-            <button type="button" onclick="deleteOrderFromDetail(${idx})" class="inline-flex items-center gap-1.5 text-xs font-bold text-rose-500 hover:text-rose-600 py-2 px-4 rounded-lg hover:bg-rose-50 transition-colors">
+            <button type="button" onclick="deleteOrderFromDetail(${idx})" class="inline-flex items-center gap-1.5 text-xs font-bold text-rose-500 hover:text-rose-400 py-2 px-4 rounded-lg hover:bg-rose-500/10 transition-colors">
               <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Eliminar Orden
             </button>
           </div>
@@ -2178,12 +2268,12 @@
     function openTechnicalReportModal(orderIdx) {
       const o = state.orders[orderIdx];
       openQuickModal(`
-        <h3 class="font-bold text-sm text-slate-900 mb-2">Reporte Técnico — Orden #${o.number}</h3>
+        <h3 class="font-bold text-sm text-main mb-2">Reporte Técnico — Orden #${o.number}</h3>
         <form onsubmit="saveTechnicalReport(event, ${orderIdx})" class="space-y-3 text-xs">
-          <textarea id="tr-text" rows="4" class="w-full p-3 border border-slate-200 rounded-xl" placeholder="Diagnóstico y reparación realizada...">${o.technicalReport || ''}</textarea>
+          <textarea id="tr-text" rows="4" class="w-full p-3 border rounded-xl" placeholder="Diagnóstico y reparación realizada...">${o.technicalReport || ''}</textarea>
           <div class="flex justify-end gap-2">
-            <button type="button" onclick="closeQuickModal()" class="px-3 py-1.5 border border-slate-200 rounded-lg">Cancelar</button>
-            <button type="submit" class="px-4 py-1.5 bg-[#84CC16] font-semibold rounded-lg">Guardar Reporte</button>
+            <button type="button" onclick="closeQuickModal()" class="px-3 py-1.5 border rounded-lg text-sec">Cancelar</button>
+            <button type="submit" class="px-4 py-1.5 bg-[#84CC16] text-slate-950 font-semibold rounded-lg">Guardar Reporte</button>
           </div>
         </form>
       `);
@@ -2200,13 +2290,13 @@
 
     function openExtraQuoteModal(orderIdx) {
       openQuickModal(`
-        <h3 class="font-bold text-sm text-slate-900 mb-2">Presupuesto Adicional</h3>
+        <h3 class="font-bold text-sm text-main mb-2">Presupuesto Adicional</h3>
         <form onsubmit="saveExtraQuote(event, ${orderIdx})" class="space-y-3 text-xs">
-          <input id="eq-label" type="text" placeholder="Concepto (ej. Cambio de flex o batería)" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
-          <input id="eq-amt" type="number" placeholder="Monto en COP" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
+          <input id="eq-label" type="text" placeholder="Concepto (ej. Cambio de flex o batería)" class="w-full px-3 py-2 border rounded-lg" required />
+          <input id="eq-amt" type="number" placeholder="Monto en COP" class="w-full px-3 py-2 border rounded-lg" required />
           <div class="flex justify-end gap-2">
-            <button type="button" onclick="closeQuickModal()" class="px-3 py-1.5 border border-slate-200 rounded-lg">Cancelar</button>
-            <button type="submit" class="px-4 py-1.5 bg-[#84CC16] font-semibold rounded-lg">Agregar</button>
+            <button type="button" onclick="closeQuickModal()" class="px-3 py-1.5 border rounded-lg text-sec">Cancelar</button>
+            <button type="submit" class="px-4 py-1.5 bg-[#84CC16] text-slate-950 font-semibold rounded-lg">Agregar</button>
           </div>
         </form>
       `);
@@ -2229,23 +2319,23 @@
     function openEditOrderModal(orderIdx) {
       const o = state.orders[orderIdx];
       openQuickModal(`
-        <h3 class="font-bold text-sm text-slate-900 mb-2">Editar Orden #${o.number}</h3>
+        <h3 class="font-bold text-sm text-main mb-2">Editar Orden #${o.number}</h3>
         <form onsubmit="saveEditedOrder(event, ${orderIdx})" class="space-y-3 text-xs">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">Equipo</label>
-            <input id="eo-device" type="text" value="${o.device}" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
+            <label class="block font-semibold text-sec mb-1">Equipo</label>
+            <input id="eo-device" type="text" value="${o.device}" class="w-full px-3 py-2 border rounded-lg" required />
           </div>
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">Falla Reportada</label>
-            <input id="eo-issue" type="text" value="${o.issue}" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
+            <label class="block font-semibold text-sec mb-1">Falla Reportada</label>
+            <input id="eo-issue" type="text" value="${o.issue}" class="w-full px-3 py-2 border rounded-lg" required />
           </div>
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">Precio Total (COP)</label>
-            <input id="eo-price" type="number" value="${o.priceTotal}" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
+            <label class="block font-semibold text-sec mb-1">Precio Total (COP)</label>
+            <input id="eo-price" type="number" value="${o.priceTotal}" class="w-full px-3 py-2 border rounded-lg" required />
           </div>
           <div class="flex justify-end gap-2">
-            <button type="button" onclick="closeQuickModal()" class="px-3 py-1.5 border border-slate-200 rounded-lg">Cancelar</button>
-            <button type="submit" class="px-4 py-1.5 bg-[#84CC16] font-semibold rounded-lg">Guardar Cambios</button>
+            <button type="button" onclick="closeQuickModal()" class="px-3 py-1.5 border rounded-lg text-sec">Cancelar</button>
+            <button type="submit" class="px-4 py-1.5 bg-[#84CC16] text-slate-950 font-semibold rounded-lg">Guardar Cambios</button>
           </div>
         </form>
       `);
@@ -2322,6 +2412,7 @@
       }, 3000);
     }
 
+    applyTheme();
     renderSidebar();
     renderWorkspace();
   </script>
