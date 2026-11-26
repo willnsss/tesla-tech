@@ -98,6 +98,24 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #475569; border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: #64748B; }
+
+    @media print {
+      body * { visibility: hidden !important; }
+      #quote-doc-modal, #quote-doc-modal * { visibility: visible !important; }
+      #quote-doc-modal {
+        position: fixed !important;
+        inset: 0 !important;
+        background: #FFFFFF !important;
+        padding: 0 !important;
+        overflow: visible !important;
+      }
+      .no-print { display: none !important; }
+      #quote-paper-sheet {
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 100% !important;
+      }
+    }
   </style>
 </head>
 <body class="flex h-screen overflow-hidden select-none">
@@ -166,6 +184,13 @@
   </div>
 
   <!-- =========================================================
+       VISTA DE DOCUMENTO / RECIBO / PDF DE PRESUPUESTO
+  ========================================================== -->
+  <div id="quote-doc-modal" class="fixed inset-0 bg-[#EEF2F6] dark:bg-[#0A0E14] z-50 hidden flex-col overflow-y-auto">
+    <div id="quote-doc-content" class="max-w-3xl w-full mx-auto px-4 py-6 space-y-4"></div>
+  </div>
+
+  <!-- =========================================================
        MODAL RÁPIDO GENÉRICO
   ========================================================== -->
   <div id="quick-action-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-[2px] hidden items-center justify-center z-50 p-4">
@@ -183,16 +208,18 @@
   ========================================================== -->
   <script>
     const STEPS = ['Recibido', 'Diagnóstico', 'En Reparación', 'Listo para Entregar', 'Entregado'];
-    const STORAGE_KEY = 'teslatech_app_state_unified_v3';
+    const STORAGE_KEY = 'teslatech_app_state_unified_v4';
 
     const defaultState = {
       activeRoute: 'inicio',
       homeSearch: '',
       homeFilterTab: 'activas',
       hideAmounts: false,
-      darkMode: false,
+      darkMode: true,
       selectedOrderIndex: null,
       selectedClientId: null,
+      selectedQuoteId: null,
+      quoteFormOpen: true,
       clientSearch: '',
       newClientType: 'Persona',
       newClientDocType: 'CC',
@@ -280,7 +307,55 @@
             { status: 'Recibido', timeAgo: 'hace 23 h 7 min', dateShort: '24 nov' }
           ]
         }
+      ],
+      quotes: [
+        {
+          id: 'pr-1',
+          code: '#PR-00001',
+          date: '25 nov 2026',
+          status: 'PENDIENTE',
+          clientType: 'Persona',
+          firstName: 'WILLIAM JOSE TADEO',
+          lastName: 'LAZARO DIAZ',
+          fullName: 'WILLIAM JOSE TADEO LAZARO DIAZ',
+          docType: 'CE',
+          docNumber: '704882',
+          phone: '+57 3206745333',
+          email: 'will.lazaro@gmail.com',
+          brand: '',
+          model: '',
+          serial: '',
+          workDescription: '',
+          items: [
+            { id: 'item-1', name: 'cambio bateria', type: 'Servicio', price: 250000, qty: 1 }
+          ],
+          discount: 0,
+          notes: '',
+          issuedBy: ''
+        }
       ]
+    };
+
+    const quoteDraft = {
+      clientType: 'Persona',
+      docType: 'CE',
+      firstName: 'WILLIAM JOSE TADEO',
+      lastName: 'LAZARO DIAZ',
+      docNumber: '704882',
+      phone: '3206745333',
+      email: 'will.lazaro@gmail.com',
+      brand: '',
+      model: '',
+      serial: '',
+      workDescription: '',
+      productTab: 'Servicio',
+      productSearch: 'cambio bateria iphone 14 pro',
+      items: [
+        { id: 'draft-item-1', name: 'cambio bateria', type: 'Servicio', price: 250000, qty: 1 }
+      ],
+      discount: 0,
+      notes: '',
+      issuedBy: ''
     };
 
     const receiveFormState = {
@@ -345,6 +420,14 @@
       return 'COP ' + Number(val || 0).toLocaleString('es-CO');
     }
 
+    function maskPhoneForDoc(phone) {
+      const clean = (phone || '').replace(/\D/g, '');
+      if (clean.length >= 4) {
+        return `+57 ••• ••• ${clean.slice(-4)}`;
+      }
+      return phone || '+57 ••• ••• ••••';
+    }
+
     function getInitials(name) {
       const parts = (name || '').trim().split(/\s+/).filter(Boolean);
       if (parts.length === 0) return 'CL';
@@ -406,9 +489,8 @@
 
     function navigate(routeId) {
       state.activeRoute = routeId;
-      if (routeId !== 'clientes') {
-        state.selectedClientId = null;
-      }
+      if (routeId !== 'clientes') state.selectedClientId = null;
+      if (routeId === 'presupuestos') state.quoteFormOpen = true;
       saveState();
       renderSidebar();
       renderWorkspace();
@@ -424,6 +506,8 @@
         ws.innerHTML = renderRecibirScreen();
       } else if (state.activeRoute === 'clientes') {
         ws.innerHTML = state.selectedClientId ? renderClientDetailView() : renderClientesListView();
+      } else if (state.activeRoute === 'presupuestos') {
+        ws.innerHTML = renderPresupuestosScreen();
       } else {
         const allItems = [...operationItems, ...posItems];
         const found = allItems.find(i => i.id === state.activeRoute);
@@ -441,9 +525,557 @@
       }
 
       lucide.createIcons();
-      if (state.activeRoute === 'recibir') {
-        updateMissingBadges();
+      if (state.activeRoute === 'recibir') updateMissingBadges();
+    }
+
+    // =========================================================
+    // PRESUPUESTOS (NUEVO PRESUPUESTO + RECIBO / PDF)
+    // =========================================================
+    function calcQuoteTotals(items, discount) {
+      const subtotal = (items || []).reduce((acc, it) => acc + (Number(it.price || 0) * Number(it.qty || 1)), 0);
+      const total = Math.max(0, subtotal - Number(discount || 0));
+      return { subtotal, total };
+    }
+
+    function renderPresupuestosScreen() {
+      const { subtotal, total } = calcQuoteTotals(quoteDraft.items, quoteDraft.discount);
+
+      const itemsHtml = quoteDraft.items.length === 0
+        ? `<div class="py-4 text-center text-xs text-dim">Agrega un servicio o repuesto para calcular el presupuesto.</div>`
+        : quoteDraft.items.map(it => {
+            const lineTotal = Number(it.price || 0) * Number(it.qty || 1);
+            return `
+              <div class="app-subtle border rounded-xl px-4 py-3 flex items-center justify-between gap-3">
+                <div>
+                  <div class="text-xs font-bold text-main">${it.name}</div>
+                  <div class="text-[11px] text-dim mt-0.5">${formatCOP(it.price)} × ${it.qty}</div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="changeDraftItemQty('${it.id}', -1)" class="w-6 h-6 rounded-md app-muted hover:opacity-80 flex items-center justify-center text-main font-bold text-xs">-</button>
+                    <span class="w-5 text-center text-xs font-bold text-main">${it.qty}</span>
+                    <button type="button" onclick="changeDraftItemQty('${it.id}', 1)" class="w-6 h-6 rounded-md app-muted hover:opacity-80 flex items-center justify-center text-main font-bold text-xs">+</button>
+                  </div>
+                  <div class="text-xs font-extrabold text-[#84CC16] min-w-[85px] text-right">${formatCOP(lineTotal)}</div>
+                  <button type="button" onclick="removeDraftItem('${it.id}')" class="text-rose-500 hover:text-rose-400 p-1">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+      const savedQuotesHtml = state.quotes.map(q => {
+        const qTotals = calcQuoteTotals(q.items, q.discount);
+        const badgeStyle = q.status === 'APROBADO'
+          ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30'
+          : q.status === 'RECHAZADO'
+            ? 'bg-rose-500/15 text-rose-500 border-rose-500/30'
+            : 'bg-amber-400/20 text-amber-500 border-amber-400/30';
+
+        return `
+          <div onclick="openQuoteDocument('${q.id}')" class="app-surface hover:border-[#84CC16] border rounded-xl px-4 py-3 flex items-center justify-between gap-4 cursor-pointer transition-colors shadow-2xs">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-extrabold text-main">${q.code}</span>
+                <span class="text-xs font-semibold text-sec">· ${q.fullName}</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${badgeStyle}">${q.status}</span>
+              </div>
+              <div class="text-[11px] text-dim mt-0.5">${q.date} · ${(q.items || []).map(i => i.name).join(', ') || 'Sin ítems'}</div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="text-right">
+                <div class="text-xs font-extrabold text-[#84CC16]">${formatCOP(qTotals.total)}</div>
+                <div class="text-[10px] text-dim">Ver / PDF</div>
+              </div>
+              <i data-lucide="file-text" class="w-4 h-4 text-[#84CC16]"></i>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="space-y-4 pb-20">
+          <!-- Cabecera superior -->
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <button type="button" onclick="navigate('inicio')" class="p-1.5 rounded-lg text-sec hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+              </button>
+              <div class="w-8 h-8 rounded-lg bg-[#84CC16] text-slate-950 flex items-center justify-center shrink-0">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h1 class="text-[17px] font-extrabold text-main leading-tight">Nuevo Presupuesto</h1>
+                <p class="text-[11px] text-dim">Crea un presupuesto para tu cliente</p>
+              </div>
+            </div>
+
+            <button type="button" onclick="openQuoteDocument(state.quotes[0]?.id)" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg accent-soft border text-[#84CC16] font-bold text-xs transition-colors">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i> Ver último PDF
+            </button>
+          </div>
+
+          <!-- Bloque 1: Cliente -->
+          <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
+                <i data-lucide="user" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h2 class="text-sm font-bold text-main leading-tight">Cliente</h2>
+                <p class="text-[11px] text-dim">Búscalo si ya vino antes, o cárgalo nuevo</p>
+              </div>
+            </div>
+
+            <div class="relative">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-dim absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input
+                type="text"
+                oninput="autofillQuoteFromClientQuery(this.value)"
+                placeholder="Buscar cliente por nombre, cédula o teléfono..."
+                class="w-full pl-9 pr-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]"
+              />
+            </div>
+
+            <div class="grid grid-cols-2 app-muted p-1 rounded-xl text-xs font-bold">
+              <button type="button" onclick="quoteDraft.clientType='Persona'; renderWorkspace();" class="py-2 rounded-lg transition-all ${quoteDraft.clientType === 'Persona' ? 'app-surface text-main shadow-2xs' : 'text-dim'}">Persona</button>
+              <button type="button" onclick="quoteDraft.clientType='Empresa'; renderWorkspace();" class="py-2 rounded-lg transition-all ${quoteDraft.clientType === 'Empresa' ? 'app-surface text-main shadow-2xs' : 'text-dim'}">Empresa</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label class="block text-xs font-bold text-sec mb-1">Nombre <span class="text-rose-500">*</span></label>
+                <input id="q-first-name" type="text" value="${quoteDraft.firstName}" oninput="quoteDraft.firstName = this.value" class="w-full px-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-sec mb-1">Apellido</label>
+                <input id="q-last-name" type="text" value="${quoteDraft.lastName}" oninput="quoteDraft.lastName = this.value" class="w-full px-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-sec mb-1.5">Tipo de documento</label>
+              <div class="flex items-center gap-2">
+                ${['CC', 'CE', 'Pasaporte'].map(dt => `
+                  <button type="button" onclick="quoteDraft.docType='${dt}'; renderWorkspace();" class="px-3.5 py-1.5 rounded-lg border text-xs font-bold transition-colors ${
+                    quoteDraft.docType === dt
+                      ? 'border-[#84CC16] accent-soft text-[#84CC16]'
+                      : 'app-surface text-sec'
+                  }">${dt}</button>
+                `).join('')}
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-sec mb-1">${quoteDraft.docType}</label>
+              <input id="q-doc-number" type="text" value="${quoteDraft.docNumber}" oninput="quoteDraft.docNumber = this.value" class="w-full px-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-sec mb-1">Teléfono</label>
+              <div class="flex items-center gap-2">
+                <span class="px-3.5 py-2.5 rounded-xl app-subtle border text-xs font-bold text-sky-400 shrink-0 inline-flex items-center gap-1.5">
+                  <i data-lucide="globe" class="w-3.5 h-3.5"></i> +57
+                </span>
+                <input id="q-phone" type="text" value="${quoteDraft.phone}" oninput="quoteDraft.phone = this.value" class="flex-1 px-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-sec mb-1">Correo (opcional)</label>
+              <input id="q-email" type="email" value="${quoteDraft.email}" oninput="quoteDraft.email = this.value" class="w-full px-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+            </div>
+          </div>
+
+          <!-- Bloque 2: Equipo y trabajo -->
+          <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
+                  <i data-lucide="smartphone" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h2 class="text-sm font-bold text-main leading-tight">Equipo y trabajo</h2>
+                  <p class="text-[11px] text-dim">Opcional: marca, modelo y qué hay que hacerle</p>
+                </div>
+              </div>
+              <i data-lucide="chevron-up" class="w-4 h-4 text-dim"></i>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label class="block text-xs font-bold text-sec mb-1">Marca</label>
+                <input type="text" value="${quoteDraft.brand}" oninput="quoteDraft.brand = this.value" placeholder="Ej: Samsung" class="w-full px-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-sec mb-1">Modelo</label>
+                <input type="text" value="${quoteDraft.model}" oninput="quoteDraft.model = this.value" placeholder="Ej: A54" class="w-full px-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-sec mb-1">Serial / IMEI</label>
+              <input type="text" value="${quoteDraft.serial}" oninput="quoteDraft.serial = this.value" placeholder="Serial o IMEI" class="w-full px-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-sec mb-1">Trabajo a realizar</label>
+              <textarea rows="3" oninput="quoteDraft.workDescription = this.value" placeholder="Ej: Cambio de pantalla y batería, limpieza de puerto de carga..." class="w-full p-3 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]">${quoteDraft.workDescription}</textarea>
+            </div>
+          </div>
+
+          <!-- Bloque 3: Productos y Servicios -->
+          <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
+                  <i data-lucide="box" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h2 class="text-sm font-bold text-main leading-tight">Productos y Servicios</h2>
+                  <p class="text-[11px] text-dim">Repuestos del inventario o mano de obra</p>
+                </div>
+              </div>
+              <span class="w-6 h-6 rounded-full bg-[#84CC16] text-slate-950 font-extrabold text-xs flex items-center justify-center">${quoteDraft.items.length}</span>
+            </div>
+
+            <div class="grid grid-cols-2 app-muted p-1 rounded-xl text-xs font-bold">
+              <button type="button" onclick="quoteDraft.productTab='Inventario'; renderWorkspace();" class="py-2 rounded-lg transition-all ${quoteDraft.productTab === 'Inventario' ? 'app-surface text-main shadow-2xs' : 'text-dim'}">Repuesto de inventario</button>
+              <button type="button" onclick="quoteDraft.productTab='Servicio'; renderWorkspace();" class="py-2 rounded-lg transition-all ${quoteDraft.productTab === 'Servicio' ? 'app-surface text-main shadow-2xs' : 'text-dim'}">Servicio</button>
+            </div>
+
+            <div class="relative">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-dim absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input type="text" value="${quoteDraft.productSearch}" oninput="quoteDraft.productSearch = this.value" class="w-full pl-9 pr-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-sec mb-1.5">Agregar servicio manual</label>
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                <input id="q-manual-name" type="text" placeholder="Ej: Cambio de pantalla" class="sm:col-span-7 px-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                <input id="q-manual-price" type="number" placeholder="$ Precio" class="sm:col-span-4 px-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                <button type="button" onclick="addQuoteManualService()" class="sm:col-span-1 h-10 rounded-xl app-muted hover:bg-[#84CC16] hover:text-slate-950 text-main font-bold flex items-center justify-center transition-colors">
+                  <i data-lucide="plus" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="space-y-2">${itemsHtml}</div>
+
+            <!-- Resumen Subtotal / Total -->
+            <div class="rounded-xl border border-[#84CC16] accent-soft p-4 space-y-2">
+              <div class="flex items-center justify-between text-xs font-semibold text-sec">
+                <span>Subtotal</span>
+                <span>${formatCOP(subtotal)}</span>
+              </div>
+              <div class="flex items-center justify-between text-base font-extrabold text-[#84CC16]">
+                <span>Total</span>
+                <span>${formatCOP(total)}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bloque 4: Detalles -->
+          <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg accent-soft text-[#84CC16] flex items-center justify-center shrink-0">
+                <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h2 class="text-sm font-bold text-main leading-tight">Detalles</h2>
+                <p class="text-[11px] text-dim">Descuento, condiciones y quién lo emite</p>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-sec mb-1">Descuento ($)</label>
+              <div class="relative">
+                <span class="text-xs font-bold text-dim absolute left-3.5 top-1/2 -translate-y-1/2">$</span>
+                <input type="number" value="${quoteDraft.discount}" oninput="quoteDraft.discount = Number(this.value || 0); renderWorkspace();" class="w-full pl-7 pr-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-sec mb-1">Notas (opcional)</label>
+              <textarea rows="3" oninput="quoteDraft.notes = this.value" placeholder="Condiciones, garantía, observaciones..." class="w-full p-3 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]">${quoteDraft.notes}</textarea>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-sec mb-1">Firma / Emitido por (opcional)</label>
+              <input type="text" value="${quoteDraft.issuedBy}" oninput="quoteDraft.issuedBy = this.value" placeholder="Ej: Juan Pérez — Técnico Principal" class="w-full px-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:border-[#84CC16]" />
+            </div>
+          </div>
+
+          <!-- Presupuestos emitidos -->
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between px-1">
+              <h3 class="text-xs font-bold text-sec">Presupuestos creados</h3>
+              <span class="text-[11px] text-dim">${state.quotes.length} registro(s)</span>
+            </div>
+            <div class="space-y-2">${savedQuotesHtml}</div>
+          </div>
+
+          <!-- Barra inferior fija -->
+          <div class="fixed bottom-0 left-60 right-0 app-surface border-t px-7 py-3 flex items-center justify-between gap-4 z-30">
+            <div>
+              <div class="text-[11px] text-dim font-medium">Total</div>
+              <div class="text-base font-extrabold text-main">${formatCOP(total)}</div>
+            </div>
+            <button type="button" onclick="createAndOpenQuote()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs shadow-sm transition-colors">
+              <i data-lucide="file-plus-2" class="w-4 h-4"></i> Crear Presupuesto
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function autofillQuoteFromClientQuery(q) {
+      const term = (q || '').trim().toLowerCase();
+      if (!term) return;
+      const match = state.clients.find(c =>
+        c.fullName.toLowerCase().includes(term) ||
+        (c.phone || '').toLowerCase().includes(term) ||
+        (c.docNumber || '').toLowerCase().includes(term)
+      );
+      if (match) {
+        quoteDraft.firstName = match.firstName || match.fullName;
+        quoteDraft.lastName = match.lastName || '';
+        quoteDraft.docNumber = match.docNumber || '';
+        quoteDraft.phone = (match.phone || '').replace(/^\+57\s*/, '');
+        quoteDraft.email = match.email || '';
+        renderWorkspace();
       }
+    }
+
+    function addQuoteManualService() {
+      const nameEl = document.getElementById('q-manual-name');
+      const priceEl = document.getElementById('q-manual-price');
+      const name = (nameEl?.value || '').trim();
+      const price = Number(priceEl?.value || 0);
+      if (!name || price <= 0) {
+        showToast('Ingresa descripción y precio del servicio');
+        return;
+      }
+      quoteDraft.items.push({
+        id: 'q-item-' + Date.now(),
+        name,
+        type: quoteDraft.productTab,
+        price,
+        qty: 1
+      });
+      renderWorkspace();
+      showToast(`Agregado: ${name}`);
+    }
+
+    function changeDraftItemQty(itemId, delta) {
+      const item = quoteDraft.items.find(i => i.id === itemId);
+      if (!item) return;
+      item.qty = Math.max(1, Number(item.qty || 1) + delta);
+      renderWorkspace();
+    }
+
+    function removeDraftItem(itemId) {
+      quoteDraft.items = quoteDraft.items.filter(i => i.id !== itemId);
+      renderWorkspace();
+    }
+
+    function createAndOpenQuote() {
+      const firstName = (quoteDraft.firstName || '').trim();
+      if (!firstName) {
+        showToast('Completa el Nombre del cliente');
+        return;
+      }
+      const lastName = (quoteDraft.lastName || '').trim();
+      const fullName = `${firstName} ${lastName}`.trim();
+      const nextIndex = state.quotes.length + 1;
+      const code = `#PR-${String(nextIndex).padStart(5, '0')}`;
+      const rawPhone = (quoteDraft.phone || '').trim();
+      const formattedPhone = rawPhone ? (rawPhone.startsWith('+') ? rawPhone : `+57 ${rawPhone}`) : '+57 3206745333';
+
+      const newQuote = {
+        id: 'pr-' + Date.now(),
+        code,
+        date: '25 nov 2026',
+        status: 'PENDIENTE',
+        clientType: quoteDraft.clientType,
+        firstName,
+        lastName,
+        fullName,
+        docType: quoteDraft.docType,
+        docNumber: (quoteDraft.docNumber || '').trim(),
+        phone: formattedPhone,
+        email: (quoteDraft.email || '').trim(),
+        brand: quoteDraft.brand,
+        model: quoteDraft.model,
+        serial: quoteDraft.serial,
+        workDescription: quoteDraft.workDescription,
+        items: JSON.parse(JSON.stringify(quoteDraft.items)),
+        discount: Number(quoteDraft.discount || 0),
+        notes: quoteDraft.notes,
+        issuedBy: quoteDraft.issuedBy
+      };
+
+      state.quotes.unshift(newQuote);
+      saveState();
+      renderWorkspace();
+      openQuoteDocument(newQuote.id);
+      showToast(`Presupuesto ${code} creado`);
+    }
+
+    function openQuoteDocument(quoteId) {
+      const q = state.quotes.find(item => item.id === quoteId) || state.quotes[0];
+      if (!q) return;
+      state.selectedQuoteId = q.id;
+
+      const { subtotal, total } = calcQuoteTotals(q.items, q.discount);
+      const modal = document.getElementById('quote-doc-modal');
+      const container = document.getElementById('quote-doc-content');
+
+      const statusBadgeClass = q.status === 'APROBADO'
+        ? 'bg-emerald-100 text-emerald-700'
+        : q.status === 'RECHAZADO'
+          ? 'bg-rose-100 text-rose-700'
+          : 'bg-amber-100/90 text-amber-700';
+
+      const rowsHtml = (q.items || []).map(it => {
+        const lineSub = Number(it.price || 0) * Number(it.qty || 1);
+        return `
+          <tr class="border-b border-slate-200/80 text-xs text-slate-700">
+            <td class="py-3 pr-2 font-medium text-slate-800">${it.name}</td>
+            <td class="py-3 px-2 text-center">${it.qty}</td>
+            <td class="py-3 px-2 text-right">${formatCOP(it.price)}</td>
+            <td class="py-3 pl-2 text-right font-bold text-slate-900">${formatCOP(lineSub)}</td>
+          </tr>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <div class="flex items-center justify-between gap-3 no-print">
+          <button type="button" onclick="closeQuoteDocument()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-[#121721] border border-slate-200 dark:border-[#232B3B] text-xs font-bold text-slate-700 dark:text-slate-200 hover:opacity-90">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver
+          </button>
+
+          <button type="button" onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-[#121721] border border-slate-200 dark:border-[#232B3B] text-xs font-bold text-slate-800 dark:text-slate-100 shadow-2xs hover:opacity-90">
+            <i data-lucide="printer" class="w-4 h-4"></i> Imprimir / PDF
+          </button>
+        </div>
+
+        <!-- Hoja blanca tipo recibo / PDF -->
+        <div id="quote-paper-sheet" class="bg-white text-slate-900 rounded-2xl border border-slate-200/90 shadow-sm p-7 sm:p-9 space-y-6">
+          <div class="flex items-start justify-between gap-4 border-b border-slate-200 pb-6">
+            <div class="space-y-3">
+              <div class="w-12 h-12 rounded-xl bg-[#84CC16] flex items-center justify-center text-white font-extrabold text-xl shadow-2xs">
+                T
+              </div>
+              <div class="text-base font-extrabold tracking-tight text-slate-950 uppercase">TESLA TECH</div>
+            </div>
+
+            <div class="text-right space-y-1">
+              <div class="text-xl sm:text-2xl font-black tracking-tight text-slate-950 uppercase">PRESUPUESTO</div>
+              <div class="text-xs font-bold text-slate-800">${q.code}</div>
+              <div class="text-xs text-slate-400">Fecha: ${q.date}</div>
+              <div class="pt-1 flex justify-end">
+                <span class="px-2.5 py-0.5 rounded text-[10px] font-extrabold tracking-wider uppercase ${statusBadgeClass}">${q.status}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Caja PARA: -->
+          <div class="rounded-xl bg-slate-50/80 border border-slate-200/80 p-4 space-y-1.5">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">PARA:</div>
+            <div class="text-sm font-extrabold text-slate-900 uppercase">${q.fullName}</div>
+            <div class="flex items-center gap-2 text-xs text-slate-600 font-medium">
+              <span>📞</span>
+              <span>${maskPhoneForDoc(q.phone)}</span>
+            </div>
+            ${q.docNumber ? `
+              <div class="flex items-center gap-2 text-xs text-slate-600 font-medium">
+                <span class="px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 font-bold text-[10px]">ID</span>
+                <span>${q.docNumber}</span>
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Tabla de conceptos -->
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr class="border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  <th class="py-2 text-left">DESCRIPCIÓN</th>
+                  <th class="py-2 text-center">CANT.</th>
+                  <th class="py-2 text-right">PRECIO</th>
+                  <th class="py-2 text-right">SUBTOTAL</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Totales -->
+          <div class="flex justify-end pt-1">
+            <div class="w-full sm:w-72 space-y-2 text-xs">
+              <div class="flex items-center justify-between text-slate-600 font-medium">
+                <span>Subtotal</span>
+                <span>${formatCOP(subtotal)}</span>
+              </div>
+              ${Number(q.discount || 0) > 0 ? `
+                <div class="flex items-center justify-between text-rose-600 font-medium">
+                  <span>Descuento</span>
+                  <span>-${formatCOP(q.discount)}</span>
+                </div>
+              ` : ''}
+              <div class="flex items-center justify-between pt-2 border-t border-slate-200">
+                <span class="text-sm font-black text-slate-950 uppercase">TOTAL</span>
+                <span class="text-lg font-black text-[#65A30D]">${formatCOP(total)}</span>
+              </div>
+            </div>
+          </div>
+
+          ${q.notes ? `<div class="text-xs text-slate-500 border-t border-slate-100 pt-3">${q.notes}</div>` : ''}
+
+          <div class="text-center text-xs text-slate-400 pt-2">
+            Presupuesto sin valor fiscal.
+          </div>
+        </div>
+
+        <!-- Botones de Aprobar / Rechazar -->
+        <div class="space-y-2.5 no-print">
+          <button type="button" onclick="updateQuoteStatus('${q.id}', 'APROBADO')" class="w-full py-3.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-colors">
+            <i data-lucide="check" class="w-4 h-4"></i> Aprobar Presupuesto
+          </button>
+          <button type="button" onclick="updateQuoteStatus('${q.id}', 'RECHAZADO')" class="w-full py-3 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-500 font-bold text-sm flex items-center justify-center gap-2 transition-colors">
+            <i data-lucide="x" class="w-4 h-4"></i> Rechazar
+          </button>
+        </div>
+
+        <div class="text-center text-[11px] text-slate-400 pb-4 no-print">
+          Generado con MiTallerControl
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function updateQuoteStatus(quoteId, newStatus) {
+      const q = state.quotes.find(item => item.id === quoteId);
+      if (!q) return;
+      q.status = newStatus;
+      saveState();
+      openQuoteDocument(quoteId);
+      if (state.activeRoute === 'presupuestos') renderWorkspace();
+      showToast(`Presupuesto marcado como ${newStatus}`);
+    }
+
+    function closeQuoteDocument() {
+      state.selectedQuoteId = null;
+      const modal = document.getElementById('quote-doc-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
     }
 
     // =========================================================
@@ -1972,8 +2604,6 @@
 
       document.getElementById('order-detail-body').innerHTML = `
         <div class="space-y-3.5 max-w-[1440px] mx-auto">
-
-          <!-- Estado Actual -->
           <div class="app-surface rounded-2xl border p-4 flex items-center justify-between gap-4 shadow-2xs">
             <div>
               <div class="text-sm font-bold text-main">Estado Actual</div>
@@ -1983,7 +2613,6 @@
             <span class="px-3 py-1 rounded-md bg-sky-500/15 text-sky-500 dark:text-sky-400 font-bold text-[10px] tracking-wider uppercase">${currentStepName}</span>
           </div>
 
-          <!-- Progreso (5 pasos) -->
           <div class="app-surface rounded-2xl border p-4 shadow-2xs">
             <div class="flex items-center gap-2 text-xs font-bold text-sec mb-3">
               <i data-lucide="trending-up" class="w-4 h-4 text-[#84CC16]"></i>
@@ -1995,7 +2624,6 @@
             </div>
           </div>
 
-          <!-- Banner: Cambiar estado / Entregar -->
           <div onclick="advanceOrderStatus(${idx})" class="rounded-2xl accent-soft hover:opacity-95 border px-4 py-3 flex items-center justify-between gap-3 cursor-pointer transition-colors">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-lg bg-[#84CC16] text-slate-950 flex items-center justify-center shrink-0">
@@ -2009,7 +2637,6 @@
             <i data-lucide="arrow-right" class="w-4 h-4 text-[#84CC16] shrink-0"></i>
           </div>
 
-          <!-- Banner: Informe Completo de la Orden -->
           <div onclick="showToast('Generando Informe Completo en PDF de la orden #${o.number}')" class="rounded-2xl accent-soft hover:opacity-95 border px-4 py-3 flex items-center justify-between gap-3 cursor-pointer transition-colors">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-lg bg-[#84CC16] text-slate-950 flex items-center justify-center shrink-0">
@@ -2023,13 +2650,9 @@
             <i data-lucide="arrow-right" class="w-4 h-4 text-[#84CC16] shrink-0"></i>
           </div>
 
-          <!-- Grilla Principal -->
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-
-            <!-- COLUMNA IZQUIERDA -->
             <div class="lg:col-span-8 space-y-4">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
-                <!-- Datos del Cliente -->
                 <div class="app-surface rounded-2xl border p-4 shadow-2xs flex flex-col justify-between space-y-3">
                   <div>
                     <div class="flex items-center gap-2 text-xs font-bold text-main mb-3">
@@ -2067,7 +2690,6 @@
                   </div>
                 </div>
 
-                <!-- Datos del Equipo -->
                 <div class="app-surface rounded-2xl border p-4 shadow-2xs space-y-2.5">
                   <div class="flex items-center gap-2 text-xs font-bold text-main mb-3">
                     <i data-lucide="smartphone" class="w-4 h-4 text-[#84CC16]"></i>
@@ -2092,7 +2714,6 @@
                 </div>
               </div>
 
-              <!-- Fila Reporte Técnico + Accesorios -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div onclick="openTechnicalReportModal(${idx})" class="app-surface hover:border-[#84CC16] rounded-2xl border p-4 shadow-2xs cursor-pointer transition-colors">
                   <div class="flex items-center gap-2 text-xs font-bold text-main">
@@ -2112,7 +2733,6 @@
                 </div>
               </div>
 
-              <!-- Recorrido del equipo -->
               <div class="app-surface rounded-2xl border p-4 shadow-2xs space-y-3">
                 <div class="flex items-center gap-2 text-xs font-bold text-main">
                   <i data-lucide="clock" class="w-4 h-4 text-[#84CC16]"></i>
@@ -2121,7 +2741,6 @@
                 <div class="space-y-2">${historyHtml}</div>
               </div>
 
-              <!-- Evidencia Fotográfica -->
               <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-3">
                 <div class="flex items-center gap-2 text-xs font-bold text-main">
                   <i data-lucide="camera" class="w-4 h-4 text-[#84CC16]"></i>
@@ -2139,7 +2758,6 @@
                 </button>
               </div>
 
-              <!-- Firma del Cliente -->
               <div class="app-surface rounded-2xl border p-5 shadow-2xs space-y-3">
                 <div class="flex items-center gap-2 text-xs font-bold text-main">
                   <i data-lucide="pen-tool" class="w-4 h-4 text-[#84CC16]"></i>
@@ -2159,9 +2777,7 @@
               </div>
             </div>
 
-            <!-- COLUMNA DERECHA -->
             <div class="lg:col-span-4 space-y-4">
-              <!-- Finanzas -->
               <div class="app-surface rounded-2xl border p-4 shadow-2xs space-y-3">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2 text-xs font-bold text-main">
@@ -2189,7 +2805,6 @@
                 </div>
               </div>
 
-              <!-- Presupuestos adicionales -->
               <div class="app-surface rounded-2xl border p-4 shadow-2xs space-y-3">
                 <div class="flex items-center gap-2 text-xs font-bold text-main">
                   <i data-lucide="file-text" class="w-4 h-4 text-[#84CC16]"></i>
@@ -2212,7 +2827,6 @@
                 </button>
               </div>
 
-              <!-- Gastos Asociados -->
               <div class="app-surface rounded-2xl border p-4 shadow-2xs space-y-3">
                 <div class="flex items-center gap-2 text-xs font-bold text-main">
                   <i data-lucide="trending-up" class="w-4 h-4 text-[#84CC16]"></i>
@@ -2236,7 +2850,6 @@
             </div>
           </div>
 
-          <!-- Acción Inferior: Eliminar Orden -->
           <div class="pt-2 pb-4 flex justify-center">
             <button type="button" onclick="deleteOrderFromDetail(${idx})" class="inline-flex items-center gap-1.5 text-xs font-bold text-rose-500 hover:text-rose-400 py-2 px-4 rounded-lg hover:bg-rose-500/10 transition-colors">
               <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Eliminar Orden
