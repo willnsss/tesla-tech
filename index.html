@@ -104,22 +104,67 @@
   ========================================================== -->
   <script>
     const STEPS = ['Recibido', 'Diagnóstico', 'En Reparación', 'Listo para Entregar', 'Entregado'];
-    const STORAGE_KEY = 'teslatech_app_state_v4';
+    const STORAGE_KEY = 'teslatech_app_state_unified_v1';
 
     const defaultState = {
       activeRoute: 'inicio',
       homeSearch: '',
-      homeFilterTab: 'activas', // 'activas' | 'recibido' | 'hoy'
+      homeFilterTab: 'activas',
       hideAmounts: false,
       darkMode: false,
       selectedOrderIndex: null,
+      selectedClientId: null,
+      clientSearch: '',
+      newClientType: 'Persona',
+      newClientDocType: 'CC',
       clients: [
         {
           id: 'cli-1',
+          type: 'Persona',
+          firstName: 'DAYANA',
+          lastName: 'FLOREZ',
           fullName: 'DAYANA FLOREZ',
           initials: 'DF',
+          avatarBg: 'bg-amber-100/80 text-amber-700',
           phone: '+573226207154',
-          docNumber: ''
+          docType: 'CC',
+          docNumber: '',
+          email: '',
+          address: '',
+          conflictive: false,
+          isPosClient: false
+        },
+        {
+          id: 'cli-2',
+          type: 'Persona',
+          firstName: 'Maria',
+          lastName: 'Rodriguez',
+          fullName: 'Maria Rodriguez',
+          initials: 'MR',
+          avatarBg: 'bg-emerald-100/80 text-emerald-700',
+          phone: '+573187152134',
+          docType: 'CC',
+          docNumber: '12345678',
+          email: '',
+          address: '',
+          conflictive: false,
+          isPosClient: false
+        },
+        {
+          id: 'cli-3',
+          type: 'Persona',
+          firstName: 'Maria',
+          lastName: 'Velez',
+          fullName: 'Maria Velez',
+          initials: 'MV',
+          avatarBg: 'bg-emerald-100/80 text-emerald-700',
+          phone: '+573505659860',
+          docType: 'CC',
+          docNumber: '1034297687',
+          email: '',
+          address: '',
+          conflictive: false,
+          isPosClient: false
         }
       ],
       orders: [
@@ -131,10 +176,15 @@
           issue: 'cambio bateria',
           technician: 'Sin asig.',
           daysElapsed: '0d',
+          internalNotes: 'N/A',
+          accessories: 'Ninguno',
+          technicalReport: '',
           statusIndex: 0,
           isToday: false,
           receivedDate: '24 nov 2026',
           lastOrderText: 'hace 23h',
+          warrantyDays: 30,
+          serviceModality: 'En el taller',
           client: {
             name: 'DAYANA FLOREZ',
             docId: 'N/A',
@@ -145,11 +195,27 @@
           paidAmount: 0,
           extraQuotes: [],
           expenses: [],
+          photos: 0,
           history: [
             { status: 'Recibido', timeAgo: 'hace 23 h', dateShort: '24 nov' }
           ]
         }
       ]
+    };
+
+    const receiveFormState = {
+      clientMode: 'Persona',
+      docType: 'CC',
+      modality: 'En el taller',
+      showPass: false,
+      passPatternMode: false,
+      accessoriesChecked: [],
+      customAccessories: [],
+      checklistItems: [],
+      services: [],
+      orderExpenses: [],
+      warrantyDays: 30,
+      photosCount: 0
     };
 
     function loadState() {
@@ -195,14 +261,31 @@
       return 'COP ' + Number(val || 0).toLocaleString('es-CO');
     }
 
+    function getInitials(name) {
+      const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return 'CL';
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function getClientOrders(client) {
+      return state.orders.filter(o =>
+        (client.id && o.clientId === client.id) ||
+        (o.client && o.client.name && o.client.name.toLowerCase() === client.fullName.toLowerCase())
+      );
+    }
+
+    // =========================================================
+    // SIDEBAR Y NAVEGACIÓN
+    // =========================================================
     function renderSidebar() {
       const renderGroup = (items, containerId) => {
         const container = document.getElementById(containerId);
         container.innerHTML = items.map(item => {
           const isActive = state.activeRoute === item.id;
           return `
-            <button onclick="navigate('${item.id}')"
-              class="w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
+            <button onclick="navigate('\${item.id}')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors \${
                 isActive
                   ? 'bg-[#E9F5D8] text-[#2F5211] font-medium'
                   : item.locked
@@ -211,9 +294,9 @@
               }">
               <span class="flex items-center gap-3 truncate">
                 <i data-lucide="${item.icon}" class="w-4 h-4 shrink-0 ${isActive ? 'text-[#4D7C1F]' : 'text-slate-400'}"></i>
-                <span class="truncate">${item.label}</span>
+                <span class="truncate">\${item.label}</span>
               </span>
-              ${item.locked ? `<i data-lucide="lock" class="w-3 h-3 text-slate-300 shrink-0"></i>` : ''}
+              \${item.locked ? `<i data-lucide="lock" class="w-3 h-3 text-slate-300 shrink-0"></i>` : ''}
             </button>
           `;
         }).join('');
@@ -239,6 +322,9 @@
 
     function navigate(routeId) {
       state.activeRoute = routeId;
+      if (routeId !== 'clientes') {
+        state.selectedClientId = null;
+      }
       saveState();
       renderSidebar();
       renderWorkspace();
@@ -246,26 +332,37 @@
 
     function renderWorkspace() {
       const ws = document.getElementById('workspace');
+
       if (state.activeRoute === 'inicio') {
         ws.innerHTML = renderInicioScreen();
+      } else if (state.activeRoute === 'recibir') {
+        ws.innerHTML = renderRecibirScreen();
+      } else if (state.activeRoute === 'clientes') {
+        ws.innerHTML = state.selectedClientId ? renderClientDetailView() : renderClientesListView();
       } else {
+        const allItems = [...operationItems, ...posItems];
+        const found = allItems.find(i => i.id === state.activeRoute);
         ws.innerHTML = `
           <div class="flex items-center justify-between mb-6">
-            <h1 class="text-xl font-bold text-slate-900 capitalize">${state.activeRoute}</h1>
+            <h1 class="text-xl font-bold text-slate-900">\${found ? found.label : state.activeRoute}</h1>
             <button onclick="navigate('inicio')" class="px-3.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">
               Volver a Inicio
             </button>
           </div>
           <div class="bg-white rounded-2xl border border-slate-200/70 p-6 text-xs text-slate-500">
-            Sección <strong>${state.activeRoute}</strong> lista para continuar.
+            Sección <strong>\${found ? found.label : state.activeRoute}</strong> lista para continuar.
           </div>
         `;
       }
+
       lucide.createIcons();
+      if (state.activeRoute === 'recibir') {
+        updateMissingBadges();
+      }
     }
 
     // =========================================================
-    // PANTALLA INICIO (RÉPLICA DE CAPTURA, SIN BANNER DE PLAN)
+    // VISTA INICIO
     // =========================================================
     function renderInicioScreen() {
       const q = (state.homeSearch || '').trim().toLowerCase();
@@ -309,39 +406,28 @@
             const statusName = STEPS[o.statusIndex] || 'Recibido';
 
             return `
-              <div onclick="openOrderDetail(${globalIdx})" class="px-5 py-3.5 hover:bg-slate-50/90 transition-colors cursor-pointer grid grid-cols-12 items-center gap-3 text-xs border-t border-slate-100 first:border-t-0">
-                <!-- Cliente + Equipo -->
+              <div onclick="openOrderDetail(\${globalIdx})" class="px-5 py-3.5 hover:bg-slate-50/90 transition-colors cursor-pointer grid grid-cols-12 items-center gap-3 text-xs border-t border-slate-100 first:border-t-0">
                 <div class="col-span-5 flex items-center gap-3 min-w-0">
                   <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
                     <i data-lucide="user" class="w-4 h-4"></i>
                   </div>
                   <div class="truncate">
-                    <div class="font-bold text-slate-900 truncate">${o.client.name}</div>
-                    <div class="text-[11px] text-slate-400 truncate">${o.device}</div>
+                    <div class="font-bold text-slate-900 truncate">\${o.client.name}</div>
+                    <div class="text-[11px] text-slate-400 truncate">\${o.device}</div>
                   </div>
                 </div>
-
-                <!-- Estado -->
                 <div class="col-span-2">
-                  <span class="inline-block px-2.5 py-0.5 rounded-md bg-sky-50 text-sky-600 font-semibold text-[11px]">${statusName}</span>
+                  <span class="inline-block px-2.5 py-0.5 rounded-md bg-sky-50 text-sky-600 font-semibold text-[11px]">\${statusName}</span>
                 </div>
-
-                <!-- Orden -->
-                <div class="col-span-1 font-bold text-slate-800">#${o.number}</div>
-
-                <!-- Técnico -->
-                <div class="col-span-1 text-slate-400 text-[11px] truncate">${o.technician || 'Sin asig.'}</div>
-
-                <!-- Tiempo -->
-                <div class="col-span-1 font-bold text-slate-800 text-[11px]">${o.daysElapsed || '0d'}</div>
-
-                <!-- Balance + Engrane -->
+                <div class="col-span-1 font-bold text-slate-800">#\${o.number}</div>
+                <div class="col-span-1 text-slate-400 text-[11px] truncate">\${o.technician || 'Sin asig.'}</div>
+                <div class="col-span-1 font-bold text-slate-800 text-[11px]">\${o.daysElapsed || '0d'}</div>
                 <div class="col-span-2 flex items-center justify-end gap-3 text-right">
                   <div>
-                    <div class="font-extrabold text-slate-900 text-xs">${formatCOP(pend > 0 ? pend : total)}</div>
+                    <div class="font-extrabold text-slate-900 text-xs">\${formatCOP(pend > 0 ? pend : total)}</div>
                     <div class="text-[10px] ${pend > 0 ? 'text-rose-500 font-medium' : 'text-emerald-600 font-medium'}">${pend > 0 ? 'Pendiente' : 'Pagado'}</div>
                   </div>
-                  <button type="button" onclick="event.stopPropagation(); showToast('Opciones de la orden #${o.number}')" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100">
+                  <button type="button" onclick="event.stopPropagation(); showToast('Opciones de la orden #\${o.number}')" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100">
                     <i data-lucide="settings" class="w-3.5 h-3.5"></i>
                   </button>
                 </div>
@@ -351,220 +437,7 @@
 
       return `
         <div class="space-y-5">
-          <!-- Header Superior de Inicio -->
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
               <h1 class="text-[20px] font-bold text-slate-900 leading-tight">Inicio</h1>
-              <p class="text-[11px] text-slate-400 mt-0.5">Última orden: ${lastOrderText}</p>
-            </div>
-
-            <div class="flex items-center gap-2.5 flex-wrap">
-              <!-- Buscador de órdenes o clientes -->
-              <div class="relative">
-                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
-                <input
-                  type="text"
-                  value="${state.homeSearch}"
-                  oninput="updateHomeSearch(this.value)"
-                  placeholder="Buscar órdenes o clientes..."
-                  class="pl-8 pr-8 py-1.5 w-64 bg-white border border-slate-200/90 rounded-lg text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#84CC16]"
-                />
-                <button type="button" onclick="showToast('Escáner de códigos / IMEI listo')" class="text-slate-400 hover:text-slate-600 absolute right-2.5 top-1/2 -translate-y-1/2" title="Escanear código">
-                  <i data-lucide="scan-line" class="w-3.5 h-3.5"></i>
-                </button>
-              </div>
-
-              <!-- Botón Actualizar -->
-              <button type="button" onclick="refreshInicio()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200/90 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
-                <i id="inicio-refresh-icon" data-lucide="rotate-cw" class="w-3.5 h-3.5 text-slate-500"></i>
-                Actualizar
-              </button>
-
-              <!-- Botón Tema -->
-              <button type="button" onclick="toggleThemeHint()" class="w-8 h-8 rounded-lg bg-white border border-slate-200/90 hover:bg-slate-50 flex items-center justify-center text-slate-600 transition-colors" title="Alternar tema">
-                <i data-lucide="moon" class="w-3.5 h-3.5"></i>
-              </button>
-
-              <!-- Botón Verde + Recibir -->
-              <button type="button" onclick="navigate('recibir')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs shadow-2xs transition-colors">
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Recibir
-              </button>
-            </div>
-          </div>
-
-          <!-- 3 Tarjetas Superiores: Pendiente (Verde) | Nuevas Hoy | Órdenes Activas -->
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-            <!-- Card Pendiente (5 cols, verde lima) -->
-            <div class="md:col-span-5 rounded-2xl bg-[#84CC16] text-slate-950 p-5 flex flex-col justify-between min-h-[126px] shadow-2xs">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-[#1E3A08]">Pendiente</span>
-                <button type="button" onclick="toggleHideAmounts()" class="text-[#2F5211] hover:text-slate-950 p-1 rounded-lg transition-colors" title="Ocultar/mostrar montos">
-                  <i data-lucide="${state.hideAmounts ? 'eye-off' : 'eye'}" class="w-4 h-4"></i>
-                </button>
-              </div>
-              <div class="mt-3">
-                <div class="text-[22px] font-extrabold tracking-tight text-slate-950">${formatCOP(pendingTotal)}</div>
-                <div class="text-xs font-medium text-[#2F5211] mt-1">Por cobrar en ${pendingOrdersCount} ${pendingOrdersCount === 1 ? 'orden' : 'órdenes'}</div>
-              </div>
-            </div>
-
-            <!-- Card Nuevas Hoy (3.5 cols) -->
-            <div class="md:col-span-3 rounded-2xl bg-white border border-slate-200/80 p-5 flex flex-col justify-between min-h-[126px] shadow-2xs">
-              <div class="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                <i data-lucide="plus-circle" class="w-4 h-4 text-[#65A30D]"></i>
-                <span>Nuevas Hoy</span>
-              </div>
-              <div class="mt-3">
-                <div class="text-[22px] font-extrabold text-slate-900 leading-none">${todayOrders.length}</div>
-                <div class="text-xs text-slate-400 mt-2">${todayOrders.length === 0 ? 'Ninguna todavía' : 'Recibidas hoy'}</div>
-              </div>
-            </div>
-
-            <!-- Card Órdenes Activas (4 cols) -->
-            <div class="md:col-span-4 rounded-2xl bg-white border border-slate-200/80 p-5 flex flex-col justify-between min-h-[126px] shadow-2xs">
-              <div class="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                <i data-lucide="clock" class="w-4 h-4 text-[#65A30D]"></i>
-                <span>Órdenes Activas</span>
-              </div>
-              <div class="mt-3 flex items-end justify-between gap-2">
-                <div>
-                  <div class="text-[22px] font-extrabold text-slate-900 leading-none">${activeOrders.length}</div>
-                  <div class="text-xs text-slate-400 mt-2">Ninguna lista para entregar</div>
-                </div>
-                <button type="button" onclick="setHomeTab('hoy')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-[#E9F5D8] hover:text-[#2F5211] text-[11px] font-semibold text-slate-600 transition-colors">
-                  Para hoy
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pestañas de Filtro: Activas 1 | Recibido 1 -->
-          <div class="flex items-center gap-2">
-            <button type="button" onclick="setHomeTab('activas')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-              state.homeFilterTab === 'activas'
-                ? 'bg-[#E9F5D8] text-[#2F5211]'
-                : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-50'
-            }">
-              Activas ${activeOrders.length}
-            </button>
-            <button type="button" onclick="setHomeTab('recibido')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-              state.homeFilterTab === 'recibido'
-                ? 'bg-[#E9F5D8] text-[#2F5211]'
-                : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-50'
-            }">
-              Recibido ${receivedOrders.length}
-            </button>
-          </div>
-
-          <!-- Tabla de Órdenes -->
-          <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-2xs">
-            <div class="px-5 py-3 border-b border-slate-100 grid grid-cols-12 gap-3 text-[11px] font-semibold text-slate-400">
-              <div class="col-span-5">Cliente</div>
-              <div class="col-span-2">Estado</div>
-              <div class="col-span-1">Orden</div>
-              <div class="col-span-1">Técnico</div>
-              <div class="col-span-1">Tiempo</div>
-              <div class="col-span-2 text-right">Balance</div>
-            </div>
-            <div>
-              ${rowsHtml}
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function updateHomeSearch(val) {
-      state.homeSearch = val;
-      saveState();
-      renderWorkspace();
-      const input = document.querySelector('input[placeholder*="Buscar órdenes"]');
-      if (input) {
-        input.focus();
-        input.setSelectionRange(input.value.length, input.value.length);
-      }
-    }
-
-    function setHomeTab(tab) {
-      state.homeFilterTab = tab;
-      saveState();
-      renderWorkspace();
-    }
-
-    function toggleHideAmounts() {
-      state.hideAmounts = !state.hideAmounts;
-      saveState();
-      renderWorkspace();
-    }
-
-    function toggleThemeHint() {
-      state.darkMode = !state.darkMode;
-      saveState();
-      showToast(state.darkMode ? 'Modo oscuro seleccionado' : 'Modo claro activo');
-    }
-
-    function refreshInicio() {
-      const icon = document.getElementById('inicio-refresh-icon');
-      if (icon) icon.classList.add('animate-spin');
-      setTimeout(() => {
-        if (icon) icon.classList.remove('animate-spin');
-        renderWorkspace();
-        showToast('Tablero actualizado');
-      }, 350);
-    }
-
-    function openOrderDetail(idx) {
-      const o = state.orders[idx];
-      if (!o) return;
-      const overlay = document.getElementById('order-detail-overlay');
-      overlay.classList.remove('hidden');
-      overlay.classList.add('flex');
-
-      document.getElementById('order-detail-header').innerHTML = `
-        <div class="flex items-center gap-3">
-          <button onclick="closeOrderDetail()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="font-bold text-[15px] text-slate-900">${o.device}</h2>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-600">${STEPS[o.statusIndex]}</span>
-            </div>
-            <p class="text-[11px] text-slate-400">#${o.number} · ${o.client.name} · recibida el ${o.receivedDate}</p>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('order-detail-body').innerHTML = `
-        <div class="bg-white rounded-2xl border border-slate-200/70 p-5 max-w-4xl space-y-2.5 text-xs">
-          <div class="font-bold text-sm text-slate-900">Detalle de Orden #${o.number}</div>
-          <div><strong>Cliente:</strong> ${o.client.name} (${o.client.phone})</div>
-          <div><strong>Equipo:</strong> ${o.device} — Color: ${o.color}</div>
-          <div><strong>Falla reportada:</strong> ${o.issue}</div>
-          <div><strong>Total:</strong> ${formatCOP(o.priceTotal)}</div>
-        </div>
-      `;
-      lucide.createIcons();
-    }
-
-    function closeOrderDetail() {
-      const overlay = document.getElementById('order-detail-overlay');
-      overlay.classList.add('hidden');
-      overlay.classList.remove('flex');
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toast-msg').textContent = msg;
-      toast.classList.remove('translate-y-20', 'opacity-0');
-      clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => {
-        toast.classList.add('translate-y-20', 'opacity-0');
-      }, 3000);
-    }
-
-    renderSidebar();
-    renderWorkspace();
-  </script>
-</body>
-</html>
+              <p class="text-[11px] text-slate-400 mt-0.5">Última orden: \${lastOrderText}</p>
