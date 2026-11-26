@@ -4,12 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TESLA TECH — Gestión de Taller y POS</title>
-  <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons via CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Google Fonts: Inter -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -18,21 +15,10 @@
       margin: 0;
       overflow-x: hidden;
     }
-    /* Custom subtle scrollbars */
-    ::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #CBD5E1;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94A3B8;
-    }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
   </style>
 </head>
 <body class="flex h-screen overflow-hidden select-none">
@@ -40,18 +26,15 @@
   <!-- =========================================================
        SIDEBAR IZQUIERDO (MENÚ PRINCIPAL)
   ========================================================== -->
-  <aside class="w-60 bg-white border-r border-slate-200/80 flex flex-col h-full shrink-0 z-20">
-    <!-- Logo Brand -->
+  <aside id="main-sidebar" class="w-60 bg-white border-r border-slate-200/80 flex flex-col h-full shrink-0 z-20">
     <div class="h-16 px-4 flex items-center gap-3 shrink-0">
-      <div class="w-8 h-8 rounded-lg bg-[#D4F097] flex items-center justify-center text-[#2B4C12] font-bold text-base shadow-xs">
+      <div class="w-8 h-8 rounded-lg bg-[#D4F097] flex items-center justify-center text-[#2B4C12] font-bold text-base shadow-2xs">
         T
       </div>
       <span id="brand-name-sidebar" class="font-bold text-[15px] tracking-tight text-slate-900 uppercase">TESLA TECH</span>
     </div>
 
-    <!-- Navigation Items -->
     <nav id="main-nav" class="flex-1 overflow-y-auto px-3 py-2 space-y-5 text-[13px]">
-      <!-- Top Group -->
       <div class="space-y-0.5">
         <button onclick="navigate('inicio')" data-nav="inicio" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors">
           <span class="flex items-center gap-3"><i data-lucide="home" class="w-4 h-4 text-slate-400"></i> Inicio</span>
@@ -64,23 +47,16 @@
         </button>
       </div>
 
-      <!-- OPERACIÓN -->
       <div>
         <div class="px-3 mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Operación</div>
-        <div class="space-y-0.5" id="nav-operacion">
-          <!-- Renderizado dinámicamente por JS -->
-        </div>
+        <div class="space-y-0.5" id="nav-operacion"></div>
       </div>
 
-      <!-- PUNTO DE VENTA -->
       <div>
         <div class="px-3 mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Punto de Venta</div>
-        <div class="space-y-0.5" id="nav-pos">
-          <!-- Renderizado dinámicamente por JS -->
-        </div>
+        <div class="space-y-0.5" id="nav-pos"></div>
       </div>
 
-      <!-- ADMINISTRACIÓN -->
       <div class="pb-4">
         <div class="px-3 mb-1.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Administración</div>
         <div class="space-y-0.5">
@@ -99,9 +75,9 @@
        CONTENEDOR PRINCIPAL DERECHO
   ========================================================== -->
   <div class="flex-1 flex flex-col h-full min-w-0">
-    <!-- Top Header -->
-    <header class="h-16 px-8 flex items-center justify-between shrink-0 bg-[#F4F7FA]">
-      <h1 id="page-title" class="text-[20px] font-bold text-slate-900 tracking-tight">Ajustes</h1>
+    <!-- Top Header estándar (se oculta cuando estamos en vista detalle full-screen de una orden) -->
+    <header id="standard-header" class="h-16 px-8 flex items-center justify-between shrink-0 bg-[#F4F7FA]">
+      <h1 id="page-title" class="text-[20px] font-bold text-slate-900 tracking-tight">Inicio</h1>
       <button onclick="refreshView()" class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white border border-slate-200/90 rounded-lg text-[13px] font-medium text-slate-700 hover:bg-slate-50 active:scale-[0.99] transition-all shadow-2xs">
         <i id="refresh-icon" data-lucide="rotate-cw" class="w-3.5 h-3.5 text-slate-500"></i>
         Actualizar
@@ -109,16 +85,29 @@
     </header>
 
     <!-- Dynamic Workspace Area -->
-    <main id="workspace" class="flex-1 overflow-y-auto px-8 pb-10">
-      <!-- El contenido cambia según la ruta activa -->
-    </main>
+    <main id="workspace" class="flex-1 overflow-y-auto px-8 pb-10"></main>
+  </div>
+
+  <!-- =========================================================
+       VISTA FULLSCREEN DE DETALLE DE ORDEN (COMO TU CAPTURA)
+  ========================================================== -->
+  <div id="order-detail-overlay" class="fixed inset-0 bg-[#F4F7FA] z-40 hidden flex-col overflow-hidden">
+    <!-- Barra Superior de la Orden -->
+    <div id="order-detail-header" class="bg-white border-b border-slate-200/80 px-5 py-3 flex flex-wrap items-center justify-between gap-3 shrink-0">
+      <!-- Renderizado por JS -->
+    </div>
+
+    <!-- Cuerpo Scrollable de la Orden -->
+    <div id="order-detail-body" class="flex-1 overflow-y-auto p-5 space-y-4">
+      <!-- Renderizado por JS -->
+    </div>
   </div>
 
   <!-- =========================================================
        MODAL GESTIONAR CUENTA / SUSCRIPCIÓN
   ========================================================== -->
   <div id="subscription-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-100 animate-fade-in">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-100">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-2.5">
           <div class="w-9 h-9 rounded-xl bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
@@ -135,7 +124,6 @@
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-5">
-        <!-- Plan Taller Pro -->
         <div class="border border-slate-200 rounded-xl p-4 hover:border-[#84CC16] transition-colors flex flex-col justify-between">
           <div>
             <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Mensual</span>
@@ -155,7 +143,6 @@
           </button>
         </div>
 
-        <!-- Plan Enterprise -->
         <div class="border-2 border-[#84CC16] bg-[#F9FDF3] rounded-xl p-4 flex flex-col justify-between relative">
           <span class="absolute -top-2.5 right-3 bg-[#84CC16] text-slate-950 text-[10px] font-bold px-2 py-0.5 rounded-full">RECOMENDADO</span>
           <div>
@@ -184,6 +171,13 @@
     </div>
   </div>
 
+  <!-- =========================================================
+       MODAL RÁPIDO PARA GASTOS / PRESUPUESTO ADICIONAL / REPORTE
+  ========================================================== -->
+  <div id="quick-action-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] hidden items-center justify-center z-50 p-4">
+    <div id="quick-action-content" class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100"></div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
     <i data-lucide="check-circle-2" class="w-4 h-4 text-[#84CC16]"></i>
@@ -191,41 +185,85 @@
   </div>
 
   <!-- =========================================================
-       LÓGICA DE LA APLICACIÓN (JAVASCRIPT)
+       JAVASCRIPT DE LA APLICACIÓN
   ========================================================== -->
   <script>
-    // Estado Global de la App
+    const STEPS = ['Recibido', 'Diagnóstico', 'En Reparación', 'Listo para Entregar', 'Entregado'];
+
     const state = {
-      activeRoute: 'ajustes',
+      activeRoute: 'inicio',
       activeSettingsTab: 'mi-cuenta',
       isSubscribed: false,
       planName: 'Inactiva',
+      selectedOrderIndex: null,
       workshop: {
         name: 'TESLA TECH',
         email: 'teslatech.cox@gmail.com',
         phone: '+57 300 123 4567',
-        city: 'Medellín, Colombia',
-        currency: 'COP ($)'
+        city: 'Medellín, Colombia'
       },
       orders: [
-        { id: 'ORD-1042', client: 'Carlos Mendoza', device: 'iPhone 14 Pro', issue: 'Cambio de batería original', status: 'En reparación', total: '$280.000', date: 'Hoy, 10:15 AM' },
-        { id: 'ORD-1041', client: 'Laura Gómez', device: 'iPhone 13', issue: 'Remanufactura de visor / pantalla', status: 'Listo para entrega', total: '$420.000', date: 'Ayer, 4:30 PM' },
-        { id: 'ORD-1040', client: 'Andrés Felipe Ruiz', device: 'Samsung S23 Ultra', issue: 'Pin de carga y limpieza interna', status: 'Recibido', total: '$150.000', date: '23 Nov, 2:10 PM' }
-      ],
-      clients: [
-        { name: 'Carlos Mendoza', phone: '310 455 8890', email: 'carlos.m@gmail.com', repairs: 3 },
-        { name: 'Laura Gómez', phone: '301 789 2211', email: 'laura.gomez@hotmail.com', repairs: 1 },
-        { name: 'Andrés Felipe Ruiz', phone: '315 660 3344', email: 'afruiz@empresa.co', repairs: 2 }
+        {
+          number: 3,
+          device: 'apple iphone 13 pro max',
+          color: 'plateado',
+          issue: 'cambio bateria',
+          internalNotes: 'N/A',
+          accessories: 'Ninguno',
+          technicalReport: '',
+          statusIndex: 0, // 0: Recibido, 1: Diagnóstico, 2: En Reparación, 3: Listo para Entregar, 4: Entregado
+          receivedDate: '24 nov 2026',
+          client: {
+            name: 'DAYANA FLOREZ',
+            docId: 'N/A',
+            phone: '+573226207154',
+            address: 'N/A'
+          },
+          priceTotal: 260000,
+          paidAmount: 0,
+          extraQuotes: [],
+          expenses: [],
+          photos: 0,
+          history: [
+            { status: 'Recibido', timeAgo: 'hace 20 h 35 min', dateShort: '24 nov' }
+          ]
+        },
+        {
+          number: 2,
+          device: 'iPhone 14 Pro',
+          color: 'morado oscuro',
+          issue: 'remanufactura de visor glass',
+          internalNotes: 'FaceID funcionando OK al recibir',
+          accessories: 'Funda transparente',
+          technicalReport: 'Visor fracturado, táctil e imagen intactos. Listo para laminado.',
+          statusIndex: 2,
+          receivedDate: '23 nov 2026',
+          client: {
+            name: 'CARLOS MENDOZA',
+            docId: '1037654321',
+            phone: '+573104558890',
+            address: 'Laureles, Medellín'
+          },
+          priceTotal: 380000,
+          paidAmount: 100000,
+          extraQuotes: [],
+          expenses: [{ label: 'Visor original OCA', amount: 65000 }],
+          photos: 3,
+          history: [
+            { status: 'En Reparación', timeAgo: 'hace 2 h 10 min', dateShort: '25 nov' },
+            { status: 'Diagnóstico', timeAgo: 'hace 1 día', dateShort: '24 nov' },
+            { status: 'Recibido', timeAgo: 'hace 2 días', dateShort: '23 nov' }
+          ]
+        }
       ],
       inventory: [
-        { sku: 'BAT-IP14P', name: 'Batería iPhone 14 Pro (Alta Capacidad)', stock: 14, price: '$145.000' },
-        { sku: 'SCR-IP13', name: 'Pantalla OLED iPhone 13', stock: 8, price: '$290.000' },
-        { sku: 'FLX-IP15', name: 'Flex Centro de Carga iPhone 15', stock: 19, price: '$85.000' },
-        { sku: 'GLS-12PM', name: 'Visor Cristal iPhone 12 Pro Max', stock: 25, price: '$35.000' }
+        { sku: 'BAT-IP13PM', name: 'Batería iPhone 13 Pro Max (Alta Capacidad)', stock: 12, price: 145000 },
+        { sku: 'BAT-IP14P', name: 'Batería iPhone 14 Pro', stock: 14, price: 155000 },
+        { sku: 'SCR-IP13', name: 'Pantalla OLED iPhone 13', stock: 8, price: 290000 },
+        { sku: 'GLS-14P', name: 'Visor Cristal iPhone 14 Pro', stock: 20, price: 45000 }
       ]
     };
 
-    // Definición de menús laterales
     const operationItems = [
       { id: 'inventario', label: 'Inventario', icon: 'package', locked: true },
       { id: 'reposicion', label: 'Reposición', icon: 'clipboard-check', locked: true },
@@ -261,7 +299,13 @@
       { id: 'ayuda', title: 'Ayuda y soporte', sub: 'Asistente y WhatsApp', icon: 'help-circle' }
     ];
 
-    // Renderizar menú lateral
+    function formatCOP(val) {
+      return 'COP ' + Number(val || 0).toLocaleString('es-CO');
+    }
+
+    // =========================================================
+    // NAVEGACIÓN Y SIDEBAR
+    // =========================================================
     function renderSidebar() {
       const renderGroup = (items, containerId) => {
         const container = document.getElementById(containerId);
@@ -290,7 +334,6 @@
       renderGroup(operationItems, 'nav-operacion');
       renderGroup(posItems, 'nav-pos');
 
-      // Actualizar estilos de botones fijos (Inicio, Recibir, Clientes, Equipo, Ajustes)
       document.querySelectorAll('.nav-item').forEach(btn => {
         const route = btn.getAttribute('data-nav');
         const icon = btn.querySelector('i');
@@ -308,7 +351,7 @@
 
     function handleMenuClick(routeId, isLocked) {
       if (isLocked) {
-        showToast('Módulo bloqueado. Activa tu cuenta en Ajustes → Gestionar Cuenta.');
+        showToast('Módulo con candado. Activa tu cuenta en Ajustes → Gestionar Cuenta.');
         openSubModal();
         return;
       }
@@ -322,17 +365,14 @@
     }
 
     // =========================================================
-    // RENDERIZADO DE VISTAS
+    // VISTAS PRINCIPALES DEL WORKSPACE
     // =========================================================
     function renderWorkspace() {
       const ws = document.getElementById('workspace');
       const titleEl = document.getElementById('page-title');
 
-      if (state.activeRoute === 'ajustes') {
-        titleEl.textContent = 'Ajustes';
-        ws.innerHTML = renderAjustesView();
-      } else if (state.activeRoute === 'inicio') {
-        titleEl.textContent = 'Inicio — Órdenes Activas';
+      if (state.activeRoute === 'inicio') {
+        titleEl.textContent = 'Inicio';
         ws.innerHTML = renderInicioView();
       } else if (state.activeRoute === 'recibir') {
         titleEl.textContent = 'Recibir Equipo';
@@ -340,15 +380,15 @@
       } else if (state.activeRoute === 'clientes') {
         titleEl.textContent = 'Clientes';
         ws.innerHTML = renderClientesView();
+      } else if (state.activeRoute === 'ajustes') {
+        titleEl.textContent = 'Ajustes';
+        ws.innerHTML = renderAjustesView();
       } else if (state.activeRoute === 'presupuestos') {
         titleEl.textContent = 'Presupuestos';
         ws.innerHTML = renderPresupuestosView();
       } else if (state.activeRoute === 'inventario') {
-        titleEl.textContent = 'Inventario de Repuestos';
+        titleEl.textContent = 'Inventario';
         ws.innerHTML = renderInventarioView();
-      } else if (state.activeRoute === 'pos') {
-        titleEl.textContent = 'Punto de Venta (POS)';
-        ws.innerHTML = renderPOSView();
       } else {
         const allItems = [...operationItems, ...posItems];
         const found = allItems.find(i => i.id === state.activeRoute);
@@ -358,8 +398,8 @@
             <div class="w-12 h-12 rounded-2xl bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center mx-auto mb-3">
               <i data-lucide="${found ? found.icon : 'layers'}" class="w-6 h-6"></i>
             </div>
-            <h2 class="text-base font-bold text-slate-900">Módulo ${found ? found.label : ''} Activo</h2>
-            <p class="text-xs text-slate-500 mt-1">Tu suscripción está activa. Este panel ya está listo para registrar movimientos en tiempo real.</p>
+            <h2 class="text-base font-bold text-slate-900">Módulo ${found ? found.label : ''}</h2>
+            <p class="text-xs text-slate-500 mt-1">Listo para registrar movimientos.</p>
           </div>
         `;
       }
@@ -367,14 +407,782 @@
       lucide.createIcons();
     }
 
-    // Vista Exacta de AJUSTES (Sub-sidebar + Panel Derecho)
+    // Vista INICIO con acceso directo a la Ficha Detallada de cada Orden
+    function renderInicioView() {
+      const cards = state.orders.map((o, idx) => {
+        const currentStep = STEPS[o.statusIndex];
+        return `
+          <div onclick="openOrderDetail(${idx})" class="bg-white rounded-2xl border border-slate-200/80 p-4 hover:border-[#84CC16] hover:shadow-sm transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-xl bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center shrink-0">
+                #${o.number}
+              </div>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-bold text-sm text-slate-900">${o.device}</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-600">${currentStep}</span>
+                </div>
+                <div class="text-xs text-slate-500 mt-0.5">
+                  ${o.client.name} · <span class="text-slate-400">${o.issue}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between sm:justify-end gap-4 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100">
+              <div class="text-right">
+                <div class="text-xs font-bold text-slate-900">${formatCOP(o.priceTotal)}</div>
+                <div class="text-[11px] text-slate-400">Recibida el ${o.receivedDate}</div>
+              </div>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="flex items-center justify-between mb-4">
+          <p class="text-xs text-slate-500">Haz clic sobre cualquier orden para abrir su ficha completa (Progreso, Finanzas, Reporte Técnico y Evidencia).</p>
+          <button onclick="navigate('recibir')" class="px-4 py-2 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs shrink-0 shadow-2xs">
+            + Recibir Equipo
+          </button>
+        </div>
+        <div class="space-y-3">
+          ${cards}
+        </div>
+      `;
+    }
+
+    // Formulario + RECIBIR EQUIPO (al guardar, abre automáticamente la ficha detallada)
+    function renderRecibirView() {
+      return `
+        <form onsubmit="createNewOrder(event)" class="bg-white rounded-2xl border border-slate-200/80 p-6 max-w-3xl space-y-6">
+          <div class="border-b border-slate-100 pb-3">
+            <h2 class="text-base font-bold text-slate-900">Nueva Orden de Recepción</h2>
+            <p class="text-xs text-slate-500">Completa los datos del cliente y del equipo para generar la orden #${state.orders.length + 1}.</p>
+          </div>
+
+          <!-- Datos del Cliente -->
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+              <i data-lucide="user" class="w-3.5 h-3.5 text-[#65A30D]"></i> Datos del Cliente
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Nombre completo *</label>
+                <input id="rec-client-name" type="text" placeholder="Ej. DAYANA FLOREZ" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Teléfono / WhatsApp *</label>
+                <input id="rec-client-phone" type="text" placeholder="Ej. +573226207154" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Cédula / ID</label>
+                <input id="rec-client-id" type="text" placeholder="N/A" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Dirección</label>
+                <input id="rec-client-address" type="text" placeholder="N/A" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Datos del Equipo -->
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+              <i data-lucide="smartphone" class="w-3.5 h-3.5 text-[#65A30D]"></i> Datos del Equipo y Finanzas
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Marca y Modelo del Equipo *</label>
+                <input id="rec-device" type="text" placeholder="Ej. apple iphone 13 pro max" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Color</label>
+                <input id="rec-color" type="text" placeholder="Ej. plateado" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-medium text-slate-700 mb-1">Falla Reportada *</label>
+                <input id="rec-issue" type="text" placeholder="Ej. cambio bateria" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" required />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Accesorios incluidos</label>
+                <input id="rec-accessories" type="text" placeholder="Ninguno" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Precio Total (COP) *</label>
+                <input id="rec-price" type="number" placeholder="260000" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" required />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-medium text-slate-700 mb-1">Notas Internas</label>
+                <input id="rec-notes" type="text" placeholder="N/A" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" />
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 flex justify-end gap-2.5">
+            <button type="button" onclick="navigate('inicio')" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50">
+              Cancelar
+            </button>
+            <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs shadow-2xs">
+              Guardar y Abrir Orden
+            </button>
+          </div>
+        </form>
+      `;
+    }
+
+    // =========================================================
+    // FICHA DETALLADA DE ORDEN (RÉPLICA EXACTA DE TU SEGUNDA CAPTURA)
+    // =========================================================
+    function openOrderDetail(idx) {
+      state.selectedOrderIndex = idx;
+      const overlay = document.getElementById('order-detail-overlay');
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+      renderOrderDetail();
+    }
+
+    function closeOrderDetail() {
+      state.selectedOrderIndex = null;
+      const overlay = document.getElementById('order-detail-overlay');
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+      renderWorkspace();
+    }
+
+    function renderOrderDetail() {
+      const idx = state.selectedOrderIndex;
+      if (idx === null) return;
+      const o = state.orders[idx];
+
+      // Cálculos financieros
+      const extraTotal = o.extraQuotes.reduce((acc, q) => acc + q.amount, 0);
+      const grandTotal = o.priceTotal + extraTotal;
+      const pendingBalance = Math.max(0, grandTotal - o.paidAmount);
+      const totalExpenses = o.expenses.reduce((acc, e) => acc + e.amount, 0);
+      const netProfit = grandTotal - totalExpenses;
+      const currentStatusLabel = STEPS[o.statusIndex];
+
+      // 1. HEADER DE LA ORDEN
+      document.getElementById('order-detail-header').innerHTML = `
+        <div class="flex items-center gap-3">
+          <button onclick="closeOrderDetail()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200/80 flex items-center justify-center text-slate-600 transition-colors" title="Cerrar">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="font-bold text-[15px] text-slate-900 leading-tight">${o.device}</h2>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-600">${currentStatusLabel}</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5">#${o.number} · ${o.client.name} · recibida el ${o.receivedDate}</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="showToast('Mostrando código QR de seguimiento #${o.number}')" class="w-8 h-8 rounded-full bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:scale-105 transition-transform" title="Vista cliente">
+            <i data-lucide="disc" class="w-3.5 h-3.5"></i>
+          </button>
+
+          <button onclick="showDocPreview('QR de Seguimiento')" class="relative inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50">
+            <i data-lucide="qr-code" class="w-3.5 h-3.5 text-slate-500"></i> QR
+            <span class="w-3.5 h-3.5 rounded-full bg-amber-400 text-white text-[9px] flex items-center justify-center"><i data-lucide="lock" class="w-2 h-2"></i></span>
+          </button>
+
+          <button onclick="showDocPreview('Etiqueta Adhesiva Equipo')" class="relative inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50">
+            <i data-lucide="tag" class="w-3.5 h-3.5 text-slate-500"></i> Etiqueta
+            <span class="w-3.5 h-3.5 rounded-full bg-amber-400 text-white text-[9px] flex items-center justify-center"><i data-lucide="lock" class="w-2 h-2"></i></span>
+          </button>
+
+          <button onclick="showDocPreview('Ticket Térmico 80mm')" class="relative inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50">
+            <i data-lucide="ticket" class="w-3.5 h-3.5 text-slate-500"></i> Ticket
+            <span class="w-3.5 h-3.5 rounded-full bg-amber-400 text-white text-[9px] flex items-center justify-center"><i data-lucide="lock" class="w-2 h-2"></i></span>
+          </button>
+
+          <button onclick="showDocPreview('Recibo de Recepción')" class="relative inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50">
+            <i data-lucide="printer" class="w-3.5 h-3.5 text-slate-500"></i> Recibo
+            <span class="w-3.5 h-3.5 rounded-full bg-amber-400 text-white text-[9px] flex items-center justify-center"><i data-lucide="lock" class="w-2 h-2"></i></span>
+          </button>
+
+          <button onclick="openEditOrderModal()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs shadow-2xs">
+            <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Editar orden
+          </button>
+        </div>
+      `;
+
+      // Stepper HTML
+      const progressPercent = (o.statusIndex / (STEPS.length - 1)) * 100;
+      const stepsHtml = STEPS.map((stepName, sIdx) => {
+        const isCompleted = sIdx <= o.statusIndex;
+        const isCurrent = sIdx === o.statusIndex;
+        const historyMatch = o.history.find(h => h.status === stepName);
+        return `
+          <div onclick="setOrderStep(${sIdx})" class="flex flex-col items-center cursor-pointer group z-10 w-28">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+              isCompleted
+                ? 'bg-[#65A30D] text-white shadow-xs ring-4 ring-[#E9F5D8]'
+                : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'
+            }">
+              ${sIdx + 1}
+            </div>
+            <span class="mt-2 text-[11px] font-semibold text-center ${isCompleted ? 'text-[#2F5211]' : 'text-slate-400'}">
+              ${stepName}
+            </span>
+            <span class="text-[10px] text-slate-400 h-3.5">
+              ${historyMatch ? historyMatch.dateShort : (isCurrent ? 'Hoy' : '')}
+            </span>
+          </div>
+        `;
+      }).join('');
+
+      // 2. CUERPO DE LA ORDEN
+      document.getElementById('order-detail-body').innerHTML = `
+        <!-- Card: Estado Actual -->
+        <div class="bg-white rounded-2xl border border-slate-200/70 p-4 flex items-center justify-between shadow-2xs">
+          <div>
+            <div class="font-bold text-sm text-slate-900">Estado Actual</div>
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mt-2">FECHA DE RECEPCIÓN</div>
+            <div class="text-xs font-semibold text-slate-800 mt-0.5">${o.receivedDate}</div>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-sky-50 text-sky-600 font-bold text-[11px] uppercase tracking-wide">
+            ${currentStatusLabel}
+          </span>
+        </div>
+
+        <!-- Card: Progreso (Stepper de 5 Pasos) -->
+        <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
+          <div class="flex items-center gap-2 font-bold text-sm text-slate-900 mb-5">
+            <i data-lucide="git-commit-horizontal" class="w-4 h-4 text-[#65A30D]"></i> Progreso
+          </div>
+          <div class="relative flex items-start justify-between max-w-6xl mx-auto px-2 pb-1">
+            <!-- Línea base gris -->
+            <div class="absolute top-3.5 left-12 right-12 h-[2px] bg-slate-100"></div>
+            <!-- Línea activa verde -->
+            <div class="absolute top-3.5 left-12 h-[2px] bg-[#65A30D] transition-all duration-300" style="width: calc(${progressPercent}% - 3rem);"></div>
+            ${stepsHtml}
+          </div>
+        </div>
+
+        <!-- Banner 1: Cambiar estado / Entregar -->
+        <div onclick="advanceOrderStep()" class="bg-[#F2FCE2] hover:bg-[#E7F8CC] border border-[#D4F097] rounded-2xl p-3.5 flex items-center justify-between cursor-pointer transition-colors">
+          <div class="flex items-center gap-3.5">
+            <div class="w-9 h-9 rounded-xl bg-[#84CC16] text-white flex items-center justify-center shrink-0">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="font-bold text-xs text-[#2F5211]">Cambiar estado / Entregar</div>
+              <div class="text-[11px] text-[#4D7C1F]">Actualiza el estado o entrega el equipo y cobra el saldo</div>
+            </div>
+          </div>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-[#4D7C1F]"></i>
+        </div>
+
+        <!-- Banner 2: Informe Completo de la Orden -->
+        <div onclick="showDocPreview('Informe Completo PDF')" class="bg-[#F2FCE2] hover:bg-[#E7F8CC] border border-[#D4F097] rounded-2xl p-3.5 flex items-center justify-between cursor-pointer transition-colors">
+          <div class="flex items-center gap-3.5">
+            <div class="w-9 h-9 rounded-xl bg-[#84CC16] text-white flex items-center justify-center shrink-0">
+              <i data-lucide="file-check-2" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="font-bold text-xs text-[#2F5211]">Informe Completo de la Orden</div>
+              <div class="text-[11px] text-[#4D7C1F]">PDF compartible: diagnóstico, checklist, firma y fotos</div>
+            </div>
+          </div>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-[#4D7C1F]"></i>
+        </div>
+
+        <!-- GRILLA DE 3 COLUMNAS (Cliente | Equipo | Finanzas) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+          <!-- COLUMNA IZQUIERDA (5 cols) -->
+          <div class="lg:col-span-5 space-y-4">
+            <!-- Datos del Cliente -->
+            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
+              <div class="flex items-center gap-2 font-bold text-sm text-slate-900 mb-3">
+                <i data-lucide="user" class="w-4 h-4 text-[#65A30D]"></i> Datos del Cliente
+              </div>
+              <div class="space-y-2.5 text-xs">
+                <div>
+                  <div class="text-[10px] font-semibold uppercase text-slate-400">NOMBRE</div>
+                  <div class="font-bold text-slate-800 mt-0.5">${o.client.name}</div>
+                </div>
+                <div>
+                  <div class="text-[10px] font-semibold uppercase text-slate-400">CÉDULA/ID</div>
+                  <div class="font-semibold text-slate-700 mt-0.5">${o.client.docId}</div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-[10px] font-semibold uppercase text-slate-400">TELÉFONO</div>
+                    <div class="font-bold text-slate-800 mt-0.5">${o.client.phone}</div>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <button onclick="showToast('Abriendo chat WhatsApp con ${o.client.phone}')" class="relative w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:bg-[#D4F097]" title="Enviar WhatsApp">
+                      <i data-lucide="message-circle" class="w-4 h-4"></i>
+                      <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-white border border-slate-200 flex items-center justify-center"><i data-lucide="lock" class="w-2 h-2 text-slate-500"></i></span>
+                    </button>
+                    <button onclick="copyPhone('${o.client.phone}')" class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:bg-[#D4F097]" title="Copiar teléfono">
+                      <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <div class="text-[10px] font-semibold uppercase text-slate-400">DIRECCIÓN</div>
+                  <div class="font-semibold text-slate-700 mt-0.5">${o.client.address}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Reporte Técnico -->
+            <div onclick="openTechReportModal()" class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs cursor-pointer hover:border-[#84CC16] transition-colors">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 font-bold text-sm text-slate-900">
+                  <i data-lucide="clipboard-list" class="w-4 h-4 text-[#65A30D]"></i> Reporte Técnico
+                </div>
+                <span class="text-[11px] font-medium text-[#4D7C1F]">+ Editar</span>
+              </div>
+              ${o.technicalReport ? `<p class="text-xs text-slate-600 mt-2.5">${o.technicalReport}</p>` : ''}
+            </div>
+
+            <!-- Recorrido del equipo -->
+            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
+              <div class="flex items-center gap-2 font-bold text-sm text-slate-900 mb-3">
+                <i data-lucide="history" class="w-4 h-4 text-[#65A30D]"></i> Recorrido del equipo
+              </div>
+              <div class="space-y-3">
+                ${o.history.map((h, hIdx) => `
+                  <div class="flex items-start gap-2.5">
+                    <span class="w-2 h-2 rounded-full mt-1.5 shrink-0 ${hIdx === 0 ? 'bg-[#65A30D]' : 'bg-slate-300'}"></span>
+                    <div>
+                      <div class="text-xs font-bold ${hIdx === 0 ? 'text-[#2F5211]' : 'text-slate-700'}">${h.status}</div>
+                      <div class="text-[11px] text-slate-400">${h.timeAgo}</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMNA CENTRAL (5 cols) -->
+          <div class="lg:col-span-5 space-y-4">
+            <!-- Datos del Equipo -->
+            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
+              <div class="flex items-center gap-2 font-bold text-sm text-slate-900 mb-3">
+                <i data-lucide="smartphone" class="w-4 h-4 text-[#65A30D]"></i> Datos del Equipo
+              </div>
+              <div class="space-y-2.5 text-xs">
+                <div>
+                  <div class="text-[10px] font-semibold uppercase text-slate-400">DATOS DEL EQUIPO</div>
+                  <div class="font-bold text-slate-800 mt-0.5">${o.device}</div>
+                </div>
+                <div>
+                  <div class="text-[10px] font-semibold uppercase text-slate-400">COLOR</div>
+                  <div class="font-semibold text-slate-700 mt-0.5">${o.color}</div>
+                </div>
+                <div>
+                  <div class="text-[10px] font-semibold uppercase text-slate-400">FALLA REPORTADA</div>
+                  <div class="font-semibold text-slate-800 mt-0.5">${o.issue}</div>
+                </div>
+                <div>
+                  <div class="text-[10px] font-semibold uppercase text-slate-400">NOTAS INTERNAS</div>
+                  <div class="font-semibold text-slate-700 mt-0.5">${o.internalNotes}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Accesorios -->
+            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
+              <div class="flex items-center gap-2 font-bold text-sm text-slate-900 mb-3">
+                <i data-lucide="file-box" class="w-4 h-4 text-[#65A30D]"></i> Accesorios
+              </div>
+              <div class="text-[10px] font-semibold uppercase text-slate-400">ACCESORIOS INCLUIDOS</div>
+              <div class="text-xs font-bold text-slate-800 mt-0.5">${o.accessories}</div>
+            </div>
+          </div>
+
+          <!-- COLUMNA DERECHA: FINANZAS, PRESUPUESTOS Y GASTOS (2 cols en desktop ancho, o adaptable) -->
+          <div class="lg:col-span-2 space-y-4">
+            <!-- Finanzas -->
+            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-1.5 font-bold text-sm text-slate-900">
+                  <i data-lucide="wallet" class="w-4 h-4 text-[#65A30D]"></i> Finanzas
+                </div>
+                <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">#${o.number}</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 text-center py-2 border-b border-slate-100">
+                <div>
+                  <div class="text-[9px] font-semibold uppercase text-slate-400">PRECIO TOTAL</div>
+                  <div class="text-xs font-extrabold text-slate-900 mt-0.5">${formatCOP(o.priceTotal)}</div>
+                </div>
+                <div>
+                  <div class="text-[9px] font-semibold uppercase text-slate-400">TOTAL</div>
+                  <div class="text-xs font-extrabold text-slate-900 mt-0.5">${formatCOP(grandTotal)}</div>
+                </div>
+              </div>
+
+              <div class="text-center pt-2.5">
+                <div class="text-[9px] font-semibold uppercase text-slate-400">SALDO PENDIENTE</div>
+                <div class="text-sm font-extrabold text-[#4D7C1F] mt-0.5">${formatCOP(pendingBalance)}</div>
+              </div>
+            </div>
+
+            <!-- Presupuestos adicionales -->
+            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
+              <div class="flex items-center gap-1.5 font-bold text-xs text-slate-900 mb-2">
+                <i data-lucide="file-plus-2" class="w-4 h-4 text-[#65A30D] shrink-0"></i>
+                <span>Presupuestos adicionales</span>
+              </div>
+              ${o.extraQuotes.length === 0
+                ? `<p class="text-[11px] text-slate-400 leading-relaxed">Sin presupuestos adicionales. Si al revisar el equipo aparecen repuestos o trabajos no contemplados, emite uno y el cliente lo aprueba desde su celular.</p>`
+                : `<div class="space-y-1.5 my-2">
+                    ${o.extraQuotes.map(q => `
+                      <div class="flex justify-between text-[11px] bg-slate-50 px-2 py-1 rounded">
+                        <span class="text-slate-700 truncate">${q.label}</span>
+                        <span class="font-bold text-slate-900">${formatCOP(q.amount)}</span>
+                      </div>
+                    `).join('')}
+                   </div>`
+              }
+              <button onclick="openAddQuoteModal()" class="mt-3 w-full py-2 px-2.5 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-[11px] transition-colors">
+                + Agregar Presupuesto Adicional
+              </button>
+            </div>
+
+            <!-- Gastos Asociados -->
+            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-1.5 font-bold text-xs text-slate-900">
+                  <i data-lucide="trending-up" class="w-4 h-4 text-[#65A30D]"></i> Gastos Asociados
+                </div>
+                <button onclick="openAddExpenseModal()" class="text-[10px] font-bold text-[#4D7C1F] hover:underline">+ Gasto</button>
+              </div>
+
+              ${o.expenses.length === 0
+                ? `<div class="text-[11px] text-slate-400 text-center py-2">Sin gastos registrados</div>`
+                : `<div class="space-y-1 my-2">
+                    ${o.expenses.map(e => `
+                      <div class="flex justify-between text-[11px] text-slate-600">
+                        <span class="truncate">${e.label}</span>
+                        <span class="text-rose-500 font-semibold">-${formatCOP(e.amount)}</span>
+                      </div>
+                    `).join('')}
+                   </div>`
+              }
+
+              <div class="flex items-center justify-between text-[11px] pt-2 border-t border-slate-100">
+                <span class="font-semibold text-slate-700">Total Gastos</span>
+                <span class="font-bold text-rose-500">-${formatCOP(totalExpenses)}</span>
+              </div>
+
+              <div class="mt-2.5 px-3 py-2 rounded-xl bg-[#F2FCE2] border border-[#D4F097] flex items-center justify-between">
+                <span class="text-[11px] font-semibold text-[#2F5211]">Ganancia Neta</span>
+                <span class="text-xs font-extrabold text-[#2F5211]">${formatCOP(netProfit)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Inferior: Evidencia Fotográfica -->
+        <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
+          <div class="flex items-center gap-2 font-bold text-sm text-slate-900 mb-3">
+            <i data-lucide="camera" class="w-4 h-4 text-[#65A30D]"></i> Evidencia Fotográfica
+          </div>
+
+          <button onclick="addMockPhoto()" class="w-full py-3 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-xs flex items-center justify-center gap-2 transition-colors">
+            <i data-lucide="camera" class="w-4 h-4"></i> Agregar Fotos
+          </button>
+
+          <div class="text-center text-[11px] text-slate-400 my-2">${o.photos}/8</div>
+
+          <button onclick="showToast('Código QR generado para subir fotos directo desde la cámara del celular')" class="w-full py-1.5 text-[#4D7C1F] hover:underline font-semibold text-xs flex items-center justify-center gap-1.5">
+            <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Subir desde el teléfono
+          </button>
+        </div>
+      `;
+
+      lucide.createIcons();
+    }
+
+    // Acciones interactivas dentro de la Orden
+    function setOrderStep(stepIdx) {
+      const o = state.orders[state.selectedOrderIndex];
+      if (o.statusIndex === stepIdx) return;
+      o.statusIndex = stepIdx;
+      o.history.unshift({
+        status: STEPS[stepIdx],
+        timeAgo: 'hace un momento',
+        dateShort: '25 nov'
+      });
+      renderOrderDetail();
+      showToast(`Estado actualizado a: ${STEPS[stepIdx]}`);
+    }
+
+    function advanceOrderStep() {
+      const o = state.orders[state.selectedOrderIndex];
+      const next = (o.statusIndex + 1) % STEPS.length;
+      setOrderStep(next);
+    }
+
+    function addMockPhoto() {
+      const o = state.orders[state.selectedOrderIndex];
+      if (o.photos >= 8) {
+        showToast('Límite máximo de 8 fotos alcanzado');
+        return;
+      }
+      o.photos += 1;
+      renderOrderDetail();
+      showToast(`Foto agregada (${o.photos}/8)`);
+    }
+
+    function copyPhone(phone) {
+      navigator.clipboard?.writeText(phone);
+      showToast(`Teléfono copiado: ${phone}`);
+    }
+
+    function openAddQuoteModal() {
+      openQuickModal(`
+        <h3 class="font-bold text-sm text-slate-900 mb-1">Agregar Presupuesto Adicional</h3>
+        <p class="text-xs text-slate-500 mb-4">Se sumará al total de la orden #${state.orders[state.selectedOrderIndex].number}.</p>
+        <form onsubmit="submitExtraQuote(event)" class="space-y-3">
+          <input id="q-label" type="text" placeholder="Concepto (ej. Pin de carga adicional)" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" required />
+          <input id="q-amount" type="number" placeholder="Valor en COP (ej. 60000)" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" required />
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" onclick="closeQuickModal()" class="px-3.5 py-1.5 text-xs border border-slate-200 rounded-lg">Cancelar</button>
+            <button type="submit" class="px-4 py-1.5 text-xs bg-[#84CC16] font-semibold rounded-lg">Agregar</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function submitExtraQuote(e) {
+      e.preventDefault();
+      const o = state.orders[state.selectedOrderIndex];
+      o.extraQuotes.push({
+        label: document.getElementById('q-label').value,
+        amount: Number(document.getElementById('q-amount').value)
+      });
+      closeQuickModal();
+      renderOrderDetail();
+      showToast('Presupuesto adicional agregado');
+    }
+
+    function openAddExpenseModal() {
+      openQuickModal(`
+        <h3 class="font-bold text-sm text-slate-900 mb-1">Registrar Gasto Asociado</h3>
+        <p class="text-xs text-slate-500 mb-4">Costo de repuesto o insumo para calcular tu Ganancia Neta.</p>
+        <form onsubmit="submitExpense(event)" class="space-y-3">
+          <input id="e-label" type="text" placeholder="Repuesto (ej. Batería iPhone 13 Pro Max)" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" required />
+          <input id="e-amount" type="number" placeholder="Costo en COP (ej. 110000)" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" required />
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" onclick="closeQuickModal()" class="px-3.5 py-1.5 text-xs border border-slate-200 rounded-lg">Cancelar</button>
+            <button type="submit" class="px-4 py-1.5 text-xs bg-[#84CC16] font-semibold rounded-lg">Guardar Gasto</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function submitExpense(e) {
+      e.preventDefault();
+      const o = state.orders[state.selectedOrderIndex];
+      o.expenses.push({
+        label: document.getElementById('e-label').value,
+        amount: Number(document.getElementById('e-amount').value)
+      });
+      closeQuickModal();
+      renderOrderDetail();
+      showToast('Gasto registrado y ganancia recalculada');
+    }
+
+    function openTechReportModal() {
+      const o = state.orders[state.selectedOrderIndex];
+      openQuickModal(`
+        <h3 class="font-bold text-sm text-slate-900 mb-2">Reporte Técnico</h3>
+        <form onsubmit="submitTechReport(event)" class="space-y-3">
+          <textarea id="tr-text" rows="4" placeholder="Escribe el diagnóstico técnico detallado..." class="w-full p-3 text-xs border border-slate-200 rounded-lg">${o.technicalReport}</textarea>
+          <div class="flex justify-end gap-2">
+            <button type="button" onclick="closeQuickModal()" class="px-3.5 py-1.5 text-xs border border-slate-200 rounded-lg">Cancelar</button>
+            <button type="submit" class="px-4 py-1.5 text-xs bg-[#84CC16] font-semibold rounded-lg">Guardar Reporte</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function submitTechReport(e) {
+      e.preventDefault();
+      state.orders[state.selectedOrderIndex].technicalReport = document.getElementById('tr-text').value;
+      closeQuickModal();
+      renderOrderDetail();
+      showToast('Reporte técnico actualizado');
+    }
+
+    function openEditOrderModal() {
+      const o = state.orders[state.selectedOrderIndex];
+      openQuickModal(`
+        <h3 class="font-bold text-sm text-slate-900 mb-3">Editar Orden #${o.number}</h3>
+        <form onsubmit="submitEditOrder(event)" class="space-y-3 text-xs">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Equipo</label>
+            <input id="ed-device" type="text" value="${o.device}" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Color</label>
+            <input id="ed-color" type="text" value="${o.color}" class="w-full px-3 py-2 border border-slate-200 rounded-lg" />
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Falla reportada</label>
+            <input id="ed-issue" type="text" value="${o.issue}" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Precio Total (COP)</label>
+            <input id="ed-price" type="number" value="${o.priceTotal}" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
+          </div>
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" onclick="closeQuickModal()" class="px-3.5 py-1.5 border border-slate-200 rounded-lg">Cancelar</button>
+            <button type="submit" class="px-4 py-1.5 bg-[#84CC16] font-semibold rounded-lg">Guardar</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function submitEditOrder(e) {
+      e.preventDefault();
+      const o = state.orders[state.selectedOrderIndex];
+      o.device = document.getElementById('ed-device').value;
+      o.color = document.getElementById('ed-color').value;
+      o.issue = document.getElementById('ed-issue').value;
+      o.priceTotal = Number(document.getElementById('ed-price').value);
+      closeQuickModal();
+      renderOrderDetail();
+      showToast('Orden actualizada');
+    }
+
+    function showDocPreview(docTitle) {
+      const o = state.orders[state.selectedOrderIndex];
+      openQuickModal(`
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-bold text-sm text-slate-900">${docTitle} — Orden #${o.number}</h3>
+          <button onclick="closeQuickModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+        <div class="border border-dashed border-slate-300 rounded-xl p-4 bg-slate-50 text-xs space-y-1.5 font-mono">
+          <div class="font-bold text-center text-slate-900">${state.workshop.name}</div>
+          <div class="text-center text-[11px] text-slate-500">${state.workshop.city} · ${state.workshop.phone}</div>
+          <hr class="border-slate-200 my-2">
+          <div><strong>ORDEN:</strong> #${o.number} (${o.receivedDate})</div>
+          <div><strong>CLIENTE:</strong> ${o.client.name}</div>
+          <div><strong>EQUIPO:</strong> ${o.device} (${o.color})</div>
+          <div><strong>FALLA:</strong> ${o.issue}</div>
+          <div><strong>ESTADO:</strong> ${STEPS[o.statusIndex]}</div>
+          <div><strong>TOTAL:</strong> ${formatCOP(o.priceTotal)}</div>
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <button onclick="window.print()" class="px-4 py-2 rounded-lg bg-[#84CC16] text-slate-950 font-semibold text-xs">Imprimir / Guardar PDF</button>
+        </div>
+      `);
+      lucide.createIcons();
+    }
+
+    function createNewOrder(e) {
+      e.preventDefault();
+      const newOrder = {
+        number: state.orders.length + 1,
+        device: document.getElementById('rec-device').value,
+        color: document.getElementById('rec-color').value || 'N/A',
+        issue: document.getElementById('rec-issue').value,
+        internalNotes: document.getElementById('rec-notes').value || 'N/A',
+        accessories: document.getElementById('rec-accessories').value || 'Ninguno',
+        technicalReport: '',
+        statusIndex: 0,
+        receivedDate: '25 nov 2026',
+        client: {
+          name: document.getElementById('rec-client-name').value.toUpperCase(),
+          docId: document.getElementById('rec-client-id').value || 'N/A',
+          phone: document.getElementById('rec-client-phone').value,
+          address: document.getElementById('rec-client-address').value || 'N/A'
+        },
+        priceTotal: Number(document.getElementById('rec-price').value),
+        paidAmount: 0,
+        extraQuotes: [],
+        expenses: [],
+        photos: 0,
+        history: [{ status: 'Recibido', timeAgo: 'hace un momento', dateShort: '25 nov' }]
+      };
+      state.orders.unshift(newOrder);
+      state.activeRoute = 'inicio';
+      renderSidebar();
+      renderWorkspace();
+      openOrderDetail(0);
+      showToast(`Orden #${newOrder.number} creada`);
+    }
+
+    // =========================================================
+    // OTRAS VISTAS (CLIENTES, AJUSTES, INVENTARIO)
+    // =========================================================
+    function renderClientesView() {
+      return `
+        <div class="bg-white rounded-2xl border border-slate-200/70 overflow-hidden max-w-3xl">
+          <div class="px-5 py-4 border-b border-slate-100 font-bold text-sm text-slate-900">Clientes Registrados</div>
+          <div class="divide-y divide-slate-100">
+            ${state.orders.map(o => `
+              <div class="px-5 py-3.5 flex items-center justify-between text-xs">
+                <div>
+                  <div class="font-bold text-slate-900">${o.client.name}</div>
+                  <div class="text-slate-400">${o.client.phone} · ${o.client.address}</div>
+                </div>
+                <span class="px-2.5 py-1 rounded-full bg-[#E9F5D8] text-[#2F5211] font-semibold text-[11px]">Orden #${o.number}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPresupuestosView() {
+      return `
+        <div class="bg-white rounded-2xl border border-slate-200/70 p-6 max-w-2xl space-y-4">
+          <h3 class="font-bold text-sm text-slate-900">Cotizador Rápido</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <input type="text" placeholder="Equipo (ej. iPhone 13 Pro Max)" class="px-3 py-2 border border-slate-200 rounded-lg" />
+            <input type="text" placeholder="Servicio (ej. Cambio de batería)" class="px-3 py-2 border border-slate-200 rounded-lg" />
+          </div>
+          <button onclick="showToast('Presupuesto listo para compartir')" class="px-4 py-2 rounded-lg bg-[#84CC16] text-slate-950 font-semibold text-xs">Generar Presupuesto</button>
+        </div>
+      `;
+    }
+
+    function renderInventarioView() {
+      return `
+        <div class="bg-white rounded-2xl border border-slate-200/70 overflow-hidden">
+          <div class="px-5 py-4 border-b border-slate-100 font-bold text-sm text-slate-900">Inventario de Repuestos</div>
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 text-[11px] text-slate-400 uppercase">
+              <tr>
+                <th class="py-3 px-4">SKU</th>
+                <th class="py-3 px-4">Repuesto</th>
+                <th class="py-3 px-4">Stock</th>
+                <th class="py-3 px-4 text-right">Precio</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              ${state.inventory.map(item => `
+                <tr>
+                  <td class="py-3 px-4 font-mono text-slate-500">${item.sku}</td>
+                  <td class="py-3 px-4 font-medium text-slate-800">${item.name}</td>
+                  <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold">${item.stock} und</span></td>
+                  <td class="py-3 px-4 text-right font-semibold text-slate-900">${formatCOP(item.price)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
     function renderAjustesView() {
       const subNavHtml = settingsSubTabs.map(tab => {
         const active = state.activeSettingsTab === tab.id;
         return `
           <button onclick="selectSettingsTab('${tab.id}')"
             class="w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-left transition-all ${
-              active ? 'bg-white shadow-xs border border-slate-200/70' : 'hover:bg-white/60 border border-transparent'
+              active ? 'bg-white shadow-2xs border border-slate-200/70' : 'hover:bg-white/60 border border-transparent'
             }">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
               active ? 'bg-[#E9F5D8] text-[#4D7C1F]' : 'bg-slate-200/60 text-slate-500'
@@ -391,329 +1199,58 @@
 
       return `
         <div class="flex flex-col lg:flex-row gap-8 items-start">
-          <!-- Columna Secundaria de Ajustes -->
           <div class="w-full lg:w-64 shrink-0 space-y-3">
-            <!-- Tarjeta Resumen Taller -->
             <div class="bg-white rounded-2xl p-4 border border-slate-200/70 shadow-2xs flex items-center gap-3.5">
-              <div class="w-11 h-11 rounded-xl bg-[#D4F097] flex items-center justify-center text-[#2B4C12] font-bold text-base shrink-0">
-                T
-              </div>
+              <div class="w-11 h-11 rounded-xl bg-[#D4F097] flex items-center justify-center text-[#2B4C12] font-bold text-base shrink-0">T</div>
               <div class="min-w-0">
                 <div class="font-bold text-[13px] text-slate-900 truncate">${state.workshop.name}</div>
                 <div class="text-[11px] text-slate-400 truncate">${state.workshop.email}</div>
                 <div class="mt-1.5">
                   ${state.isSubscribed
-                    ? `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-600">
-                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Activa
-                       </span>`
-                    : `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-500">
-                         <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Inactiva
-                       </span>`
+                    ? `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-600"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Activa</span>`
+                    : `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-500"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Inactiva</span>`
                   }
                 </div>
               </div>
             </div>
-
-            <!-- Lista de Sub-secciones -->
-            <div class="space-y-1">
-              ${subNavHtml}
-            </div>
+            <div class="space-y-1">${subNavHtml}</div>
           </div>
 
-          <!-- Panel Derecho de Detalle -->
           <div class="flex-1 w-full min-w-0">
-            ${renderSettingsSubContent()}
-          </div>
-        </div>
-      `;
-    }
-
-    function renderSettingsSubContent() {
-      if (state.activeSettingsTab === 'mi-cuenta') {
-        return `
-          <div class="flex items-start justify-between mb-6">
-            <div>
-              <h2 class="text-[17px] font-bold text-slate-900">Mi cuenta</h2>
-              <p class="text-xs text-slate-500 mt-0.5">Tu plan y cómo pagarlo.</p>
-            </div>
-            <button onclick="showToast('Tutorial rápido: Haz clic en Gestionar Cuenta para activar módulos')" class="w-8 h-8 rounded-full bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:scale-105 transition-transform" title="Ver guía rápida">
-              <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
-            </button>
-          </div>
-
-          <div class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-2.5">Suscripción</div>
-
-          <div class="bg-white rounded-2xl border border-slate-200/70 p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-              <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
-                state.isSubscribed ? 'bg-[#E9F5D8] text-[#4D7C1F]' : 'bg-rose-50 text-rose-500'
-              }">
-                <i data-lucide="crown" class="w-5 h-5"></i>
-              </div>
+            <div class="flex items-start justify-between mb-6">
               <div>
-                <div class="font-bold text-[15px] ${state.isSubscribed ? 'text-emerald-600' : 'text-rose-500'}">
-                  ${state.isSubscribed ? `Activa — ${state.planName}` : 'Inactiva'}
-                </div>
-                <div class="text-xs text-slate-500 mt-0.5">
-                  ${state.isSubscribed
-                    ? 'Todos los módulos de operación y punto de venta están desbloqueados.'
-                    : 'Gestiona tu cuenta para más funciones'}
-                </div>
+                <h2 class="text-[17px] font-bold text-slate-900">Mi cuenta</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Tu plan y cómo pagarlo.</p>
               </div>
-            </div>
-
-            <button onclick="openSubModal()" class="px-5 py-2.5 rounded-xl bg-[#84CC16] hover:bg-[#73B312] active:scale-[0.98] text-slate-950 font-semibold text-xs transition-all shrink-0 shadow-2xs">
-              Gestionar Cuenta
-            </button>
-          </div>
-        `;
-      }
-
-      if (state.activeSettingsTab === 'perfil') {
-        return `
-          <div class="mb-6">
-            <h2 class="text-[17px] font-bold text-slate-900">Perfil del taller</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Información comercial que aparecerá en tus tickets y presupuestos.</p>
-          </div>
-          <form onsubmit="saveWorkshopProfile(event)" class="bg-white rounded-2xl border border-slate-200/70 p-6 space-y-4 max-w-2xl">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">Nombre del Taller</label>
-                <input id="inp-w-name" type="text" value="${state.workshop.name}" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" required />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">Correo de contacto</label>
-                <input id="inp-w-email" type="email" value="${state.workshop.email}" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" required />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">Teléfono / WhatsApp</label>
-                <input id="inp-w-phone" type="text" value="${state.workshop.phone}" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">Ciudad y País</label>
-                <input id="inp-w-city" type="text" value="${state.workshop.city}" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" />
-              </div>
-            </div>
-            <div class="pt-2 flex justify-end">
-              <button type="submit" class="px-5 py-2 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs">
-                Guardar Cambios
+              <button onclick="openSubModal()" class="w-8 h-8 rounded-full bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
+                <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
               </button>
             </div>
-          </form>
-        `;
-      }
-
-      const currentTab = settingsSubTabs.find(t => t.id === state.activeSettingsTab);
-      return `
-        <div class="mb-6">
-          <h2 class="text-[17px] font-bold text-slate-900">${currentTab.title}</h2>
-          <p class="text-xs text-slate-500 mt-0.5">${currentTab.sub}</p>
-        </div>
-        <div class="bg-white rounded-2xl border border-slate-200/70 p-6 max-w-2xl">
-          <div class="flex items-center justify-between py-2">
-            <div>
-              <div class="text-xs font-semibold text-slate-800">Configuración rápida de ${currentTab.title}</div>
-              <div class="text-[11px] text-slate-500">Activa o personaliza las preferencias predeterminadas de tu sucursal.</div>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" checked class="sr-only peer" onchange="showToast('Preferencia actualizada')">
-              <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#84CC16]"></div>
-            </label>
-          </div>
-        </div>
-      `;
-    }
-
-    // Vista INICIO (Dashboard de Órdenes)
-    function renderInicioView() {
-      const rows = state.orders.map((o, idx) => `
-        <tr class="border-b border-slate-100 hover:bg-slate-50/70 text-xs">
-          <td class="py-3.5 px-4 font-semibold text-slate-900">${o.id}</td>
-          <td class="py-3.5 px-4 text-slate-700">${o.client}</td>
-          <td class="py-3.5 px-4 font-medium text-slate-800">${o.device}</td>
-          <td class="py-3.5 px-4 text-slate-500">${o.issue}</td>
-          <td class="py-3.5 px-4">
-            <select onchange="updateOrderStatus(${idx}, this.value)" class="text-[11px] font-semibold px-2.5 py-1 rounded-full border border-slate-200 bg-white text-slate-700">
-              <option ${o.status === 'Recibido' ? 'selected' : ''}>Recibido</option>
-              <option ${o.status === 'En reparación' ? 'selected' : ''}>En reparación</option>
-              <option ${o.status === 'Listo para entrega' ? 'selected' : ''}>Listo para entrega</option>
-              <option ${o.status === 'Entregado' ? 'selected' : ''}>Entregado</option>
-            </select>
-          </td>
-          <td class="py-3.5 px-4 font-semibold text-slate-900 text-right">${o.total}</td>
-        </tr>
-      `).join('');
-
-      return `
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div class="bg-white p-4 rounded-2xl border border-slate-200/70">
-            <span class="text-[11px] font-medium text-slate-400">Órdenes Activas</span>
-            <div class="text-2xl font-bold text-slate-900 mt-1">${state.orders.length}</div>
-          </div>
-          <div class="bg-white p-4 rounded-2xl border border-slate-200/70">
-            <span class="text-[11px] font-medium text-slate-400">Listos para Entrega</span>
-            <div class="text-2xl font-bold text-[#4D7C1F] mt-1">${state.orders.filter(o => o.status === 'Listo para entrega').length}</div>
-          </div>
-          <div class="bg-white p-4 rounded-2xl border border-slate-200/70">
-            <span class="text-[11px] font-medium text-slate-400">Clientes Registrados</span>
-            <div class="text-2xl font-bold text-slate-900 mt-1">${state.clients.length}</div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-slate-200/70 overflow-hidden">
-          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-            <h3 class="font-bold text-sm text-slate-900">Recepción de Equipos Recientes</h3>
-            <button onclick="navigate('recibir')" class="px-3.5 py-1.5 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs">
-              + Nueva Orden
-            </button>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="bg-slate-50/80 text-[11px] font-semibold text-slate-400 uppercase border-b border-slate-100">
-                  <th class="py-3 px-4">Orden</th>
-                  <th class="py-3 px-4">Cliente</th>
-                  <th class="py-3 px-4">Equipo</th>
-                  <th class="py-3 px-4">Falla / Servicio</th>
-                  <th class="py-3 px-4">Estado</th>
-                  <th class="py-3 px-4 text-right">Estimado</th>
-                </tr>
-              </thead>
-              <tbody>${rows}</tbody>
-            </table>
-          </div>
-        </div>
-      `;
-    }
-
-    // Vista RECIBIR EQUIPO
-    function renderRecibirView() {
-      return `
-        <form onsubmit="createOrder(event)" class="bg-white rounded-2xl border border-slate-200/70 p-6 max-w-2xl space-y-4">
-          <h3 class="font-bold text-sm text-slate-900">Registrar Nueva Reparación</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-slate-700 mb-1">Nombre del Cliente</label>
-              <input id="ord-client" type="text" placeholder="Ej. Juan Pérez" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-slate-700 mb-1">Modelo de Equipo</label>
-              <input id="ord-device" type="text" placeholder="Ej. iPhone 15 Pro Max" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" required />
-            </div>
-            <div class="sm:col-span-2">
-              <label class="block text-xs font-medium text-slate-700 mb-1">Diagnóstico / Reparación solicitada</label>
-              <input id="ord-issue" type="text" placeholder="Ej. Cambio de batería y mantenimiento" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" required />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-slate-700 mb-1">Costo Estimado</label>
-              <input id="ord-total" type="text" placeholder="$250.000" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" required />
-            </div>
-          </div>
-          <div class="pt-2 flex justify-end gap-2">
-            <button type="button" onclick="navigate('inicio')" class="px-4 py-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-600">Cancelar</button>
-            <button type="submit" class="px-5 py-2 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs">Crear Orden</button>
-          </div>
-        </form>
-      `;
-    }
-
-    // Vista CLIENTES
-    function renderClientesView() {
-      return `
-        <div class="bg-white rounded-2xl border border-slate-200/70 overflow-hidden max-w-3xl">
-          <div class="px-5 py-4 border-b border-slate-100 font-bold text-sm text-slate-900">Directorio de Clientes</div>
-          <div class="divide-y divide-slate-100">
-            ${state.clients.map(c => `
-              <div class="px-5 py-3.5 flex items-center justify-between text-xs">
-                <div>
-                  <div class="font-semibold text-slate-900">${c.name}</div>
-                  <div class="text-slate-400">${c.phone} • ${c.email}</div>
+            <div class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-2.5">Suscripción</div>
+            <div class="bg-white rounded-2xl border border-slate-200/70 p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${state.isSubscribed ? 'bg-[#E9F5D8] text-[#4D7C1F]' : 'bg-rose-50 text-rose-500'}">
+                  <i data-lucide="crown" class="w-5 h-5"></i>
                 </div>
-                <span class="px-2.5 py-1 rounded-full bg-[#E9F5D8] text-[#2F5211] font-semibold text-[11px]">${c.repairs} equipos</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
-
-    // Vista PRESUPUESTOS
-    function renderPresupuestosView() {
-      return `
-        <div class="bg-white rounded-2xl border border-slate-200/70 p-6 max-w-2xl space-y-4">
-          <h3 class="font-bold text-sm text-slate-900">Cotizador Rápido de Taller</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <input id="quote-device" type="text" placeholder="Equipo (ej. iPhone 14)" class="px-3 py-2 border border-slate-200 rounded-lg" />
-            <input id="quote-service" type="text" placeholder="Servicio (ej. Cambio de pantalla)" class="px-3 py-2 border border-slate-200 rounded-lg" />
-          </div>
-          <button onclick="showToast('Presupuesto PDF generado y listo para enviar por WhatsApp')" class="px-4 py-2 rounded-lg bg-[#84CC16] text-slate-950 font-semibold text-xs">
-            Generar Cotización
-          </button>
-        </div>
-      `;
-    }
-
-    // Vista INVENTARIO (Desbloqueable)
-    function renderInventarioView() {
-      return `
-        <div class="bg-white rounded-2xl border border-slate-200/70 overflow-hidden">
-          <div class="px-5 py-4 border-b border-slate-100 font-bold text-sm text-slate-900">Stock de Repuestos</div>
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 text-[11px] text-slate-400 uppercase">
-              <tr>
-                <th class="py-3 px-4">SKU</th>
-                <th class="py-3 px-4">Repuesto</th>
-                <th class="py-3 px-4">Disponibles</th>
-                <th class="py-3 px-4 text-right">Precio</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-              ${state.inventory.map(item => `
-                <tr>
-                  <td class="py-3 px-4 font-mono text-slate-500">${item.sku}</td>
-                  <td class="py-3 px-4 font-medium text-slate-800">${item.name}</td>
-                  <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold">${item.stock} und</span></td>
-                  <td class="py-3 px-4 text-right font-semibold text-slate-900">${item.price}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      `;
-    }
-
-    // Vista POS (Desbloqueable)
-    function renderPOSView() {
-      return `
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            ${state.inventory.map(item => `
-              <div class="bg-white p-4 rounded-2xl border border-slate-200/70 flex flex-col justify-between">
                 <div>
-                  <span class="text-[10px] font-mono text-slate-400">${item.sku}</span>
-                  <h4 class="font-semibold text-xs text-slate-900 mt-1">${item.name}</h4>
-                </div>
-                <div class="mt-4 flex items-center justify-between">
-                  <span class="font-bold text-sm text-slate-900">${item.price}</span>
-                  <button onclick="showToast('Agregado: ${item.name}')" class="px-3 py-1 rounded-lg bg-[#E9F5D8] text-[#2F5211] font-semibold text-xs hover:bg-[#D4F097]">+ Agregar</button>
+                  <div class="font-bold text-[15px] ${state.isSubscribed ? 'text-emerald-600' : 'text-rose-500'}">
+                    ${state.isSubscribed ? `Activa — ${state.planName}` : 'Inactiva'}
+                  </div>
+                  <div class="text-xs text-slate-500 mt-0.5">
+                    ${state.isSubscribed ? 'Todos los módulos desbloqueados.' : 'Gestiona tu cuenta para más funciones'}
+                  </div>
                 </div>
               </div>
-            `).join('')}
-          </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-200/70 flex flex-col justify-between">
-            <div>
-              <h3 class="font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">Ticket de Venta</h3>
-              <p class="text-xs text-slate-400 py-8 text-center">Selecciona productos para iniciar una venta rápida.</p>
+              <button onclick="openSubModal()" class="px-5 py-2.5 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs shrink-0">
+                Gestionar Cuenta
+              </button>
             </div>
-            <button onclick="showToast('Venta registrada en caja')" class="w-full py-2.5 rounded-xl bg-[#84CC16] text-slate-950 font-bold text-xs">Cobrar Ticket</button>
           </div>
         </div>
       `;
     }
 
-    // =========================================================
-    // ACCIONES E INTERACTIVIDAD
-    // =========================================================
+    // Helpers de Modales y Toast
     function selectSettingsTab(tabId) {
       state.activeSettingsTab = tabId;
       renderWorkspace();
@@ -722,11 +1259,7 @@
     function openSubModal() {
       const modal = document.getElementById('subscription-modal');
       const deactZone = document.getElementById('deactivate-zone');
-      if (state.isSubscribed) {
-        deactZone.classList.remove('hidden');
-      } else {
-        deactZone.classList.add('hidden');
-      }
+      state.isSubscribed ? deactZone.classList.remove('hidden') : deactZone.classList.add('hidden');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
@@ -743,7 +1276,7 @@
       closeSubModal();
       renderSidebar();
       renderWorkspace();
-      showToast(`¡${planTitle} activado! Todos los módulos desbloqueados.`);
+      showToast(`¡${planTitle} activado!`);
     }
 
     function deactivatePlan() {
@@ -755,36 +1288,17 @@
       showToast('Suscripción desactivada.');
     }
 
-    function saveWorkshopProfile(e) {
-      e.preventDefault();
-      state.workshop.name = document.getElementById('inp-w-name').value;
-      state.workshop.email = document.getElementById('inp-w-email').value;
-      state.workshop.phone = document.getElementById('inp-w-phone').value;
-      state.workshop.city = document.getElementById('inp-w-city').value;
-      document.getElementById('brand-name-sidebar').textContent = state.workshop.name;
-      renderWorkspace();
-      showToast('Perfil del taller actualizado');
+    function openQuickModal(html) {
+      const modal = document.getElementById('quick-action-modal');
+      document.getElementById('quick-action-content').innerHTML = html;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
     }
 
-    function createOrder(e) {
-      e.preventDefault();
-      const newOrder = {
-        id: 'ORD-' + (1040 + state.orders.length + 1),
-        client: document.getElementById('ord-client').value,
-        device: document.getElementById('ord-device').value,
-        issue: document.getElementById('ord-issue').value,
-        status: 'Recibido',
-        total: document.getElementById('ord-total').value,
-        date: 'Ahora'
-      };
-      state.orders.unshift(newOrder);
-      showToast(`Orden ${newOrder.id} creada correctamente`);
-      navigate('inicio');
-    }
-
-    function updateOrderStatus(idx, newStatus) {
-      state.orders[idx].status = newStatus;
-      showToast(`Estado actualizado a: ${newStatus}`);
+    function closeQuickModal() {
+      const modal = document.getElementById('quick-action-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
     }
 
     function refreshView() {
@@ -794,7 +1308,7 @@
         icon.classList.remove('animate-spin');
         renderWorkspace();
         showToast('Datos sincronizados');
-      }, 450);
+      }, 400);
     }
 
     function showToast(msg) {
@@ -807,9 +1321,10 @@
       }, 3000);
     }
 
-    // Inicializar aplicación
+    // Inicializar en Inicio y abrir directamente la orden #3 de ejemplo para que la veas igual a tu captura
     renderSidebar();
     renderWorkspace();
+    openOrderDetail(0);
   </script>
 </body>
 </html>
