@@ -76,7 +76,7 @@
   ========================================================== -->
   <div class="flex-1 flex flex-col h-full min-w-0">
     <header id="standard-header" class="h-16 px-8 flex items-center justify-between shrink-0 bg-[#F4F7FA]">
-      <h1 id="page-title" class="text-[20px] font-bold text-slate-900 tracking-tight">Inicio</h1>
+      <h1 id="page-title" class="text-[20px] font-bold text-slate-900 tracking-tight">Clientes</h1>
       <button onclick="refreshView()" class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white border border-slate-200/90 rounded-lg text-[13px] font-medium text-slate-700 hover:bg-slate-50 active:scale-[0.99] transition-all shadow-2xs">
         <i id="refresh-icon" data-lucide="rotate-cw" class="w-3.5 h-3.5 text-slate-500"></i>
         Actualizar
@@ -163,10 +163,10 @@
   </div>
 
   <!-- =========================================================
-       MODAL RÁPIDO GENÉRICO (FIRMA, ELIMINAR, GASTOS, ETC.)
+       MODAL RÁPIDO GENÉRICO
   ========================================================== -->
   <div id="quick-action-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] hidden items-center justify-center z-50 p-4">
-    <div id="quick-action-content" class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100"></div>
+    <div id="quick-action-content" class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 max-h-[92vh] overflow-y-auto"></div>
   </div>
 
   <!-- Toast Notification -->
@@ -176,27 +176,82 @@
   </div>
 
   <!-- =========================================================
-       JAVASCRIPT DE LA APLICACIÓN (CON GUARDADO EN LOCALSTORAGE)
+       JAVASCRIPT DE LA APLICACIÓN
   ========================================================== -->
   <script>
     const STEPS = ['Recibido', 'Diagnóstico', 'En Reparación', 'Listo para Entregar', 'Entregado'];
-    const STORAGE_KEY = 'teslatech_app_state_v1';
+    const STORAGE_KEY = 'teslatech_app_state_v2';
 
     const defaultState = {
-      activeRoute: 'inicio',
+      activeRoute: 'clientes',
       activeSettingsTab: 'mi-cuenta',
       isSubscribed: false,
       planName: 'Inactiva',
       selectedOrderIndex: null,
+      selectedClientId: null,
+      clientSearch: '',
+      newClientType: 'Persona',
+      newClientDocType: 'CC',
       workshop: {
         name: 'TESLA TECH',
         email: 'teslatech.cox@gmail.com',
         phone: '+57 300 123 4567',
         city: 'Medellín, Colombia'
       },
+      clients: [
+        {
+          id: 'cli-1',
+          type: 'Persona',
+          firstName: 'DAYANA',
+          lastName: 'FLOREZ',
+          fullName: 'DAYANA FLOREZ',
+          initials: 'DF',
+          avatarBg: 'bg-amber-100/80 text-amber-700',
+          phone: '+573226207154',
+          docType: 'CC',
+          docNumber: '',
+          email: '',
+          address: '',
+          conflictive: false,
+          isPosClient: false
+        },
+        {
+          id: 'cli-2',
+          type: 'Persona',
+          firstName: 'Maria',
+          lastName: 'Rodriguez',
+          fullName: 'Maria Rodriguez',
+          initials: 'MR',
+          avatarBg: 'bg-emerald-100/80 text-emerald-700',
+          phone: '+573187152134',
+          docType: 'CC',
+          docNumber: '12345678',
+          email: '',
+          address: '',
+          conflictive: false,
+          isPosClient: false
+        },
+        {
+          id: 'cli-3',
+          type: 'Persona',
+          firstName: 'Maria',
+          lastName: 'Velez',
+          fullName: 'Maria Velez',
+          initials: 'MV',
+          avatarBg: 'bg-emerald-100/80 text-emerald-700',
+          phone: '+573505659860',
+          docType: 'CC',
+          docNumber: '1034297687',
+          email: '',
+          address: '',
+          conflictive: false,
+          isPosClient: false
+        }
+      ],
       orders: [
         {
           number: 3,
+          clientId: 'cli-1',
           device: 'appple iphone 13 pro max',
           color: 'plateado',
           issue: 'cambio bateria',
@@ -220,34 +275,6 @@
           history: [
             { status: 'Recibido', timeAgo: 'hace 20 h 35 min', dateShort: '24 nov' }
           ]
-        },
-        {
-          number: 2,
-          device: 'iPhone 14 Pro',
-          color: 'morado oscuro',
-          issue: 'remanufactura de visor glass',
-          internalNotes: 'FaceID funcionando OK al recibir',
-          accessories: 'Funda transparente',
-          technicalReport: 'Visor fracturado, táctil e imagen intactos. Listo para laminado.',
-          statusIndex: 2,
-          receivedDate: '23 nov 2026',
-          client: {
-            name: 'CARLOS MENDOZA',
-            docId: '1037654321',
-            phone: '+573104558890',
-            address: 'Laureles, Medellín'
-          },
-          priceTotal: 380000,
-          paidAmount: 100000,
-          extraQuotes: [],
-          expenses: [{ label: 'Visor original OCA', amount: 65000 }],
-          photos: 3,
-          signatureDataUrl: null,
-          history: [
-            { status: 'En Reparación', timeAgo: 'hace 2 h 10 min', dateShort: '25 nov' },
-            { status: 'Diagnóstico', timeAgo: 'hace 1 día', dateShort: '24 nov' },
-            { status: 'Recibido', timeAgo: 'hace 2 días', dateShort: '23 nov' }
-          ]
         }
       ],
       inventory: [
@@ -258,7 +285,6 @@
       ]
     };
 
-    // Cargar estado guardado o usar inicial
     function loadState() {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
@@ -314,6 +340,20 @@
 
     function formatCOP(val) {
       return 'COP ' + Number(val || 0).toLocaleString('es-CO');
+    }
+
+    function getInitials(name) {
+      const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return 'CL';
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function getClientOrders(client) {
+      return state.orders.filter(o =>
+        (client.id && o.clientId === client.id) ||
+        (o.client && o.client.name && o.client.name.toLowerCase() === client.fullName.toLowerCase())
+      );
     }
 
     // =========================================================
@@ -373,27 +413,35 @@
 
     function navigate(routeId) {
       state.activeRoute = routeId;
+      if (routeId !== 'clientes') {
+        state.selectedClientId = null;
+      }
       saveState();
       renderSidebar();
       renderWorkspace();
     }
 
     // =========================================================
-    // VISTAS PRINCIPALES DEL WORKSPACE
+    // RENDERIZADO DEL WORKSPACE
     // =========================================================
     function renderWorkspace() {
       const ws = document.getElementById('workspace');
       const titleEl = document.getElementById('page-title');
 
-      if (state.activeRoute === 'inicio') {
+      if (state.activeRoute === 'clientes') {
+        if (state.selectedClientId) {
+          titleEl.textContent = 'Clientes';
+          ws.innerHTML = renderClientDetailView();
+        } else {
+          titleEl.textContent = 'Clientes';
+          ws.innerHTML = renderClientesListView();
+        }
+      } else if (state.activeRoute === 'inicio') {
         titleEl.textContent = 'Inicio';
         ws.innerHTML = renderInicioView();
       } else if (state.activeRoute === 'recibir') {
         titleEl.textContent = 'Recibir Equipo';
         ws.innerHTML = renderRecibirView();
-      } else if (state.activeRoute === 'clientes') {
-        titleEl.textContent = 'Clientes';
-        ws.innerHTML = renderClientesView();
       } else if (state.activeRoute === 'ajustes') {
         titleEl.textContent = 'Ajustes';
         ws.innerHTML = renderAjustesView();
@@ -421,145 +469,759 @@
       lucide.createIcons();
     }
 
-    function renderInicioView() {
-      if (state.orders.length === 0) {
-        return `
-          <div class="bg-white rounded-2xl border border-slate-200/80 p-10 text-center max-w-lg mx-auto mt-6">
-            <p class="text-sm font-bold text-slate-800">No hay órdenes activas</p>
-            <p class="text-xs text-slate-500 mt-1 mb-4">Crea una nueva recepción de equipo para comenzar.</p>
-            <button onclick="navigate('recibir')" class="px-4 py-2 rounded-xl bg-[#84CC16] text-slate-950 font-semibold text-xs">+ Recibir Equipo</button>
-          </div>
-        `;
-      }
+    // =========================================================
+    // VISTA 1: MIS CLIENTES (RÉPLICA DE CAPTURA 1)
+    // =========================================================
+    function renderClientesListView() {
+      const q = (state.clientSearch || '').trim().toLowerCase();
+      const filtered = state.clients.filter(c =>
+        c.fullName.toLowerCase().includes(q) ||
+        (c.docNumber || '').toLowerCase().includes(q) ||
+        (c.phone || '').toLowerCase().includes(q)
+      );
 
-      const cards = state.orders.map((o, idx) => {
-        const currentStep = STEPS[o.statusIndex];
-        return `
-          <div onclick="openOrderDetail(${idx})" class="bg-white rounded-2xl border border-slate-200/80 p-4 hover:border-[#84CC16] hover:shadow-sm transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="flex items-start gap-3.5">
-              <div class="w-10 h-10 rounded-xl bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center shrink-0">
-                #${o.number}
+      const frequentCount = state.clients.filter(c => getClientOrders(c).length >= 2).length;
+      const posCount = state.clients.filter(c => c.isPosClient).length;
+
+      const rowsHtml = filtered.length === 0
+        ? `<div class="bg-white rounded-2xl border border-slate-200/70 p-10 text-center text-xs text-slate-400">No se encontraron clientes con "${state.clientSearch}".</div>`
+        : filtered.map(c => `
+            <div onclick="openClientDetail('${c.id}')" class="bg-white hover:bg-slate-50/80 border border-slate-200/70 rounded-xl px-5 py-3.5 flex items-center justify-between gap-4 cursor-pointer transition-colors shadow-2xs">
+              <!-- Columna 1: Avatar + Nombre -->
+              <div class="flex items-center gap-3.5 w-1/3 min-w-[180px]">
+                <div class="w-9 h-9 rounded-full ${c.avatarBg || 'bg-emerald-100/80 text-emerald-700'} font-bold text-xs flex items-center justify-center shrink-0">
+                  ${c.initials || getInitials(c.fullName)}
+                </div>
+                <div>
+                  <div class="text-[13px] font-bold text-slate-900 leading-tight">${c.fullName}</div>
+                  ${c.conflictive ? `<span class="inline-block mt-0.5 text-[10px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">Cliente conflictivo</span>` : ''}
+                </div>
               </div>
-              <div>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="font-bold text-sm text-slate-900">${o.device}</span>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-600">${currentStep}</span>
-                </div>
-                <div class="text-xs text-slate-500 mt-0.5">
-                  ${o.client.name} · <span class="text-slate-400">${o.issue}</span>
-                </div>
+
+              <!-- Columna 2: Identificación -->
+              <div class="w-1/4 text-xs text-slate-500 font-medium">
+                ${c.docNumber ? `<span class="text-slate-400 mr-1">#</span>${c.docNumber}` : ''}
+              </div>
+
+              <!-- Columna 3: Teléfono + Flecha -->
+              <div class="flex-1 flex items-center justify-end gap-6 text-xs text-slate-600 font-medium">
+                <span class="inline-flex items-center gap-1.5">
+                  <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400"></i>
+                  ${c.phone || '—'}
+                </span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 shrink-0"></i>
               </div>
             </div>
-            <div class="flex items-center justify-between sm:justify-end gap-4 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100">
-              <div class="text-right">
-                <div class="text-xs font-bold text-slate-900">${formatCOP(o.priceTotal)}</div>
-                <div class="text-[11px] text-slate-400">Recibida el ${o.receivedDate}</div>
-              </div>
-              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
-            </div>
-          </div>
-        `;
-      }).join('');
+          `).join('');
 
       return `
-        <div class="flex items-center justify-between mb-4">
-          <p class="text-xs text-slate-500">Haz clic sobre cualquier orden para abrir su ficha completa.</p>
-          <button onclick="navigate('recibir')" class="px-4 py-2 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs shrink-0 shadow-2xs">
-            + Recibir Equipo
-          </button>
+        <!-- Barra superior: Título Mis Clientes + Buscador + Contadores + Acciones -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div class="flex flex-wrap items-center gap-2.5">
+            <div class="flex items-center gap-2 mr-1">
+              <i data-lucide="users" class="w-4 h-4 text-slate-700"></i>
+              <h2 class="text-[16px] font-bold text-slate-900">Mis Clientes</h2>
+              <button onclick="showToast('Tip: haz clic en cualquier cliente para ver su historial y saldo pendiente')" class="w-6 h-6 rounded-full bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:scale-105 transition-transform" title="Guía rápida">
+                <i data-lucide="play" class="w-3 h-3 fill-current"></i>
+              </button>
+            </div>
+
+            <!-- Buscador -->
+            <div class="relative">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+              <input
+                type="text"
+                value="${state.clientSearch}"
+                oninput="updateClientSearch(this.value)"
+                placeholder="Buscar por nombre, cédula, teléfon"
+                class="pl-8 pr-3 py-1.5 w-60 bg-white border border-slate-200/90 rounded-lg text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#84CC16]"
+              />
+            </div>
+
+            <!-- Pill: Total -->
+            <div class="bg-white border border-slate-200/80 rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
+              <span class="w-6 h-6 rounded-md bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
+                <i data-lucide="users" class="w-3.5 h-3.5"></i>
+              </span>
+              <div class="leading-none">
+                <div class="text-xs font-extrabold text-slate-900">${state.clients.length}</div>
+                <div class="text-[9px] font-bold uppercase text-slate-400 mt-0.5">TOTAL</div>
+              </div>
+            </div>
+
+            <!-- Pill: Frecuentes -->
+            <div class="bg-white border border-slate-200/80 rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
+              <span class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+              </span>
+              <div class="leading-none">
+                <div class="text-xs font-extrabold text-slate-900">${frequentCount}</div>
+                <div class="text-[9px] font-bold uppercase text-slate-400 mt-0.5">FRECUENTES</div>
+              </div>
+            </div>
+
+            <!-- Pill: Clientes POS -->
+            <div class="bg-white border border-slate-200/80 rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
+              <span class="w-6 h-6 rounded-md bg-purple-50 text-purple-600 flex items-center justify-center">
+                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+              </span>
+              <div class="leading-none">
+                <div class="text-xs font-extrabold text-slate-900">${posCount}</div>
+                <div class="text-[9px] font-bold uppercase text-slate-400 mt-0.5">CLIENTES POS</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botones Derecha -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="showToast('Selecciona un archivo .CSV para importar clientes')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#E9F5D8]/70 hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-xs transition-colors">
+              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-[#4D7C1F]"></i> Importar CSV
+            </button>
+            <button onclick="exportClientsCSV()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#E9F5D8]/70 hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-xs transition-colors">
+              <i data-lucide="download" class="w-3.5 h-3.5 text-[#4D7C1F]"></i> Exportar
+            </button>
+            <button onclick="cleanDuplicateClients()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100/80 text-amber-700 font-semibold text-xs transition-colors">
+              <i data-lucide="git-merge" class="w-3.5 h-3.5 text-amber-600"></i> Limpiar Duplicados
+            </button>
+            <button onclick="openNewClientModal()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs shadow-2xs transition-colors">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nuevo Cliente
+            </button>
+          </div>
         </div>
-        <div class="space-y-3">
-          ${cards}
+
+        <!-- Cabeceras de Tabla -->
+        <div class="px-5 pb-2 flex items-center text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          <div class="w-1/3 min-w-[180px]">CLIENTE</div>
+          <div class="w-1/4">IDENTIFICACIÓN</div>
+          <div class="flex-1">TELÉFONO</div>
+        </div>
+
+        <!-- Filas de Clientes -->
+        <div class="space-y-2.5">
+          ${rowsHtml}
         </div>
       `;
+    }
+
+    function updateClientSearch(val) {
+      state.clientSearch = val;
+      saveState();
+      renderWorkspace();
+      // Mantener foco en el buscador
+      const input = document.querySelector('input[placeholder*="Buscar por nombre"]');
+      if (input) {
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+      }
+    }
+
+    function exportClientsCSV() {
+      const csv = ['Nombre,Documento,Telefono,Correo,Direccion']
+        .concat(state.clients.map(c => `"${c.fullName}","${c.docNumber || ''}","${c.phone || ''}","${c.email || ''}","${c.address || ''}"`))
+        .join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'clientes_tesla_tech.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Listado de clientes exportado en CSV');
+    }
+
+    function cleanDuplicateClients() {
+      const seen = new Set();
+      const unique = [];
+      let removed = 0;
+      for (const c of state.clients) {
+        const key = `${c.fullName.trim().toLowerCase()}|${(c.phone || '').trim()}`;
+        if (seen.has(key)) {
+          removed++;
+        } else {
+          seen.add(key);
+          unique.push(c);
+        }
+      }
+      state.clients = unique;
+      saveState();
+      renderWorkspace();
+      showToast(removed > 0 ? `Se eliminaron ${removed} duplicados` : 'No se encontraron clientes duplicados');
+    }
+
+    // =========================================================
+    // MODAL: NUEVO CLIENTE (RÉPLICA DE CAPTURA 2)
+    // =========================================================
+    function openNewClientModal(editingClientId = null) {
+      const existing = editingClientId ? state.clients.find(c => c.id === editingClientId) : null;
+      state.newClientType = existing ? (existing.type || 'Persona') : 'Persona';
+      state.newClientDocType = existing ? (existing.docType || 'CC') : 'CC';
+
+      const isEmpresa = state.newClientType === 'Empresa';
+
+      openQuickModal(`
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+              <i data-lucide="user-plus" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-base text-slate-900 leading-tight">${existing ? 'Editar Cliente' : 'Nuevo Cliente'}</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Queda guardado para la próxima orden o venta</p>
+            </div>
+          </div>
+          <button onclick="closeQuickModal()" class="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Selector Persona / Empresa -->
+        <div class="grid grid-cols-2 gap-1.5 bg-slate-100/90 p-1 rounded-xl mb-4 text-xs font-bold">
+          <button type="button" onclick="setClientModalType('Persona')" class="py-2 rounded-lg transition-all ${!isEmpresa ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">
+            Persona
+          </button>
+          <button type="button" onclick="setClientModalType('Empresa')" class="py-2 rounded-lg transition-all ${isEmpresa ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">
+            Empresa
+          </button>
+        </div>
+
+        <form onsubmit="submitClientForm(event, '${existing ? existing.id : ''}')" class="space-y-3.5 text-xs">
+          ${!isEmpresa
+            ? `<div class="grid grid-cols-2 gap-3">
+                 <div>
+                   <label class="block font-bold text-slate-800 mb-1">Nombre *</label>
+                   <input id="nc-first" type="text" value="${existing ? (existing.firstName || '') : ''}" placeholder="Ej. María" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" required />
+                 </div>
+                 <div>
+                   <label class="block font-bold text-slate-800 mb-1">Apellido *</label>
+                   <input id="nc-last" type="text" value="${existing ? (existing.lastName || '') : ''}" placeholder="Ej. Pérez" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" required />
+                 </div>
+               </div>`
+            : `<div>
+                 <label class="block font-bold text-slate-800 mb-1">Razón Social / Empresa *</label>
+                 <input id="nc-company" type="text" value="${existing ? existing.fullName : ''}" placeholder="Ej. Inversiones Tech SAS" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" required />
+               </div>`
+          }
+
+          <!-- Teléfono con +57 -->
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">Teléfono</label>
+            <div class="flex items-center gap-2">
+              <span class="px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 font-extrabold text-[#4D7C1F] shrink-0">+57</span>
+              <input id="nc-phone" type="text" value="${existing ? (existing.phone || '').replace(/^\+57/, '') : ''}" placeholder="4141234567" class="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+            </div>
+          </div>
+
+          <!-- Tipo de documento -->
+          <div>
+            <label class="block font-bold text-slate-800 mb-1.5">Tipo de documento</label>
+            <div class="flex items-center gap-2">
+              ${['CC', 'CE', 'Pasaporte'].map(dt => `
+                <button type="button" onclick="setClientModalDocType('${dt}')" class="px-3.5 py-1.5 rounded-lg border text-xs font-bold transition-colors ${
+                  state.newClientDocType === dt
+                    ? 'border-[#84CC16] bg-[#F2FCE2] text-[#2F5211]'
+                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                }">${dt}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Número de documento -->
+          <div>
+            <label id="nc-doc-label" class="block font-bold text-slate-800 mb-1">${state.newClientDocType}</label>
+            <input id="nc-doc-num" type="text" value="${existing ? (existing.docNumber || '') : ''}" placeholder="1023456789" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+          </div>
+
+          <!-- Correo -->
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">Correo</label>
+            <input id="nc-email" type="email" value="${existing ? (existing.email || '') : ''}" placeholder="cliente@correo.com" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+          </div>
+
+          <!-- Dirección -->
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">Dirección</label>
+            <input id="nc-address" type="text" value="${existing ? (existing.address || '') : ''}" placeholder="Opcional" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+          </div>
+
+          <button type="submit" class="mt-2 w-full py-3 rounded-xl bg-[#A3E635] hover:bg-[#84CC16] text-slate-900 font-bold text-sm transition-colors shadow-2xs">
+            ${existing ? 'Actualizar Cliente' : 'Guardar Cliente'}
+          </button>
+        </form>
+      `);
+      lucide.createIcons();
+    }
+
+    function setClientModalType(type) {
+      state.newClientType = type;
+      openNewClientModal(state.selectedClientId);
+    }
+
+    function setClientModalDocType(dt) {
+      state.newClientDocType = dt;
+      const lbl = document.getElementById('nc-doc-label');
+      if (lbl) lbl.textContent = dt;
+      openNewClientModal(state.selectedClientId);
+    }
+
+    function submitClientForm(e, editId) {
+      e.preventDefault();
+      const rawPhone = (document.getElementById('nc-phone')?.value || '').trim();
+      const phone = rawPhone ? (rawPhone.startsWith('+') ? rawPhone : '+57' + rawPhone) : '';
+
+      let firstName = '';
+      let lastName = '';
+      let fullName = '';
+
+      if (state.newClientType === 'Empresa') {
+        fullName = (document.getElementById('nc-company')?.value || '').trim();
+        firstName = fullName;
+      } else {
+        firstName = (document.getElementById('nc-first')?.value || '').trim();
+        lastName = (document.getElementById('nc-last')?.value || '').trim();
+        fullName = `${firstName} ${lastName}`.trim();
+      }
+
+      if (!fullName) return;
+
+      const docNumber = (document.getElementById('nc-doc-num')?.value || '').trim();
+      const email = (document.getElementById('nc-email')?.value || '').trim();
+      const address = (document.getElementById('nc-address')?.value || '').trim();
+
+      if (editId) {
+        const cli = state.clients.find(c => c.id === editId);
+        if (cli) {
+          cli.type = state.newClientType;
+          cli.firstName = firstName;
+          cli.lastName = lastName;
+          cli.fullName = fullName;
+          cli.initials = getInitials(fullName);
+          cli.phone = phone;
+          cli.docType = state.newClientDocType;
+          cli.docNumber = docNumber;
+          cli.email = email;
+          cli.address = address;
+        }
+        showToast('Cliente actualizado');
+      } else {
+        state.clients.unshift({
+          id: 'cli-' + Date.now(),
+          type: state.newClientType,
+          firstName,
+          lastName,
+          fullName,
+          initials: getInitials(fullName),
+          avatarBg: 'bg-emerald-100/80 text-emerald-700',
+          phone,
+          docType: state.newClientDocType,
+          docNumber,
+          email,
+          address,
+          conflictive: false,
+          isPosClient: false
+        });
+        showToast(`Cliente "${fullName}" guardado`);
+      }
+
+      saveState();
+      closeQuickModal();
+      renderWorkspace();
+    }
+
+    // =========================================================
+    // VISTA 2: DETALLE DE CLIENTE (RÉPLICA DE CAPTURA 3)
+    // =========================================================
+    function openClientDetail(clientId) {
+      state.selectedClientId = clientId;
+      saveState();
+      renderWorkspace();
+    }
+
+    function backToClientsList() {
+      state.selectedClientId = null;
+      saveState();
+      renderWorkspace();
+    }
+
+    function toggleClientConflictive(clientId) {
+      const cli = state.clients.find(c => c.id === clientId);
+      if (!cli) return;
+      cli.conflictive = !cli.conflictive;
+      saveState();
+      renderWorkspace();
+      showToast(cli.conflictive ? 'Marcado como Cliente conflictivo' : 'Marca de cliente conflictivo removida');
+    }
+
+    function deleteClientById(clientId) {
+      const cli = state.clients.find(c => c.id === clientId);
+      if (!cli) return;
+      state.clients = state.clients.filter(c => c.id !== clientId);
+      state.selectedClientId = null;
+      saveState();
+      renderWorkspace();
+      showToast(`Cliente "${cli.fullName}" eliminado`);
+    }
+
+    function renderClientDetailView() {
+      const cli = state.clients.find(c => c.id === state.selectedClientId);
+      if (!cli) {
+        state.selectedClientId = null;
+        return renderClientesListView();
+      }
+
+      const clientOrders = getClientOrders(cli);
+      const pendingSum = clientOrders.reduce((acc, o) => {
+        const extra = (o.extraQuotes || []).reduce((s, q) => s + q.amount, 0);
+        const total = (o.priceTotal || 0) + extra;
+        const pend = Math.max(0, total - (o.paidAmount || 0));
+        return acc + pend;
+      }, 0);
+
+      const lastOrderDate = clientOrders.length > 0 ? clientOrders[0].receivedDate.split(' ').slice(0, 2).join(' ') : '—';
+
+      const ordersHtml = clientOrders.length === 0
+        ? `<div class="bg-white rounded-2xl border border-slate-200/70 p-8 text-center text-xs text-slate-400">Este cliente aún no tiene órdenes registradas.</div>`
+        : clientOrders.map(o => {
+            const globalIdx = state.orders.indexOf(o);
+            const extra = (o.extraQuotes || []).reduce((s, q) => s + q.amount, 0);
+            const total = (o.priceTotal || 0) + extra;
+            const pend = Math.max(0, total - (o.paidAmount || 0));
+            const statusLabel = (STEPS[o.statusIndex] || 'Recibido').toUpperCase();
+
+            return `
+              <div onclick="openOrderDetail(${globalIdx})" class="bg-white hover:border-[#84CC16] border border-slate-200/70 rounded-2xl p-4 flex items-center justify-between gap-4 cursor-pointer transition-all shadow-2xs">
+                <div class="flex items-start gap-3.5">
+                  <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0 mt-0.5">
+                    <i data-lucide="smartphone" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <div class="font-bold text-sm text-slate-900 leading-tight">${o.device}</div>
+                    <div class="text-[11px] text-slate-400 mt-0.5">#${o.number} · ${o.receivedDate}</div>
+                    <span class="inline-block mt-2 px-2.5 py-0.5 rounded-md bg-sky-50 text-sky-600 font-bold text-[10px] tracking-wide">${statusLabel}</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-3 text-right">
+                  <div>
+                    <div class="text-sm font-extrabold text-slate-900">${formatCOP(total)}</div>
+                    ${pend > 0 ? `<div class="text-[11px] font-bold text-rose-500 mt-0.5">Debe ${formatCOP(pend)}</div>` : `<div class="text-[11px] font-semibold text-emerald-600 mt-0.5">Pagado</div>`}
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+      return `
+        <!-- Sub-barra: Flecha Atrás + Título Cliente + Botones Eliminar y Editar -->
+        <div class="flex items-center justify-between gap-4 mb-5">
+          <div class="flex items-center gap-3">
+            <button onclick="backToClientsList()" class="p-1.5 rounded-lg text-slate-700 hover:bg-white transition-colors" title="Volver a Mis Clientes">
+              <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            </button>
+            <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
+              <i data-lucide="user" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-[16px] font-bold text-slate-900 leading-none">Cliente</h2>
+              <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1">${cli.fullName}</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2.5">
+            <button onclick="deleteClientById('${cli.id}')" class="w-9 h-9 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-500 flex items-center justify-center transition-colors" title="Eliminar cliente">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+            <button onclick="openNewClientModal('${cli.id}')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#2F5211] font-bold text-xs transition-colors">
+              <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Editar
+            </button>
+          </div>
+        </div>
+
+        <!-- Grilla Principal de Detalle -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+          <!-- Columna Izquierda (5 cols) -->
+          <div class="lg:col-span-5 space-y-4">
+            <!-- Card Identidad + WhatsApp + Copiar -->
+            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
+              <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-full ${cli.avatarBg || 'bg-amber-100/80 text-amber-700'} font-extrabold text-sm flex items-center justify-center shrink-0">
+                  ${cli.initials || getInitials(cli.fullName)}
+                </div>
+                <div>
+                  <div class="font-extrabold text-sm text-slate-900">${cli.fullName}</div>
+                  <div class="text-xs text-slate-500 mt-0.5">${cli.phone || 'Sin teléfono'}</div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 mt-4">
+                <button onclick="showToast('Abriendo WhatsApp con ${cli.phone || ''}')" class="w-9 h-9 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#4D7C1F] flex items-center justify-center transition-colors" title="WhatsApp">
+                  <i data-lucide="message-circle" class="w-4 h-4"></i>
+                </button>
+                <button onclick="copyToClip('${cli.phone || cli.fullName}')" class="w-9 h-9 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#4D7C1F] flex items-center justify-center transition-colors" title="Copiar datos">
+                  <i data-lucide="copy" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Card Cliente conflictivo -->
+            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 flex items-center justify-between gap-3 shadow-2xs">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
+                  <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <div class="font-bold text-xs text-slate-900">Cliente conflictivo</div>
+                  <div class="text-[11px] text-slate-400">Al recibirle un equipo, la app avisa.</div>
+                </div>
+              </div>
+              <button type="button" onclick="toggleClientConflictive('${cli.id}')" class="w-10 h-5 rounded-full transition-colors p-0.5 ${cli.conflictive ? 'bg-[#84CC16]' : 'bg-slate-200'}">
+                <div class="w-4 h-4 rounded-full bg-white shadow-2xs transition-transform ${cli.conflictive ? 'translate-x-5' : 'translate-x-0'}"></div>
+              </button>
+            </div>
+
+            <!-- 3 Mini Cards: Órdenes | Pendiente | Última -->
+            <div class="grid grid-cols-3 gap-3">
+              <div class="bg-white rounded-2xl border border-slate-200/70 p-3.5 shadow-2xs">
+                <div class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center mb-2">
+                  <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>
+                </div>
+                <div class="font-extrabold text-sm text-slate-900">${clientOrders.length}</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Órdenes</div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-slate-200/70 p-3.5 shadow-2xs">
+                <div class="w-7 h-7 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center mb-2">
+                  <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+                </div>
+                <div class="font-extrabold text-xs text-rose-500 truncate">${formatCOP(pendingSum)}</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Pendiente</div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-slate-200/70 p-3.5 shadow-2xs">
+                <div class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center mb-2">
+                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                </div>
+                <div class="font-extrabold text-sm text-slate-900">${lastOrderDate}</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Última</div>
+              </div>
+            </div>
+
+            <!-- Card Información de Contacto -->
+            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs space-y-3">
+              <div class="flex items-center gap-2 font-bold text-xs text-slate-900">
+                <span class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
+                  <i data-lucide="contact" class="w-3.5 h-3.5"></i>
+                </span>
+                Información de Contacto
+              </div>
+
+              <div class="flex items-center gap-3 pt-1">
+                <i data-lucide="phone" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                <div>
+                  <div class="text-[10px] text-slate-400">Teléfono</div>
+                  <div class="text-xs font-bold text-slate-800">${cli.phone || 'Sin teléfono'}</div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <i data-lucide="mail" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                <div>
+                  <div class="text-[10px] text-slate-400">Correo</div>
+                  <div class="text-xs font-bold text-slate-800">${cli.email || 'Sin correo'}</div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <i data-lucide="map-pin" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                <div>
+                  <div class="text-[10px] text-slate-400">Dirección</div>
+                  <div class="text-xs font-bold text-slate-800">${cli.address || 'Sin dirección'}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Historial de Órdenes (7 cols) -->
+          <div class="lg:col-span-7 space-y-3">
+            <div class="flex items-center justify-between px-1">
+              <h3 class="font-bold text-xs text-slate-800">Historial de Órdenes</h3>
+              <span class="text-[11px] text-slate-400">${clientOrders.length} registros</span>
+            </div>
+            <div class="space-y-2.5">
+              ${ordersHtml}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function copyToClip(text) {
+      navigator.clipboard?.writeText(text);
+      showToast(`Copiado: ${text}`);
+    }
+
+    // =========================================================
+    // OTRAS VISTAS Y DETALLE DE ORDEN
+    // =========================================================
+    function renderInicioView() {
+      const cards = state.orders.map((o, idx) => `
+        <div onclick="openOrderDetail(${idx})" class="bg-white rounded-2xl border border-slate-200/80 p-4 hover:border-[#84CC16] transition-all cursor-pointer flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center">#${o.number}</div>
+            <div>
+              <div class="font-bold text-sm text-slate-900">${o.device}</div>
+              <div class="text-xs text-slate-500">${o.client.name} · ${o.issue}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-xs font-bold text-slate-900">${formatCOP(o.priceTotal)}</div>
+            <div class="text-[11px] text-slate-400">${STEPS[o.statusIndex]}</div>
+          </div>
+        </div>
+      `).join('');
+
+      return `<div class="space-y-3">${cards}</div>`;
     }
 
     function renderRecibirView() {
       const nextNum = state.orders.reduce((max, o) => Math.max(max, o.number), 0) + 1;
       return `
-        <form onsubmit="createNewOrder(event)" class="bg-white rounded-2xl border border-slate-200/80 p-6 max-w-3xl space-y-6">
-          <div class="border-b border-slate-100 pb-3">
-            <h2 class="text-base font-bold text-slate-900">Nueva Orden de Recepción</h2>
-            <p class="text-xs text-slate-500">Completa los datos del cliente y del equipo para generar la orden #${nextNum}.</p>
-          </div>
-
-          <div>
-            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-              <i data-lucide="user" class="w-3.5 h-3.5 text-[#65A30D]"></i> Datos del Cliente
+        <form onsubmit="createNewOrder(event)" class="bg-white rounded-2xl border border-slate-200/80 p-6 max-w-3xl space-y-4">
+          <h2 class="text-base font-bold text-slate-900">Nueva Orden de Recepción #${nextNum}</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Nombre completo *</label>
+              <input id="rec-client-name" type="text" placeholder="Ej. DAYANA FLOREZ" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">Nombre completo *</label>
-                <input id="rec-client-name" type="text" placeholder="Ej. DAYANA FLOREZ" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" required />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">Teléfono / WhatsApp *</label>
-                <input id="rec-client-phone" type="text" placeholder="Ej. +573226207154" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" required />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">Cédula / ID</label>
-                <input id="rec-client-id" type="text" placeholder="N/A" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">Dirección</label>
-                <input id="rec-client-address" type="text" placeholder="N/A" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" />
-              </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Teléfono *</label>
+              <input id="rec-client-phone" type="text" placeholder="+573226207154" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
             </div>
-          </div>
-
-          <div>
-            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-              <i data-lucide="smartphone" class="w-3.5 h-3.5 text-[#65A30D]"></i> Datos del Equipo y Finanzas
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Equipo *</label>
+              <input id="rec-device" type="text" placeholder="apple iphone 13 pro max" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">Marca y Modelo del Equipo *</label>
-                <input id="rec-device" type="text" placeholder="Ej. apple iphone 13 pro max" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" required />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">Color</label>
-                <input id="rec-color" type="text" placeholder="Ej. plateado" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" />
-              </div>
-              <div class="sm:col-span-2">
-                <label class="block text-xs font-medium text-slate-700 mb-1">Falla Reportada *</label>
-                <input id="rec-issue" type="text" placeholder="Ej. cambio bateria" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" required />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">Accesorios incluidos</label>
-                <input id="rec-accessories" type="text" placeholder="Ninguno" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">Precio Total (COP) *</label>
-                <input id="rec-price" type="number" placeholder="260000" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" required />
-              </div>
-              <div class="sm:col-span-2">
-                <label class="block text-xs font-medium text-slate-700 mb-1">Notas Internas</label>
-                <input id="rec-notes" type="text" placeholder="N/A" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#84CC16]" />
-              </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Color</label>
+              <input id="rec-color" type="text" placeholder="plateado" class="w-full px-3 py-2 border border-slate-200 rounded-lg" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block font-medium text-slate-700 mb-1">Falla Reportada *</label>
+              <input id="rec-issue" type="text" placeholder="cambio bateria" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Precio Total (COP) *</label>
+              <input id="rec-price" type="number" placeholder="260000" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
             </div>
           </div>
-
-          <div class="pt-3 border-t border-slate-100 flex justify-end gap-2.5">
-            <button type="button" onclick="navigate('inicio')" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50">
-              Cancelar
-            </button>
-            <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs shadow-2xs">
-              Guardar y Abrir Orden
-            </button>
+          <div class="pt-2 flex justify-end gap-2">
+            <button type="button" onclick="navigate('inicio')" class="px-4 py-2 rounded-lg border border-slate-200 text-xs">Cancelar</button>
+            <button type="submit" class="px-5 py-2 rounded-lg bg-[#84CC16] text-slate-950 font-semibold text-xs">Guardar Orden</button>
           </div>
         </form>
       `;
     }
 
-    // =========================================================
-    // FICHA DETALLADA DE ORDEN (CON FIRMA Y ELIMINAR ORDEN)
-    // =========================================================
+    function createNewOrder(e) {
+      e.preventDefault();
+      const clientName = document.getElementById('rec-client-name').value.trim().toUpperCase();
+      const phone = document.getElementById('rec-client-phone').value.trim();
+
+      let matchedClient = state.clients.find(c => c.fullName.toLowerCase() === clientName.toLowerCase());
+      if (!matchedClient) {
+        matchedClient = {
+          id: 'cli-' + Date.now(),
+          type: 'Persona',
+          firstName: clientName.split(' ')[0] || clientName,
+          lastName: clientName.split(' ').slice(1).join(' '),
+          fullName: clientName,
+          initials: getInitials(clientName),
+          avatarBg: 'bg-emerald-100/80 text-emerald-700',
+          phone,
+          docType: 'CC',
+          docNumber: '',
+          email: '',
+          address: '',
+          conflictive: false,
+          isPosClient: false
+        };
+        state.clients.unshift(matchedClient);
+      }
+
+      const nextNum = state.orders.reduce((max, o) => Math.max(max, o.number), 0) + 1;
+      const newOrder = {
+        number: nextNum,
+        clientId: matchedClient.id,
+        device: document.getElementById('rec-device').value,
+        color: document.getElementById('rec-color').value || 'N/A',
+        issue: document.getElementById('rec-issue').value,
+        internalNotes: 'N/A',
+        accessories: 'Ninguno',
+        technicalReport: '',
+        statusIndex: 0,
+        receivedDate: '25 nov 2026',
+        client: { name: clientName, docId: matchedClient.docNumber || 'N/A', phone, address: matchedClient.address || 'N/A' },
+        priceTotal: Number(document.getElementById('rec-price').value),
+        paidAmount: 0,
+        extraQuotes: [],
+        expenses: [],
+        photos: 0,
+        signatureDataUrl: null,
+        history: [{ status: 'Recibido', timeAgo: 'hace un momento', dateShort: '25 nov' }]
+      };
+      state.orders.unshift(newOrder);
+      saveState();
+      state.activeRoute = 'inicio';
+      renderSidebar();
+      renderWorkspace();
+      openOrderDetail(0);
+      showToast(`Orden #${newOrder.number} creada y vinculada a ${clientName}`);
+    }
+
     function openOrderDetail(idx) {
       state.selectedOrderIndex = idx;
+      const o = state.orders[idx];
+      if (!o) return;
       const overlay = document.getElementById('order-detail-overlay');
       overlay.classList.remove('hidden');
       overlay.classList.add('flex');
-      renderOrderDetail();
+
+      document.getElementById('order-detail-header').innerHTML = `
+        <div class="flex items-center gap-3">
+          <button onclick="closeOrderDetail()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="font-bold text-[15px] text-slate-900">${o.device}</h2>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-600">${STEPS[o.statusIndex]}</span>
+            </div>
+            <p class="text-[11px] text-slate-400">#${o.number} · ${o.client.name} · recibida el ${o.receivedDate}</p>
+          </div>
+        </div>
+        <button onclick="deleteOrderFromDetail(${idx})" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold text-xs">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Eliminar Orden
+        </button>
+      `;
+
+      document.getElementById('order-detail-body').innerHTML = `
+        <div class="bg-white rounded-2xl border border-slate-200/70 p-5 max-w-4xl space-y-3 text-xs">
+          <div class="font-bold text-sm text-slate-900">Detalle de Orden #${o.number}</div>
+          <div><strong>Cliente:</strong> ${o.client.name} (${o.client.phone})</div>
+          <div><strong>Equipo:</strong> ${o.device} — Color: ${o.color}</div>
+          <div><strong>Falla reportada:</strong> ${o.issue}</div>
+          <div><strong>Total:</strong> ${formatCOP(o.priceTotal)}</div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    function deleteOrderFromDetail(idx) {
+      state.orders.splice(idx, 1);
+      saveState();
+      closeOrderDetail();
+      showToast('Orden eliminada');
     }
 
     function closeOrderDetail() {
@@ -570,864 +1232,29 @@
       renderWorkspace();
     }
 
-    function renderOrderDetail() {
-      const idx = state.selectedOrderIndex;
-      if (idx === null || !state.orders[idx]) return;
-      const o = state.orders[idx];
-
-      const extraTotal = o.extraQuotes.reduce((acc, q) => acc + q.amount, 0);
-      const grandTotal = o.priceTotal + extraTotal;
-      const pendingBalance = Math.max(0, grandTotal - o.paidAmount);
-      const totalExpenses = o.expenses.reduce((acc, e) => acc + e.amount, 0);
-      const netProfit = grandTotal - totalExpenses;
-      const currentStatusLabel = STEPS[o.statusIndex];
-
-      // Header de la orden
-      document.getElementById('order-detail-header').innerHTML = `
-        <div class="flex items-center gap-3">
-          <button onclick="closeOrderDetail()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200/80 flex items-center justify-center text-slate-600 transition-colors" title="Cerrar">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="font-bold text-[15px] text-slate-900 leading-tight">${o.device}</h2>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-600">${currentStatusLabel}</span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-0.5">#${o.number} · ${o.client.name} · recibida el ${o.receivedDate}</p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="showToast('Mostrando código QR de seguimiento #${o.number}')" class="w-8 h-8 rounded-full bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:scale-105 transition-transform" title="Vista cliente">
-            <i data-lucide="disc" class="w-3.5 h-3.5"></i>
-          </button>
-
-          <button onclick="showDocPreview('QR de Seguimiento')" class="relative inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50">
-            <i data-lucide="qr-code" class="w-3.5 h-3.5 text-slate-500"></i> QR
-            <span class="w-3.5 h-3.5 rounded-full bg-amber-400 text-white text-[9px] flex items-center justify-center"><i data-lucide="lock" class="w-2 h-2"></i></span>
-          </button>
-
-          <button onclick="showDocPreview('Etiqueta Adhesiva Equipo')" class="relative inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50">
-            <i data-lucide="tag" class="w-3.5 h-3.5 text-slate-500"></i> Etiqueta
-            <span class="w-3.5 h-3.5 rounded-full bg-amber-400 text-white text-[9px] flex items-center justify-center"><i data-lucide="lock" class="w-2 h-2"></i></span>
-          </button>
-
-          <button onclick="showDocPreview('Ticket Térmico 80mm')" class="relative inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50">
-            <i data-lucide="ticket" class="w-3.5 h-3.5 text-slate-500"></i> Ticket
-            <span class="w-3.5 h-3.5 rounded-full bg-amber-400 text-white text-[9px] flex items-center justify-center"><i data-lucide="lock" class="w-2 h-2"></i></span>
-          </button>
-
-          <button onclick="showDocPreview('Recibo de Recepción')" class="relative inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50">
-            <i data-lucide="printer" class="w-3.5 h-3.5 text-slate-500"></i> Recibo
-            <span class="w-3.5 h-3.5 rounded-full bg-amber-400 text-white text-[9px] flex items-center justify-center"><i data-lucide="lock" class="w-2 h-2"></i></span>
-          </button>
-
-          <button onclick="openEditOrderModal()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs shadow-2xs">
-            <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Editar orden
-          </button>
-        </div>
-      `;
-
-      const progressPercent = (o.statusIndex / (STEPS.length - 1)) * 100;
-      const stepsHtml = STEPS.map((stepName, sIdx) => {
-        const isCompleted = sIdx <= o.statusIndex;
-        const isCurrent = sIdx === o.statusIndex;
-        const historyMatch = o.history.find(h => h.status === stepName);
-        return `
-          <div onclick="setOrderStep(${sIdx})" class="flex flex-col items-center cursor-pointer group z-10 w-28">
-            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-              isCompleted
-                ? 'bg-[#65A30D] text-white shadow-xs ring-4 ring-[#E9F5D8]'
-                : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'
-            }">
-              ${sIdx + 1}
-            </div>
-            <span class="mt-2 text-[11px] font-semibold text-center ${isCompleted ? 'text-[#2F5211]' : 'text-slate-400'}">
-              ${stepName}
-            </span>
-            <span class="text-[10px] text-slate-400 h-3.5">
-              ${historyMatch ? historyMatch.dateShort : (isCurrent ? 'Hoy' : '')}
-            </span>
-          </div>
-        `;
-      }).join('');
-
-      document.getElementById('order-detail-body').innerHTML = `
-        <!-- Card: Estado Actual -->
-        <div class="bg-white rounded-2xl border border-slate-200/70 p-4 flex items-center justify-between shadow-2xs">
-          <div>
-            <div class="font-bold text-sm text-slate-900">Estado Actual</div>
-            <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mt-2">FECHA DE RECEPCIÓN</div>
-            <div class="text-xs font-semibold text-slate-800 mt-0.5">${o.receivedDate}</div>
-          </div>
-          <span class="px-3 py-1 rounded-full bg-sky-50 text-sky-600 font-bold text-[11px] uppercase tracking-wide">
-            ${currentStatusLabel}
-          </span>
-        </div>
-
-        <!-- Card: Progreso -->
-        <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
-          <div class="flex items-center gap-2 font-bold text-sm text-slate-900 mb-5">
-            <i data-lucide="git-commit-horizontal" class="w-4 h-4 text-[#65A30D]"></i> Progreso
-          </div>
-          <div class="relative flex items-start justify-between max-w-6xl mx-auto px-2 pb-1">
-            <div class="absolute top-3.5 left-12 right-12 h-[2px] bg-slate-100"></div>
-            <div class="absolute top-3.5 left-12 h-[2px] bg-[#65A30D] transition-all duration-300" style="width: calc(${progressPercent}% - 3rem);"></div>
-            ${stepsHtml}
-          </div>
-        </div>
-
-        <!-- Banner 1: Cambiar estado / Entregar -->
-        <div onclick="advanceOrderStep()" class="bg-[#F2FCE2] hover:bg-[#E7F8CC] border border-[#D4F097] rounded-2xl p-3.5 flex items-center justify-between cursor-pointer transition-colors">
-          <div class="flex items-center gap-3.5">
-            <div class="w-9 h-9 rounded-xl bg-[#84CC16] text-white flex items-center justify-center shrink-0">
-              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <div class="font-bold text-xs text-[#2F5211]">Cambiar estado / Entregar</div>
-              <div class="text-[11px] text-[#4D7C1F]">Actualiza el estado o entrega el equipo y cobra el saldo</div>
-            </div>
-          </div>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-[#4D7C1F]"></i>
-        </div>
-
-        <!-- Banner 2: Informe Completo de la Orden -->
-        <div onclick="showDocPreview('Informe Completo PDF')" class="bg-[#F2FCE2] hover:bg-[#E7F8CC] border border-[#D4F097] rounded-2xl p-3.5 flex items-center justify-between cursor-pointer transition-colors">
-          <div class="flex items-center gap-3.5">
-            <div class="w-9 h-9 rounded-xl bg-[#84CC16] text-white flex items-center justify-center shrink-0">
-              <i data-lucide="file-check-2" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <div class="font-bold text-xs text-[#2F5211]">Informe Completo de la Orden</div>
-              <div class="text-[11px] text-[#4D7C1F]">PDF compartible: diagnóstico, checklist, firma y fotos</div>
-            </div>
-          </div>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-[#4D7C1F]"></i>
-        </div>
-
-        <!-- GRILLA DE 3 COLUMNAS -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-
-          <!-- COLUMNA IZQUIERDA (5 cols) -->
-          <div class="lg:col-span-5 space-y-4">
-            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
-              <div class="flex items-center gap-2 font-bold text-sm text-slate-900 mb-3">
-                <i data-lucide="user" class="w-4 h-4 text-[#65A30D]"></i> Datos del Cliente
-              </div>
-              <div class="space-y-2.5 text-xs">
-                <div>
-                  <div class="text-[10px] font-semibold uppercase text-slate-400">NOMBRE</div>
-                  <div class="font-bold text-slate-800 mt-0.5">${o.client.name}</div>
-                </div>
-                <div>
-                  <div class="text-[10px] font-semibold uppercase text-slate-400">CÉDULA/ID</div>
-                  <div class="font-semibold text-slate-700 mt-0.5">${o.client.docId}</div>
-                </div>
-                <div class="flex items-center justify-between">
-                  <div>
-                    <div class="text-[10px] font-semibold uppercase text-slate-400">TELÉFONO</div>
-                    <div class="font-bold text-slate-800 mt-0.5">${o.client.phone}</div>
-                  </div>
-                  <div class="flex items-center gap-1.5">
-                    <button onclick="showToast('Abriendo chat WhatsApp con ${o.client.phone}')" class="relative w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:bg-[#D4F097]" title="Enviar WhatsApp">
-                      <i data-lucide="message-circle" class="w-4 h-4"></i>
-                      <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-white border border-slate-200 flex items-center justify-center"><i data-lucide="lock" class="w-2 h-2 text-slate-500"></i></span>
-                    </button>
-                    <button onclick="copyPhone('${o.client.phone}')" class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:bg-[#D4F097]" title="Copiar teléfono">
-                      <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                    </button>
-                  </div>
-                </div>
-                <div>
-                  <div class="text-[10px] font-semibold uppercase text-slate-400">DIRECCIÓN</div>
-                  <div class="font-semibold text-slate-700 mt-0.5">${o.client.address}</div>
-                </div>
-              </div>
-            </div>
-
-            <div onclick="openTechReportModal()" class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs cursor-pointer hover:border-[#84CC16] transition-colors">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2 font-bold text-sm text-slate-900">
-                  <i data-lucide="clipboard-list" class="w-4 h-4 text-[#65A30D]"></i> Reporte Técnico
-                </div>
-                <span class="text-[11px] font-medium text-[#4D7C1F]">+ Editar</span>
-              </div>
-              ${o.technicalReport ? `<p class="text-xs text-slate-600 mt-2.5">${o.technicalReport}</p>` : ''}
-            </div>
-
-            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
-              <div class="flex items-center gap-2 font-bold text-sm text-slate-900 mb-3">
-                <i data-lucide="history" class="w-4 h-4 text-[#65A30D]"></i> Recorrido del equipo
-              </div>
-              <div class="space-y-3">
-                ${o.history.map((h, hIdx) => `
-                  <div class="flex items-start gap-2.5">
-                    <span class="w-2 h-2 rounded-full mt-1.5 shrink-0 ${hIdx === 0 ? 'bg-[#65A30D]' : 'bg-slate-300'}"></span>
-                    <div>
-                      <div class="text-xs font-bold ${hIdx === 0 ? 'text-[#2F5211]' : 'text-slate-700'}">${h.status}</div>
-                      <div class="text-[11px] text-slate-400">${h.timeAgo}</div>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          </div>
-
-          <!-- COLUMNA CENTRAL (5 cols) -->
-          <div class="lg:col-span-5 space-y-4">
-            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
-              <div class="flex items-center gap-2 font-bold text-sm text-slate-900 mb-3">
-                <i data-lucide="smartphone" class="w-4 h-4 text-[#65A30D]"></i> Datos del Equipo
-              </div>
-              <div class="space-y-2.5 text-xs">
-                <div>
-                  <div class="text-[10px] font-semibold uppercase text-slate-400">DATOS DEL EQUIPO</div>
-                  <div class="font-bold text-slate-800 mt-0.5">${o.device}</div>
-                </div>
-                <div>
-                  <div class="text-[10px] font-semibold uppercase text-slate-400">COLOR</div>
-                  <div class="font-semibold text-slate-700 mt-0.5">${o.color}</div>
-                </div>
-                <div>
-                  <div class="text-[10px] font-semibold uppercase text-slate-400">FALLA REPORTADA</div>
-                  <div class="font-semibold text-slate-800 mt-0.5">${o.issue}</div>
-                </div>
-                <div>
-                  <div class="text-[10px] font-semibold uppercase text-slate-400">NOTAS INTERNAS</div>
-                  <div class="font-semibold text-slate-700 mt-0.5">${o.internalNotes}</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
-              <div class="flex items-center gap-2 font-bold text-sm text-slate-900 mb-3">
-                <i data-lucide="file-box" class="w-4 h-4 text-[#65A30D]"></i> Accesorios
-              </div>
-              <div class="text-[10px] font-semibold uppercase text-slate-400">ACCESORIOS INCLUIDOS</div>
-              <div class="text-xs font-bold text-slate-800 mt-0.5">${o.accessories}</div>
-            </div>
-          </div>
-
-          <!-- COLUMNA DERECHA (2 cols) -->
-          <div class="lg:col-span-2 space-y-4">
-            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-1.5 font-bold text-sm text-slate-900">
-                  <i data-lucide="wallet" class="w-4 h-4 text-[#65A30D]"></i> Finanzas
-                </div>
-                <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">#${o.number}</span>
-              </div>
-
-              <div class="grid grid-cols-2 gap-2 text-center py-2 border-b border-slate-100">
-                <div>
-                  <div class="text-[9px] font-semibold uppercase text-slate-400">PRECIO TOTAL</div>
-                  <div class="text-xs font-extrabold text-slate-900 mt-0.5">${formatCOP(o.priceTotal)}</div>
-                </div>
-                <div>
-                  <div class="text-[9px] font-semibold uppercase text-slate-400">TOTAL</div>
-                  <div class="text-xs font-extrabold text-slate-900 mt-0.5">${formatCOP(grandTotal)}</div>
-                </div>
-              </div>
-
-              <div class="text-center pt-2.5">
-                <div class="text-[9px] font-semibold uppercase text-slate-400">SALDO PENDIENTE</div>
-                <div class="text-sm font-extrabold text-[#4D7C1F] mt-0.5">${formatCOP(pendingBalance)}</div>
-              </div>
-            </div>
-
-            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
-              <div class="flex items-center gap-1.5 font-bold text-xs text-slate-900 mb-2">
-                <i data-lucide="file-plus-2" class="w-4 h-4 text-[#65A30D] shrink-0"></i>
-                <span>Presupuestos adicionales</span>
-              </div>
-              ${o.extraQuotes.length === 0
-                ? `<p class="text-[11px] text-slate-400 leading-relaxed">Sin presupuestos adicionales. Si al revisar el equipo aparecen repuestos o trabajos no contemplados, emite uno y el cliente lo aprueba desde su celular.</p>`
-                : `<div class="space-y-1.5 my-2">
-                    ${o.extraQuotes.map(q => `
-                      <div class="flex justify-between text-[11px] bg-slate-50 px-2 py-1 rounded">
-                        <span class="text-slate-700 truncate">${q.label}</span>
-                        <span class="font-bold text-slate-900">${formatCOP(q.amount)}</span>
-                      </div>
-                    `).join('')}
-                   </div>`
-              }
-              <button onclick="openAddQuoteModal()" class="mt-3 w-full py-2 px-2.5 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-[11px] transition-colors">
-                + Agregar Presupuesto Adicional
-              </button>
-            </div>
-
-            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
-              <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center gap-1.5 font-bold text-xs text-slate-900">
-                  <i data-lucide="trending-up" class="w-4 h-4 text-[#65A30D]"></i> Gastos Asociados
-                </div>
-                <button onclick="openAddExpenseModal()" class="text-[10px] font-bold text-[#4D7C1F] hover:underline">+ Gasto</button>
-              </div>
-
-              ${o.expenses.length === 0
-                ? `<div class="text-[11px] text-slate-400 text-center py-2">Sin gastos registrados</div>`
-                : `<div class="space-y-1 my-2">
-                    ${o.expenses.map(e => `
-                      <div class="flex justify-between text-[11px] text-slate-600">
-                        <span class="truncate">${e.label}</span>
-                        <span class="text-rose-500 font-semibold">-${formatCOP(e.amount)}</span>
-                      </div>
-                    `).join('')}
-                   </div>`
-              }
-
-              <div class="flex items-center justify-between text-[11px] pt-2 border-t border-slate-100">
-                <span class="font-semibold text-slate-700">Total Gastos</span>
-                <span class="font-bold text-rose-500">-${formatCOP(totalExpenses)}</span>
-              </div>
-
-              <div class="mt-2.5 px-3 py-2 rounded-xl bg-[#F2FCE2] border border-[#D4F097] flex items-center justify-between">
-                <span class="text-[11px] font-semibold text-[#2F5211]">Ganancia Neta</span>
-                <span class="text-xs font-extrabold text-[#2F5211]">${formatCOP(netProfit)}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card: Evidencia Fotográfica -->
-        <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
-          <div class="flex items-center gap-2 font-bold text-sm text-slate-900 mb-3">
-            <i data-lucide="camera" class="w-4 h-4 text-[#65A30D]"></i> Evidencia Fotográfica
-          </div>
-
-          <button onclick="addMockPhoto()" class="w-full py-3 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-xs flex items-center justify-center gap-2 transition-colors">
-            <i data-lucide="camera" class="w-4 h-4"></i> Agregar Fotos
-          </button>
-
-          <div class="text-center text-[11px] text-slate-400 my-2">${o.photos}/8</div>
-
-          <button onclick="showToast('Código QR generado para subir fotos directo desde la cámara del celular')" class="w-full py-1.5 text-[#4D7C1F] hover:underline font-semibold text-xs flex items-center justify-center gap-1.5">
-            <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Subir desde el teléfono
-          </button>
-        </div>
-
-        <!-- Card: Firma del Cliente (COMO TU CAPTURA) -->
-        <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-2 font-bold text-sm text-slate-900">
-              <i data-lucide="pen-tool" class="w-4 h-4 text-[#65A30D]"></i> Firma del Cliente
-            </div>
-            ${o.signatureDataUrl ? `<button onclick="clearOrderSignature()" class="text-[11px] text-rose-500 hover:underline font-medium">Borrar firma</button>` : ''}
-          </div>
-
-          ${o.signatureDataUrl
-            ? `<div onclick="openSignatureModal()" class="w-full py-3 px-4 rounded-xl border border-dashed border-[#84CC16] bg-[#F9FDF3] flex flex-col items-center justify-center cursor-pointer">
-                 <img src="${o.signatureDataUrl}" alt="Firma del cliente" class="max-h-24 object-contain" />
-                 <span class="text-[10px] text-slate-400 mt-1">Haz clic para volver a firmar</span>
-               </div>`
-            : `<div onclick="openSignatureModal()" class="w-full py-6 rounded-xl border border-dashed border-slate-200 bg-slate-50/60 hover:bg-slate-50 hover:border-[#84CC16] flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-colors">
-                 <i data-lucide="pen-tool" class="w-4 h-4 text-[#65A30D]"></i>
-                 <span class="text-xs font-semibold text-slate-700">Capturar Firma</span>
-               </div>`
-          }
-
-          <div class="mt-3">
-            <button onclick="showToast('Enlace QR generado para que el cliente firme desde su celular')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-[11px] transition-colors">
-              <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> Firmar en mi celular
-            </button>
-          </div>
-        </div>
-
-        <!-- Botón Inferior Centrado: Eliminar Orden (COMO TU CAPTURA) -->
-        <div class="pt-3 pb-6 flex justify-center">
-          <button onclick="confirmDeleteOrder()" class="inline-flex items-center gap-1.5 text-rose-500 hover:text-rose-600 hover:bg-rose-50 px-4 py-2 rounded-xl font-semibold text-xs transition-colors">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Eliminar Orden
-          </button>
-        </div>
-      `;
-
-      lucide.createIcons();
-    }
-
-    // =========================================================
-    // LÓGICA DE FIRMA DIGITAL EN CANVAS Y ELIMINAR ORDEN
-    // =========================================================
-    function openSignatureModal() {
-      openQuickModal(`
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="font-bold text-sm text-slate-900">Capturar Firma del Cliente</h3>
-          <button onclick="closeQuickModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
-        </div>
-        <p class="text-xs text-slate-500 mb-3">Dibuja la firma con el mouse o con el dedo dentro del recuadro.</p>
-        <div class="border border-slate-200 rounded-xl bg-slate-50 overflow-hidden touch-none">
-          <canvas id="sig-canvas" width="380" height="160" class="w-full h-40 cursor-crosshair block"></canvas>
-        </div>
-        <div class="flex items-center justify-between mt-4">
-          <button type="button" onclick="clearSigCanvas()" class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg font-medium">Limpiar</button>
-          <div class="flex gap-2">
-            <button type="button" onclick="closeQuickModal()" class="px-3.5 py-1.5 text-xs border border-slate-200 rounded-lg">Cancelar</button>
-            <button type="button" onclick="saveSigCanvas()" class="px-4 py-1.5 text-xs bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold rounded-lg">Guardar Firma</button>
-          </div>
-        </div>
-      `);
-      lucide.createIcons();
-      initSignaturePad();
-    }
-
-    function initSignaturePad() {
-      const canvas = document.getElementById('sig-canvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      ctx.strokeStyle = '#0F172A';
-      ctx.lineWidth = 2.2;
-      ctx.lineCap = 'round';
-      let drawing = false;
-
-      const getPos = (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return {
-          x: (clientX - rect.left) * (canvas.width / rect.width),
-          y: (clientY - rect.top) * (canvas.height / rect.height)
-        };
-      };
-
-      const start = (e) => {
-        drawing = true;
-        const pos = getPos(e);
-        ctx.beginPath();
-        ctx.moveTo(pos.x, pos.y);
-      };
-      const move = (e) => {
-        if (!drawing) return;
-        e.preventDefault();
-        const pos = getPos(e);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-      };
-      const end = () => { drawing = false; };
-
-      canvas.addEventListener('mousedown', start);
-      canvas.addEventListener('mousemove', move);
-      window.addEventListener('mouseup', end);
-      canvas.addEventListener('touchstart', start, { passive: false });
-      canvas.addEventListener('touchmove', move, { passive: false });
-      canvas.addEventListener('touchend', end);
-    }
-
-    function clearSigCanvas() {
-      const canvas = document.getElementById('sig-canvas');
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-    }
-
-    function saveSigCanvas() {
-      const canvas = document.getElementById('sig-canvas');
-      if (!canvas) return;
-      state.orders[state.selectedOrderIndex].signatureDataUrl = canvas.toDataURL('image/png');
-      saveState();
-      closeQuickModal();
-      renderOrderDetail();
-      showToast('Firma del cliente guardada');
-    }
-
-    function clearOrderSignature() {
-      state.orders[state.selectedOrderIndex].signatureDataUrl = null;
-      saveState();
-      renderOrderDetail();
-      showToast('Firma eliminada');
-    }
-
-    function confirmDeleteOrder() {
-      const o = state.orders[state.selectedOrderIndex];
-      openQuickModal(`
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center shrink-0">
-            <i data-lucide="trash-2" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <h3 class="font-bold text-sm text-slate-900">¿Eliminar Orden #${o.number}?</h3>
-            <p class="text-xs text-slate-500">Se eliminará permanentemente la orden de <strong>${o.client.name}</strong> (${o.device}).</p>
-          </div>
-        </div>
-        <div class="flex justify-end gap-2 mt-5">
-          <button onclick="closeQuickModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50">Cancelar</button>
-          <button onclick="executeDeleteOrder()" class="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-semibold text-xs">Sí, Eliminar Orden</button>
-        </div>
-      `);
-      lucide.createIcons();
-    }
-
-    function executeDeleteOrder() {
-      const removed = state.orders.splice(state.selectedOrderIndex, 1)[0];
-      saveState();
-      closeQuickModal();
-      closeOrderDetail();
-      showToast(`Orden #${removed.number} eliminada`);
-    }
-
-    // =========================================================
-    // ACCIONES INTERACTIVAS DE LA ORDEN
-    // =========================================================
-    function setOrderStep(stepIdx) {
-      const o = state.orders[state.selectedOrderIndex];
-      if (o.statusIndex === stepIdx) return;
-      o.statusIndex = stepIdx;
-      o.history.unshift({
-        status: STEPS[stepIdx],
-        timeAgo: 'hace un momento',
-        dateShort: '25 nov'
-      });
-      saveState();
-      renderOrderDetail();
-      showToast(`Estado actualizado a: ${STEPS[stepIdx]}`);
-    }
-
-    function advanceOrderStep() {
-      const o = state.orders[state.selectedOrderIndex];
-      const next = (o.statusIndex + 1) % STEPS.length;
-      setOrderStep(next);
-    }
-
-    function addMockPhoto() {
-      const o = state.orders[state.selectedOrderIndex];
-      if (o.photos >= 8) {
-        showToast('Límite máximo de 8 fotos alcanzado');
-        return;
-      }
-      o.photos += 1;
-      saveState();
-      renderOrderDetail();
-      showToast(`Foto agregada (${o.photos}/8)`);
-    }
-
-    function copyPhone(phone) {
-      navigator.clipboard?.writeText(phone);
-      showToast(`Teléfono copiado: ${phone}`);
-    }
-
-    function openAddQuoteModal() {
-      openQuickModal(`
-        <h3 class="font-bold text-sm text-slate-900 mb-1">Agregar Presupuesto Adicional</h3>
-        <p class="text-xs text-slate-500 mb-4">Se sumará al total de la orden #${state.orders[state.selectedOrderIndex].number}.</p>
-        <form onsubmit="submitExtraQuote(event)" class="space-y-3">
-          <input id="q-label" type="text" placeholder="Concepto (ej. Pin de carga adicional)" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" required />
-          <input id="q-amount" type="number" placeholder="Valor en COP (ej. 60000)" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" required />
-          <div class="flex justify-end gap-2 pt-2">
-            <button type="button" onclick="closeQuickModal()" class="px-3.5 py-1.5 text-xs border border-slate-200 rounded-lg">Cancelar</button>
-            <button type="submit" class="px-4 py-1.5 text-xs bg-[#84CC16] font-semibold rounded-lg">Agregar</button>
-          </div>
-        </form>
-      `);
-    }
-
-    function submitExtraQuote(e) {
-      e.preventDefault();
-      const o = state.orders[state.selectedOrderIndex];
-      o.extraQuotes.push({
-        label: document.getElementById('q-label').value,
-        amount: Number(document.getElementById('q-amount').value)
-      });
-      saveState();
-      closeQuickModal();
-      renderOrderDetail();
-      showToast('Presupuesto adicional agregado');
-    }
-
-    function openAddExpenseModal() {
-      openQuickModal(`
-        <h3 class="font-bold text-sm text-slate-900 mb-1">Registrar Gasto Asociado</h3>
-        <p class="text-xs text-slate-500 mb-4">Costo de repuesto o insumo para calcular tu Ganancia Neta.</p>
-        <form onsubmit="submitExpense(event)" class="space-y-3">
-          <input id="e-label" type="text" placeholder="Repuesto (ej. Batería iPhone 13 Pro Max)" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" required />
-          <input id="e-amount" type="number" placeholder="Costo en COP (ej. 110000)" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg" required />
-          <div class="flex justify-end gap-2 pt-2">
-            <button type="button" onclick="closeQuickModal()" class="px-3.5 py-1.5 text-xs border border-slate-200 rounded-lg">Cancelar</button>
-            <button type="submit" class="px-4 py-1.5 text-xs bg-[#84CC16] font-semibold rounded-lg">Guardar Gasto</button>
-          </div>
-        </form>
-      `);
-    }
-
-    function submitExpense(e) {
-      e.preventDefault();
-      const o = state.orders[state.selectedOrderIndex];
-      o.expenses.push({
-        label: document.getElementById('e-label').value,
-        amount: Number(document.getElementById('e-amount').value)
-      });
-      saveState();
-      closeQuickModal();
-      renderOrderDetail();
-      showToast('Gasto registrado y ganancia recalculada');
-    }
-
-    function openTechReportModal() {
-      const o = state.orders[state.selectedOrderIndex];
-      openQuickModal(`
-        <h3 class="font-bold text-sm text-slate-900 mb-2">Reporte Técnico</h3>
-        <form onsubmit="submitTechReport(event)" class="space-y-3">
-          <textarea id="tr-text" rows="4" placeholder="Escribe el diagnóstico técnico detallado..." class="w-full p-3 text-xs border border-slate-200 rounded-lg">${o.technicalReport}</textarea>
-          <div class="flex justify-end gap-2">
-            <button type="button" onclick="closeQuickModal()" class="px-3.5 py-1.5 text-xs border border-slate-200 rounded-lg">Cancelar</button>
-            <button type="submit" class="px-4 py-1.5 text-xs bg-[#84CC16] font-semibold rounded-lg">Guardar Reporte</button>
-          </div>
-        </form>
-      `);
-    }
-
-    function submitTechReport(e) {
-      e.preventDefault();
-      state.orders[state.selectedOrderIndex].technicalReport = document.getElementById('tr-text').value;
-      saveState();
-      closeQuickModal();
-      renderOrderDetail();
-      showToast('Reporte técnico actualizado');
-    }
-
-    function openEditOrderModal() {
-      const o = state.orders[state.selectedOrderIndex];
-      openQuickModal(`
-        <h3 class="font-bold text-sm text-slate-900 mb-3">Editar Orden #${o.number}</h3>
-        <form onsubmit="submitEditOrder(event)" class="space-y-3 text-xs">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Equipo</label>
-            <input id="ed-device" type="text" value="${o.device}" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Color</label>
-            <input id="ed-color" type="text" value="${o.color}" class="w-full px-3 py-2 border border-slate-200 rounded-lg" />
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Falla reportada</label>
-            <input id="ed-issue" type="text" value="${o.issue}" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Precio Total (COP)</label>
-            <input id="ed-price" type="number" value="${o.priceTotal}" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
-          </div>
-          <div class="flex justify-end gap-2 pt-2">
-            <button type="button" onclick="closeQuickModal()" class="px-3.5 py-1.5 border border-slate-200 rounded-lg">Cancelar</button>
-            <button type="submit" class="px-4 py-1.5 bg-[#84CC16] font-semibold rounded-lg">Guardar</button>
-          </div>
-        </form>
-      `);
-    }
-
-    function submitEditOrder(e) {
-      e.preventDefault();
-      const o = state.orders[state.selectedOrderIndex];
-      o.device = document.getElementById('ed-device').value;
-      o.color = document.getElementById('ed-color').value;
-      o.issue = document.getElementById('ed-issue').value;
-      o.priceTotal = Number(document.getElementById('ed-price').value);
-      saveState();
-      closeQuickModal();
-      renderOrderDetail();
-      showToast('Orden actualizada');
-    }
-
-    function showDocPreview(docTitle) {
-      const o = state.orders[state.selectedOrderIndex];
-      openQuickModal(`
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="font-bold text-sm text-slate-900">${docTitle} — Orden #${o.number}</h3>
-          <button onclick="closeQuickModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
-        </div>
-        <div class="border border-dashed border-slate-300 rounded-xl p-4 bg-slate-50 text-xs space-y-1.5 font-mono">
-          <div class="font-bold text-center text-slate-900">${state.workshop.name}</div>
-          <div class="text-center text-[11px] text-slate-500">${state.workshop.city} · ${state.workshop.phone}</div>
-          <hr class="border-slate-200 my-2">
-          <div><strong>ORDEN:</strong> #${o.number} (${o.receivedDate})</div>
-          <div><strong>CLIENTE:</strong> ${o.client.name}</div>
-          <div><strong>EQUIPO:</strong> ${o.device} (${o.color})</div>
-          <div><strong>FALLA:</strong> ${o.issue}</div>
-          <div><strong>ESTADO:</strong> ${STEPS[o.statusIndex]}</div>
-          <div><strong>TOTAL:</strong> ${formatCOP(o.priceTotal)}</div>
-          ${o.signatureDataUrl ? `<div class="pt-2"><img src="${o.signatureDataUrl}" class="h-12 mx-auto border-b border-slate-300" /><div class="text-center text-[9px] text-slate-400">Firma del cliente</div></div>` : ''}
-        </div>
-        <div class="flex justify-end gap-2 mt-4">
-          <button onclick="window.print()" class="px-4 py-2 rounded-lg bg-[#84CC16] text-slate-950 font-semibold text-xs">Imprimir / Guardar PDF</button>
-        </div>
-      `);
-      lucide.createIcons();
-    }
-
-    function createNewOrder(e) {
-      e.preventDefault();
-      const nextNum = state.orders.reduce((max, o) => Math.max(max, o.number), 0) + 1;
-      const newOrder = {
-        number: nextNum,
-        device: document.getElementById('rec-device').value,
-        color: document.getElementById('rec-color').value || 'N/A',
-        issue: document.getElementById('rec-issue').value,
-        internalNotes: document.getElementById('rec-notes').value || 'N/A',
-        accessories: document.getElementById('rec-accessories').value || 'Ninguno',
-        technicalReport: '',
-        statusIndex: 0,
-        receivedDate: '25 nov 2026',
-        client: {
-          name: document.getElementById('rec-client-name').value.toUpperCase(),
-          docId: document.getElementById('rec-client-id').value || 'N/A',
-          phone: document.getElementById('rec-client-phone').value,
-          address: document.getElementById('rec-client-address').value || 'N/A'
-        },
-        priceTotal: Number(document.getElementById('rec-price').value),
-        paidAmount: 0,
-        extraQuotes: [],
-        expenses: [],
-        photos: 0,
-        signatureDataUrl: null,
-        history: [{ status: 'Recibido', timeAgo: 'hace un momento', dateShort: '25 nov' }]
-      };
-      state.orders.unshift(newOrder);
-      state.activeRoute = 'inicio';
-      saveState();
-      renderSidebar();
-      renderWorkspace();
-      openOrderDetail(0);
-      showToast(`Orden #${newOrder.number} creada y guardada`);
-    }
-
-    // =========================================================
-    // OTRAS VISTAS (CLIENTES, AJUSTES, INVENTARIO)
-    // =========================================================
-    function renderClientesView() {
-      return `
-        <div class="bg-white rounded-2xl border border-slate-200/70 overflow-hidden max-w-3xl">
-          <div class="px-5 py-4 border-b border-slate-100 font-bold text-sm text-slate-900">Clientes Registrados</div>
-          <div class="divide-y divide-slate-100">
-            ${state.orders.map(o => `
-              <div class="px-5 py-3.5 flex items-center justify-between text-xs">
-                <div>
-                  <div class="font-bold text-slate-900">${o.client.name}</div>
-                  <div class="text-slate-400">${o.client.phone} · ${o.client.address}</div>
-                </div>
-                <span class="px-2.5 py-1 rounded-full bg-[#E9F5D8] text-[#2F5211] font-semibold text-[11px]">Orden #${o.number}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
-
     function renderPresupuestosView() {
-      return `
-        <div class="bg-white rounded-2xl border border-slate-200/70 p-6 max-w-2xl space-y-4">
-          <h3 class="font-bold text-sm text-slate-900">Cotizador Rápido</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <input type="text" placeholder="Equipo (ej. iPhone 13 Pro Max)" class="px-3 py-2 border border-slate-200 rounded-lg" />
-            <input type="text" placeholder="Servicio (ej. Cambio de batería)" class="px-3 py-2 border border-slate-200 rounded-lg" />
-          </div>
-          <button onclick="showToast('Presupuesto listo para compartir')" class="px-4 py-2 rounded-lg bg-[#84CC16] text-slate-950 font-semibold text-xs">Generar Presupuesto</button>
-        </div>
-      `;
+      return `<div class="bg-white rounded-2xl border border-slate-200/70 p-6 max-w-xl text-xs"><h3 class="font-bold text-sm text-slate-900 mb-2">Presupuestos</h3><p class="text-slate-500">Cotizador rápido disponible para clientes.</p></div>`;
     }
 
     function renderInventarioView() {
-      return `
-        <div class="bg-white rounded-2xl border border-slate-200/70 overflow-hidden">
-          <div class="px-5 py-4 border-b border-slate-100 font-bold text-sm text-slate-900">Inventario de Repuestos</div>
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 text-[11px] text-slate-400 uppercase">
-              <tr>
-                <th class="py-3 px-4">SKU</th>
-                <th class="py-3 px-4">Repuesto</th>
-                <th class="py-3 px-4">Stock</th>
-                <th class="py-3 px-4 text-right">Precio</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-              ${state.inventory.map(item => `
-                <tr>
-                  <td class="py-3 px-4 font-mono text-slate-500">${item.sku}</td>
-                  <td class="py-3 px-4 font-medium text-slate-800">${item.name}</td>
-                  <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold">${item.stock} und</span></td>
-                  <td class="py-3 px-4 text-right font-semibold text-slate-900">${formatCOP(item.price)}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      `;
+      return `<div class="bg-white rounded-2xl border border-slate-200/70 p-6 text-xs"><h3 class="font-bold text-sm text-slate-900 mb-2">Inventario</h3><p class="text-slate-500">${state.inventory.length} repuestos registrados.</p></div>`;
     }
 
     function renderAjustesView() {
-      const subNavHtml = settingsSubTabs.map(tab => {
-        const active = state.activeSettingsTab === tab.id;
-        return `
-          <button onclick="selectSettingsTab('${tab.id}')"
-            class="w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-left transition-all ${
-              active ? 'bg-white shadow-2xs border border-slate-200/70' : 'hover:bg-white/60 border border-transparent'
-            }">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-              active ? 'bg-[#E9F5D8] text-[#4D7C1F]' : 'bg-slate-200/60 text-slate-500'
-            }">
-              <i data-lucide="${tab.icon}" class="w-4 h-4"></i>
-            </div>
-            <div class="min-w-0">
-              <div class="text-[13px] font-semibold text-slate-800 leading-tight">${tab.title}</div>
-              <div class="text-[11px] text-slate-400 truncate mt-0.5">${tab.sub}</div>
-            </div>
-          </button>
-        `;
-      }).join('');
-
       return `
-        <div class="flex flex-col lg:flex-row gap-8 items-start">
-          <div class="w-full lg:w-64 shrink-0 space-y-3">
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/70 shadow-2xs flex items-center gap-3.5">
-              <div class="w-11 h-11 rounded-xl bg-[#D4F097] flex items-center justify-center text-[#2B4C12] font-bold text-base shrink-0">T</div>
-              <div class="min-w-0">
-                <div class="font-bold text-[13px] text-slate-900 truncate">${state.workshop.name}</div>
-                <div class="text-[11px] text-slate-400 truncate">${state.workshop.email}</div>
-                <div class="mt-1.5">
-                  ${state.isSubscribed
-                    ? `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-600"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Activa</span>`
-                    : `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-500"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Inactiva</span>`
-                  }
-                </div>
-              </div>
+        <div class="bg-white rounded-2xl border border-slate-200/70 p-6 max-w-2xl flex items-center justify-between gap-4">
+          <div>
+            <div class="text-xs font-bold uppercase text-slate-400">Suscripción</div>
+            <div class="text-base font-bold ${state.isSubscribed ? 'text-emerald-600' : 'text-rose-500'} mt-0.5">
+              ${state.isSubscribed ? `Activa — ${state.planName}` : 'Inactiva'}
             </div>
-            <div class="space-y-1">${subNavHtml}</div>
+            <div class="text-xs text-slate-500 mt-0.5">Gestiona tu cuenta para desbloquear todos los módulos</div>
           </div>
-
-          <div class="flex-1 w-full min-w-0">
-            <div class="flex items-start justify-between mb-6">
-              <div>
-                <h2 class="text-[17px] font-bold text-slate-900">Mi cuenta</h2>
-                <p class="text-xs text-slate-500 mt-0.5">Tu plan y cómo pagarlo.</p>
-              </div>
-              <button onclick="openSubModal()" class="w-8 h-8 rounded-full bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
-                <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
-              </button>
-            </div>
-            <div class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-2.5">Suscripción</div>
-            <div class="bg-white rounded-2xl border border-slate-200/70 p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div class="flex items-center gap-4">
-                <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${state.isSubscribed ? 'bg-[#E9F5D8] text-[#4D7C1F]' : 'bg-rose-50 text-rose-500'}">
-                  <i data-lucide="crown" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <div class="font-bold text-[15px] ${state.isSubscribed ? 'text-emerald-600' : 'text-rose-500'}">
-                    ${state.isSubscribed ? `Activa — ${state.planName}` : 'Inactiva'}
-                  </div>
-                  <div class="text-xs text-slate-500 mt-0.5">
-                    ${state.isSubscribed ? 'Todos los módulos desbloqueados.' : 'Gestiona tu cuenta para más funciones'}
-                  </div>
-                </div>
-              </div>
-              <button onclick="openSubModal()" class="px-5 py-2.5 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs shrink-0">
-                Gestionar Cuenta
-              </button>
-            </div>
-          </div>
+          <button onclick="openSubModal()" class="px-5 py-2.5 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-semibold text-xs">
+            Gestionar Cuenta
+          </button>
         </div>
       `;
-    }
-
-    function selectSettingsTab(tabId) {
-      state.activeSettingsTab = tabId;
-      saveState();
-      renderWorkspace();
     }
 
     function openSubModal() {
@@ -1484,7 +1311,7 @@
         icon.classList.remove('animate-spin');
         renderWorkspace();
         showToast('Datos sincronizados');
-      }, 400);
+      }, 350);
     }
 
     function showToast(msg) {
@@ -1497,12 +1324,9 @@
       }, 3000);
     }
 
-    // Inicializar aplicación
+    // Arrancar directamente en la pestaña Clientes para ver el listado al instante
     renderSidebar();
     renderWorkspace();
-    if (state.orders.length > 0) {
-      openOrderDetail(0);
-    }
   </script>
 </body>
 </html>
