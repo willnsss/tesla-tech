@@ -284,8 +284,8 @@
         container.innerHTML = items.map(item => {
           const isActive = state.activeRoute === item.id;
           return `
-            <button onclick="navigate('\${item.id}')"
-              class="w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors \${
+            <button onclick="navigate('${item.id}')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
                 isActive
                   ? 'bg-[#E9F5D8] text-[#2F5211] font-medium'
                   : item.locked
@@ -294,9 +294,9 @@
               }">
               <span class="flex items-center gap-3 truncate">
                 <i data-lucide="${item.icon}" class="w-4 h-4 shrink-0 ${isActive ? 'text-[#4D7C1F]' : 'text-slate-400'}"></i>
-                <span class="truncate">\${item.label}</span>
+                <span class="truncate">${item.label}</span>
               </span>
-              \${item.locked ? `<i data-lucide="lock" class="w-3 h-3 text-slate-300 shrink-0"></i>` : ''}
+              ${item.locked ? `<i data-lucide="lock" class="w-3 h-3 text-slate-300 shrink-0"></i>` : ''}
             </button>
           `;
         }).join('');
@@ -344,13 +344,13 @@
         const found = allItems.find(i => i.id === state.activeRoute);
         ws.innerHTML = `
           <div class="flex items-center justify-between mb-6">
-            <h1 class="text-xl font-bold text-slate-900">\${found ? found.label : state.activeRoute}</h1>
+            <h1 class="text-xl font-bold text-slate-900">${found ? found.label : state.activeRoute}</h1>
             <button onclick="navigate('inicio')" class="px-3.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">
               Volver a Inicio
             </button>
           </div>
           <div class="bg-white rounded-2xl border border-slate-200/70 p-6 text-xs text-slate-500">
-            Sección <strong>\${found ? found.label : state.activeRoute}</strong> lista para continuar.
+            Sección <strong>${found ? found.label : state.activeRoute}</strong> lista para continuar.
           </div>
         `;
       }
@@ -406,28 +406,28 @@
             const statusName = STEPS[o.statusIndex] || 'Recibido';
 
             return `
-              <div onclick="openOrderDetail(\${globalIdx})" class="px-5 py-3.5 hover:bg-slate-50/90 transition-colors cursor-pointer grid grid-cols-12 items-center gap-3 text-xs border-t border-slate-100 first:border-t-0">
+              <div onclick="openOrderDetail(${globalIdx})" class="px-5 py-3.5 hover:bg-slate-50/90 transition-colors cursor-pointer grid grid-cols-12 items-center gap-3 text-xs border-t border-slate-100 first:border-t-0">
                 <div class="col-span-5 flex items-center gap-3 min-w-0">
                   <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
                     <i data-lucide="user" class="w-4 h-4"></i>
                   </div>
                   <div class="truncate">
-                    <div class="font-bold text-slate-900 truncate">\${o.client.name}</div>
-                    <div class="text-[11px] text-slate-400 truncate">\${o.device}</div>
+                    <div class="font-bold text-slate-900 truncate">${o.client.name}</div>
+                    <div class="text-[11px] text-slate-400 truncate">${o.device}</div>
                   </div>
                 </div>
                 <div class="col-span-2">
-                  <span class="inline-block px-2.5 py-0.5 rounded-md bg-sky-50 text-sky-600 font-semibold text-[11px]">\${statusName}</span>
+                  <span class="inline-block px-2.5 py-0.5 rounded-md bg-sky-50 text-sky-600 font-semibold text-[11px]">${statusName}</span>
                 </div>
-                <div class="col-span-1 font-bold text-slate-800">#\${o.number}</div>
-                <div class="col-span-1 text-slate-400 text-[11px] truncate">\${o.technician || 'Sin asig.'}</div>
-                <div class="col-span-1 font-bold text-slate-800 text-[11px]">\${o.daysElapsed || '0d'}</div>
+                <div class="col-span-1 font-bold text-slate-800">#${o.number}</div>
+                <div class="col-span-1 text-slate-400 text-[11px] truncate">${o.technician || 'Sin asig.'}</div>
+                <div class="col-span-1 font-bold text-slate-800 text-[11px]">${o.daysElapsed || '0d'}</div>
                 <div class="col-span-2 flex items-center justify-end gap-3 text-right">
                   <div>
-                    <div class="font-extrabold text-slate-900 text-xs">\${formatCOP(pend > 0 ? pend : total)}</div>
+                    <div class="font-extrabold text-slate-900 text-xs">${formatCOP(pend > 0 ? pend : total)}</div>
                     <div class="text-[10px] ${pend > 0 ? 'text-rose-500 font-medium' : 'text-emerald-600 font-medium'}">${pend > 0 ? 'Pendiente' : 'Pagado'}</div>
                   </div>
-                  <button type="button" onclick="event.stopPropagation(); showToast('Opciones de la orden #\${o.number}')" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100">
+                  <button type="button" onclick="event.stopPropagation(); showToast('Opciones de la orden #${o.number}')" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100">
                     <i data-lucide="settings" class="w-3.5 h-3.5"></i>
                   </button>
                 </div>
@@ -440,4 +440,1428 @@
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
               <h1 class="text-[20px] font-bold text-slate-900 leading-tight">Inicio</h1>
-              <p class="text-[11px] text-slate-400 mt-0.5">Última orden: \${lastOrderText}</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Última orden: ${lastOrderText}</p>
+            </div>
+
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <div class="relative">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                <input
+                  type="text"
+                  value="${state.homeSearch}"
+                  oninput="updateHomeSearch(this.value)"
+                  placeholder="Buscar órdenes o clientes..."
+                  class="pl-8 pr-8 py-1.5 w-64 bg-white border border-slate-200/90 rounded-lg text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#84CC16]"
+                />
+                <button type="button" onclick="showToast('Escáner de códigos / IMEI listo')" class="text-slate-400 hover:text-slate-600 absolute right-2.5 top-1/2 -translate-y-1/2" title="Escanear código">
+                  <i data-lucide="scan-line" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+
+              <button type="button" onclick="refreshInicio()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200/90 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
+                <i id="inicio-refresh-icon" data-lucide="rotate-cw" class="w-3.5 h-3.5 text-slate-500"></i>
+                Actualizar
+              </button>
+
+              <button type="button" onclick="toggleThemeHint()" class="w-8 h-8 rounded-lg bg-white border border-slate-200/90 hover:bg-slate-50 flex items-center justify-center text-slate-600 transition-colors" title="Alternar tema">
+                <i data-lucide="moon" class="w-3.5 h-3.5"></i>
+              </button>
+
+              <button type="button" onclick="navigate('recibir')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs shadow-2xs transition-colors">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Recibir
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div class="md:col-span-5 rounded-2xl bg-[#84CC16] text-slate-950 p-5 flex flex-col justify-between min-h-[126px] shadow-2xs">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-[#1E3A08]">Pendiente</span>
+                <button type="button" onclick="toggleHideAmounts()" class="text-[#2F5211] hover:text-slate-950 p-1 rounded-lg transition-colors" title="Ocultar/mostrar montos">
+                  <i data-lucide="${state.hideAmounts ? 'eye-off' : 'eye'}" class="w-4 h-4"></i>
+                </button>
+              </div>
+              <div class="mt-3">
+                <div class="text-[22px] font-extrabold tracking-tight text-slate-950">${formatCOP(pendingTotal)}</div>
+                <div class="text-xs font-medium text-[#2F5211] mt-1">Por cobrar en ${pendingOrdersCount} ${pendingOrdersCount === 1 ? 'orden' : 'órdenes'}</div>
+              </div>
+            </div>
+
+            <div class="md:col-span-3 rounded-2xl bg-white border border-slate-200/80 p-5 flex flex-col justify-between min-h-[126px] shadow-2xs">
+              <div class="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                <i data-lucide="plus-circle" class="w-4 h-4 text-[#65A30D]"></i>
+                <span>Nuevas Hoy</span>
+              </div>
+              <div class="mt-3">
+                <div class="text-[22px] font-extrabold text-slate-900 leading-none">${todayOrders.length}</div>
+                <div class="text-xs text-slate-400 mt-2">${todayOrders.length === 0 ? 'Ninguna todavía' : 'Recibidas hoy'}</div>
+              </div>
+            </div>
+
+            <div class="md:col-span-4 rounded-2xl bg-white border border-slate-200/80 p-5 flex flex-col justify-between min-h-[126px] shadow-2xs">
+              <div class="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                <i data-lucide="clock" class="w-4 h-4 text-[#65A30D]"></i>
+                <span>Órdenes Activas</span>
+              </div>
+              <div class="mt-3 flex items-end justify-between gap-2">
+                <div>
+                  <div class="text-[22px] font-extrabold text-slate-900 leading-none">${activeOrders.length}</div>
+                  <div class="text-xs text-slate-400 mt-2">Ninguna lista para entregar</div>
+                </div>
+                <button type="button" onclick="setHomeTab('hoy')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-[#E9F5D8] hover:text-[#2F5211] text-[11px] font-semibold text-slate-600 transition-colors">
+                  Para hoy
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="setHomeTab('activas')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+              state.homeFilterTab === 'activas'
+                ? 'bg-[#E9F5D8] text-[#2F5211]'
+                : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-50'
+            }">
+              Activas ${activeOrders.length}
+            </button>
+            <button type="button" onclick="setHomeTab('recibido')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+              state.homeFilterTab === 'recibido'
+                ? 'bg-[#E9F5D8] text-[#2F5211]'
+                : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-50'
+            }">
+              Recibido ${receivedOrders.length}
+            </button>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-2xs">
+            <div class="px-5 py-3 border-b border-slate-100 grid grid-cols-12 gap-3 text-[11px] font-semibold text-slate-400">
+              <div class="col-span-5">Cliente</div>
+              <div class="col-span-2">Estado</div>
+              <div class="col-span-1">Orden</div>
+              <div class="col-span-1">Técnico</div>
+              <div class="col-span-1">Tiempo</div>
+              <div class="col-span-2 text-right">Balance</div>
+            </div>
+            <div>
+              ${rowsHtml}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateHomeSearch(val) {
+      state.homeSearch = val;
+      saveState();
+      renderWorkspace();
+      const input = document.querySelector('input[placeholder*="Buscar órdenes"]');
+      if (input) {
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+      }
+    }
+
+    function setHomeTab(tab) {
+      state.homeFilterTab = tab;
+      saveState();
+      renderWorkspace();
+    }
+
+    function toggleHideAmounts() {
+      state.hideAmounts = !state.hideAmounts;
+      saveState();
+      renderWorkspace();
+    }
+
+    function toggleThemeHint() {
+      state.darkMode = !state.darkMode;
+      saveState();
+      showToast(state.darkMode ? 'Modo oscuro seleccionado' : 'Modo claro activo');
+    }
+
+    function refreshInicio() {
+      const icon = document.getElementById('inicio-refresh-icon');
+      if (icon) icon.classList.add('animate-spin');
+      setTimeout(() => {
+        if (icon) icon.classList.remove('animate-spin');
+        renderWorkspace();
+        showToast('Tablero actualizado');
+      }, 350);
+    }
+
+    // =========================================================
+    // VISTA CLIENTES + MODAL NUEVO CLIENTE + DETALLE CLIENTE
+    // =========================================================
+    function renderClientesListView() {
+      const q = (state.clientSearch || '').trim().toLowerCase();
+      const filtered = state.clients.filter(c =>
+        c.fullName.toLowerCase().includes(q) ||
+        (c.docNumber || '').toLowerCase().includes(q) ||
+        (c.phone || '').toLowerCase().includes(q)
+      );
+
+      const frequentCount = state.clients.filter(c => getClientOrders(c).length >= 2).length;
+      const posCount = state.clients.filter(c => c.isPosClient).length;
+
+      const rowsHtml = filtered.length === 0
+        ? `<div class="bg-white rounded-2xl border border-slate-200/70 p-10 text-center text-xs text-slate-400">No se encontraron clientes con "${state.clientSearch}".</div>`
+        : filtered.map(c => `
+            <div onclick="openClientDetail('${c.id}')" class="bg-white hover:bg-slate-50/80 border border-slate-200/70 rounded-xl px-5 py-3.5 flex items-center justify-between gap-4 cursor-pointer transition-colors shadow-2xs">
+              <div class="flex items-center gap-3.5 w-1/3 min-w-[180px]">
+                <div class="w-9 h-9 rounded-full ${c.avatarBg || 'bg-emerald-100/80 text-emerald-700'} font-bold text-xs flex items-center justify-center shrink-0">
+                  ${c.initials || getInitials(c.fullName)}
+                </div>
+                <div>
+                  <div class="text-[13px] font-bold text-slate-900 leading-tight">${c.fullName}</div>
+                  ${c.conflictive ? `<span class="inline-block mt-0.5 text-[10px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">Cliente conflictivo</span>` : ''}
+                </div>
+              </div>
+              <div class="w-1/4 text-xs text-slate-500 font-medium">
+                ${c.docNumber ? `<span class="text-slate-400 mr-1">#</span>${c.docNumber}` : ''}
+              </div>
+              <div class="flex-1 flex items-center justify-end gap-6 text-xs text-slate-600 font-medium">
+                <span class="inline-flex items-center gap-1.5">
+                  <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400"></i>
+                  ${c.phone || '—'}
+                </span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 shrink-0"></i>
+              </div>
+            </div>
+          `).join('');
+
+      return `
+        <div class="flex items-center justify-between mb-4">
+          <h1 class="text-[20px] font-bold text-slate-900">Clientes</h1>
+          <button onclick="refreshInicio()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">
+            <i data-lucide="rotate-cw" class="w-3.5 h-3.5 text-slate-500"></i> Actualizar
+          </button>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div class="flex flex-wrap items-center gap-2.5">
+            <div class="flex items-center gap-2 mr-1">
+              <i data-lucide="users" class="w-4 h-4 text-slate-700"></i>
+              <h2 class="text-[16px] font-bold text-slate-900">Mis Clientes</h2>
+              <button onclick="showToast('Haz clic en cualquier cliente para ver su historial y saldo pendiente')" class="w-6 h-6 rounded-full bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:scale-105 transition-transform">
+                <i data-lucide="play" class="w-3 h-3 fill-current"></i>
+              </button>
+            </div>
+
+            <div class="relative">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+              <input
+                type="text"
+                value="${state.clientSearch}"
+                oninput="updateClientSearch(this.value)"
+                placeholder="Buscar por nombre, cédula, teléfon"
+                class="pl-8 pr-3 py-1.5 w-60 bg-white border border-slate-200/90 rounded-lg text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#84CC16]"
+              />
+            </div>
+
+            <div class="bg-white border border-slate-200/80 rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
+              <span class="w-6 h-6 rounded-md bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
+                <i data-lucide="users" class="w-3.5 h-3.5"></i>
+              </span>
+              <div class="leading-none">
+                <div class="text-xs font-extrabold text-slate-900">${state.clients.length}</div>
+                <div class="text-[9px] font-bold uppercase text-slate-400 mt-0.5">TOTAL</div>
+              </div>
+            </div>
+
+            <div class="bg-white border border-slate-200/80 rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
+              <span class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+              </span>
+              <div class="leading-none">
+                <div class="text-xs font-extrabold text-slate-900">${frequentCount}</div>
+                <div class="text-[9px] font-bold uppercase text-slate-400 mt-0.5">FRECUENTES</div>
+              </div>
+            </div>
+
+            <div class="bg-white border border-slate-200/80 rounded-lg px-3 py-1 flex items-center gap-2 shadow-2xs">
+              <span class="w-6 h-6 rounded-md bg-purple-50 text-purple-600 flex items-center justify-center">
+                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+              </span>
+              <div class="leading-none">
+                <div class="text-xs font-extrabold text-slate-900">${posCount}</div>
+                <div class="text-[9px] font-bold uppercase text-slate-400 mt-0.5">CLIENTES POS</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="showToast('Selecciona un archivo .CSV para importar clientes')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#E9F5D8]/70 hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-xs transition-colors">
+              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-[#4D7C1F]"></i> Importar CSV
+            </button>
+            <button onclick="exportClientsCSV()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#E9F5D8]/70 hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-xs transition-colors">
+              <i data-lucide="download" class="w-3.5 h-3.5 text-[#4D7C1F]"></i> Exportar
+            </button>
+            <button onclick="cleanDuplicateClients()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100/80 text-amber-700 font-semibold text-xs transition-colors">
+              <i data-lucide="git-merge" class="w-3.5 h-3.5 text-amber-600"></i> Limpiar Duplicados
+            </button>
+            <button onclick="openNewClientModal()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs shadow-2xs transition-colors">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nuevo Cliente
+            </button>
+          </div>
+        </div>
+
+        <div class="px-5 pb-2 flex items-center text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          <div class="w-1/3 min-w-[180px]">CLIENTE</div>
+          <div class="w-1/4">IDENTIFICACIÓN</div>
+          <div class="flex-1">TELÉFONO</div>
+        </div>
+
+        <div class="space-y-2.5">
+          ${rowsHtml}
+        </div>
+      `;
+    }
+
+    function updateClientSearch(val) {
+      state.clientSearch = val;
+      saveState();
+      renderWorkspace();
+      const input = document.querySelector('input[placeholder*="Buscar por nombre"]');
+      if (input) {
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+      }
+    }
+
+    function exportClientsCSV() {
+      const csv = ['Nombre,Documento,Telefono,Correo,Direccion']
+        .concat(state.clients.map(c => `"${c.fullName}","${c.docNumber || ''}","${c.phone || ''}","${c.email || ''}","${c.address || ''}"`))
+        .join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'clientes_tesla_tech.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Listado de clientes exportado en CSV');
+    }
+
+    function cleanDuplicateClients() {
+      const seen = new Set();
+      const unique = [];
+      let removed = 0;
+      for (const c of state.clients) {
+        const key = `${c.fullName.trim().toLowerCase()}|${(c.phone || '').trim()}`;
+        if (seen.has(key)) removed++;
+        else {
+          seen.add(key);
+          unique.push(c);
+        }
+      }
+      state.clients = unique;
+      saveState();
+      renderWorkspace();
+      showToast(removed > 0 ? `Se eliminaron ${removed} duplicados` : 'No se encontraron clientes duplicados');
+    }
+
+    function openNewClientModal(editingClientId = null) {
+      const existing = editingClientId ? state.clients.find(c => c.id === editingClientId) : null;
+      state.newClientType = existing ? (existing.type || 'Persona') : 'Persona';
+      state.newClientDocType = existing ? (existing.docType || 'CC') : 'CC';
+      const isEmpresa = state.newClientType === 'Empresa';
+
+      openQuickModal(`
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+              <i data-lucide="user-plus" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-base text-slate-900 leading-tight">${existing ? 'Editar Cliente' : 'Nuevo Cliente'}</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Queda guardado para la próxima orden o venta</p>
+            </div>
+          </div>
+          <button onclick="closeQuickModal()" class="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-1.5 bg-slate-100/90 p-1 rounded-xl mb-4 text-xs font-bold">
+          <button type="button" onclick="setClientModalType('Persona')" class="py-2 rounded-lg transition-all ${!isEmpresa ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">Persona</button>
+          <button type="button" onclick="setClientModalType('Empresa')" class="py-2 rounded-lg transition-all ${isEmpresa ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">Empresa</button>
+        </div>
+
+        <form onsubmit="submitClientForm(event, '${existing ? existing.id : ''}')" class="space-y-3.5 text-xs">
+          ${!isEmpresa
+            ? `<div class="grid grid-cols-2 gap-3">
+                 <div>
+                   <label class="block font-bold text-slate-800 mb-1">Nombre *</label>
+                   <input id="nc-first" type="text" value="${existing ? (existing.firstName || '') : ''}" placeholder="Ej. María" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" required />
+                 </div>
+                 <div>
+                   <label class="block font-bold text-slate-800 mb-1">Apellido *</label>
+                   <input id="nc-last" type="text" value="${existing ? (existing.lastName || '') : ''}" placeholder="Ej. Pérez" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" required />
+                 </div>
+               </div>`
+            : `<div>
+                 <label class="block font-bold text-slate-800 mb-1">Razón Social / Empresa *</label>
+                 <input id="nc-company" type="text" value="${existing ? existing.fullName : ''}" placeholder="Ej. Inversiones Tech SAS" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" required />
+               </div>`
+          }
+
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">Teléfono</label>
+            <div class="flex items-center gap-2">
+              <span class="px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 font-extrabold text-[#4D7C1F] shrink-0">+57</span>
+              <input id="nc-phone" type="text" value="${existing ? (existing.phone || '').replace(/^\+57/, '') : ''}" placeholder="4141234567" class="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-800 mb-1.5">Tipo de documento</label>
+            <div class="flex items-center gap-2">
+              ${['CC', 'CE', 'Pasaporte'].map(dt => `
+                <button type="button" onclick="setClientModalDocType('${dt}')" class="px-3.5 py-1.5 rounded-lg border text-xs font-bold transition-colors ${
+                  state.newClientDocType === dt
+                    ? 'border-[#84CC16] bg-[#F2FCE2] text-[#2F5211]'
+                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                }">${dt}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">${state.newClientDocType}</label>
+            <input id="nc-doc-num" type="text" value="${existing ? (existing.docNumber || '') : ''}" placeholder="1023456789" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">Correo</label>
+            <input id="nc-email" type="email" value="${existing ? (existing.email || '') : ''}" placeholder="cliente@correo.com" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">Dirección</label>
+            <input id="nc-address" type="text" value="${existing ? (existing.address || '') : ''}" placeholder="Opcional" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+          </div>
+
+          <button type="submit" class="mt-2 w-full py-3 rounded-xl bg-[#A3E635] hover:bg-[#84CC16] text-slate-900 font-bold text-sm transition-colors shadow-2xs">
+            ${existing ? 'Actualizar Cliente' : 'Guardar Cliente'}
+          </button>
+        </form>
+      `);
+      lucide.createIcons();
+    }
+
+    function setClientModalType(type) {
+      state.newClientType = type;
+      openNewClientModal(state.selectedClientId);
+    }
+
+    function setClientModalDocType(dt) {
+      state.newClientDocType = dt;
+      openNewClientModal(state.selectedClientId);
+    }
+
+    function submitClientForm(e, editId) {
+      e.preventDefault();
+      const rawPhone = (document.getElementById('nc-phone')?.value || '').trim();
+      const phone = rawPhone ? (rawPhone.startsWith('+') ? rawPhone : '+57' + rawPhone) : '';
+      let firstName = '', lastName = '', fullName = '';
+
+      if (state.newClientType === 'Empresa') {
+        fullName = (document.getElementById('nc-company')?.value || '').trim();
+        firstName = fullName;
+      } else {
+        firstName = (document.getElementById('nc-first')?.value || '').trim();
+        lastName = (document.getElementById('nc-last')?.value || '').trim();
+        fullName = `${firstName} ${lastName}`.trim();
+      }
+      if (!fullName) return;
+
+      const docNumber = (document.getElementById('nc-doc-num')?.value || '').trim();
+      const email = (document.getElementById('nc-email')?.value || '').trim();
+      const address = (document.getElementById('nc-address')?.value || '').trim();
+
+      if (editId) {
+        const cli = state.clients.find(c => c.id === editId);
+        if (cli) {
+          Object.assign(cli, {
+            type: state.newClientType, firstName, lastName, fullName,
+            initials: getInitials(fullName), phone, docType: state.newClientDocType,
+            docNumber, email, address
+          });
+        }
+        showToast('Cliente actualizado');
+      } else {
+        state.clients.unshift({
+          id: 'cli-' + Date.now(), type: state.newClientType, firstName, lastName, fullName,
+          initials: getInitials(fullName), avatarBg: 'bg-emerald-100/80 text-emerald-700',
+          phone, docType: state.newClientDocType, docNumber, email, address,
+          conflictive: false, isPosClient: false
+        });
+        showToast(`Cliente "${fullName}" guardado`);
+      }
+
+      saveState();
+      closeQuickModal();
+      renderWorkspace();
+    }
+
+    function openClientDetail(clientId) {
+      state.selectedClientId = clientId;
+      saveState();
+      renderWorkspace();
+    }
+
+    function backToClientsList() {
+      state.selectedClientId = null;
+      saveState();
+      renderWorkspace();
+    }
+
+    function toggleClientConflictive(clientId) {
+      const cli = state.clients.find(c => c.id === clientId);
+      if (!cli) return;
+      cli.conflictive = !cli.conflictive;
+      saveState();
+      renderWorkspace();
+      showToast(cli.conflictive ? 'Marcado como Cliente conflictivo' : 'Marca removida');
+    }
+
+    function deleteClientById(clientId) {
+      const cli = state.clients.find(c => c.id === clientId);
+      if (!cli) return;
+      state.clients = state.clients.filter(c => c.id !== clientId);
+      state.selectedClientId = null;
+      saveState();
+      renderWorkspace();
+      showToast(`Cliente "${cli.fullName}" eliminado`);
+    }
+
+    function renderClientDetailView() {
+      const cli = state.clients.find(c => c.id === state.selectedClientId);
+      if (!cli) {
+        state.selectedClientId = null;
+        return renderClientesListView();
+      }
+
+      const clientOrders = getClientOrders(cli);
+      const pendingSum = clientOrders.reduce((acc, o) => {
+        const extra = (o.extraQuotes || []).reduce((s, q) => s + q.amount, 0);
+        return acc + Math.max(0, ((o.priceTotal || 0) + extra) - (o.paidAmount || 0));
+      }, 0);
+      const lastOrderDate = clientOrders.length > 0 ? clientOrders[0].receivedDate.split(' ').slice(0, 2).join(' ') : '—';
+
+      const ordersHtml = clientOrders.length === 0
+        ? `<div class="bg-white rounded-2xl border border-slate-200/70 p-8 text-center text-xs text-slate-400">Este cliente aún no tiene órdenes registradas.</div>`
+        : clientOrders.map(o => {
+            const globalIdx = state.orders.indexOf(o);
+            const extra = (o.extraQuotes || []).reduce((s, q) => s + q.amount, 0);
+            const total = (o.priceTotal || 0) + extra;
+            const pend = Math.max(0, total - (o.paidAmount || 0));
+            return `
+              <div onclick="openOrderDetail(${globalIdx})" class="bg-white hover:border-[#84CC16] border border-slate-200/70 rounded-2xl p-4 flex items-center justify-between gap-4 cursor-pointer transition-all shadow-2xs">
+                <div class="flex items-start gap-3.5">
+                  <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0 mt-0.5">
+                    <i data-lucide="smartphone" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <div class="font-bold text-sm text-slate-900 leading-tight">${o.device}</div>
+                    <div class="text-[11px] text-slate-400 mt-0.5">#${o.number} · ${o.receivedDate}</div>
+                    <span class="inline-block mt-2 px-2.5 py-0.5 rounded-md bg-sky-50 text-sky-600 font-bold text-[10px] tracking-wide">${(STEPS[o.statusIndex] || 'Recibido').toUpperCase()}</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3 text-right">
+                  <div>
+                    <div class="text-sm font-extrabold text-slate-900">${formatCOP(total)}</div>
+                    ${pend > 0 ? `<div class="text-[11px] font-bold text-rose-500 mt-0.5">Debe ${formatCOP(pend)}</div>` : `<div class="text-[11px] font-semibold text-emerald-600 mt-0.5">Pagado</div>`}
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+      return `
+        <div class="flex items-center justify-between gap-4 mb-5">
+          <div class="flex items-center gap-3">
+            <button onclick="backToClientsList()" class="p-1.5 rounded-lg text-slate-700 hover:bg-white transition-colors">
+              <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            </button>
+            <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
+              <i data-lucide="user" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-[16px] font-bold text-slate-900 leading-none">Cliente</h2>
+              <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1">${cli.fullName}</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2.5">
+            <button onclick="deleteClientById('${cli.id}')" class="w-9 h-9 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-500 flex items-center justify-center transition-colors">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+            <button onclick="openNewClientModal('${cli.id}')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#2F5211] font-bold text-xs transition-colors">
+              <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Editar
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <div class="lg:col-span-5 space-y-4">
+            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs">
+              <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-full ${cli.avatarBg || 'bg-amber-100/80 text-amber-700'} font-extrabold text-sm flex items-center justify-center shrink-0">
+                  ${cli.initials || getInitials(cli.fullName)}
+                </div>
+                <div>
+                  <div class="font-extrabold text-sm text-slate-900">${cli.fullName}</div>
+                  <div class="text-xs text-slate-500 mt-0.5">${cli.phone || 'Sin teléfono'}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 mt-4">
+                <button onclick="showToast('WhatsApp: ${cli.phone || ''}')" class="w-9 h-9 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#4D7C1F] flex items-center justify-center transition-colors">
+                  <i data-lucide="message-circle" class="w-4 h-4"></i>
+                </button>
+                <button onclick="copyToClip('${cli.phone || cli.fullName}')" class="w-9 h-9 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#4D7C1F] flex items-center justify-center transition-colors">
+                  <i data-lucide="copy" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 flex items-center justify-between gap-3 shadow-2xs">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
+                  <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <div class="font-bold text-xs text-slate-900">Cliente conflictivo</div>
+                  <div class="text-[11px] text-slate-400">Al recibirle un equipo, la app avisa.</div>
+                </div>
+              </div>
+              <button type="button" onclick="toggleClientConflictive('${cli.id}')" class="w-10 h-5 rounded-full transition-colors p-0.5 ${cli.conflictive ? 'bg-[#84CC16]' : 'bg-slate-200'}">
+                <div class="w-4 h-4 rounded-full bg-white shadow-2xs transition-transform ${cli.conflictive ? 'translate-x-5' : 'translate-x-0'}"></div>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+              <div class="bg-white rounded-2xl border border-slate-200/70 p-3.5 shadow-2xs">
+                <div class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center mb-2">
+                  <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>
+                </div>
+                <div class="font-extrabold text-sm text-slate-900">${clientOrders.length}</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Órdenes</div>
+              </div>
+              <div class="bg-white rounded-2xl border border-slate-200/70 p-3.5 shadow-2xs">
+                <div class="w-7 h-7 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center mb-2">
+                  <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+                </div>
+                <div class="font-extrabold text-xs text-rose-500 truncate">${formatCOP(pendingSum)}</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Pendiente</div>
+              </div>
+              <div class="bg-white rounded-2xl border border-slate-200/70 p-3.5 shadow-2xs">
+                <div class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center mb-2">
+                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                </div>
+                <div class="font-extrabold text-sm text-slate-900">${lastOrderDate}</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Última</div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs space-y-3">
+              <div class="flex items-center gap-2 font-bold text-xs text-slate-900">
+                <span class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center">
+                  <i data-lucide="contact" class="w-3.5 h-3.5"></i>
+                </span>
+                Información de Contacto
+              </div>
+              <div class="flex items-center gap-3 pt-1">
+                <i data-lucide="phone" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                <div>
+                  <div class="text-[10px] text-slate-400">Teléfono</div>
+                  <div class="text-xs font-bold text-slate-800">${cli.phone || 'Sin teléfono'}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <i data-lucide="mail" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                <div>
+                  <div class="text-[10px] text-slate-400">Correo</div>
+                  <div class="text-xs font-bold text-slate-800">${cli.email || 'Sin correo'}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <i data-lucide="map-pin" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                <div>
+                  <div class="text-[10px] text-slate-400">Dirección</div>
+                  <div class="text-xs font-bold text-slate-800">${cli.address || 'Sin dirección'}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 space-y-3">
+            <div class="flex items-center justify-between px-1">
+              <h3 class="font-bold text-xs text-slate-800">Historial de Órdenes</h3>
+              <span class="text-[11px] text-slate-400">${clientOrders.length} registros</span>
+            </div>
+            <div class="space-y-2.5">${ordersHtml}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function copyToClip(text) {
+      navigator.clipboard?.writeText(text);
+      showToast(`Copiado: ${text}`);
+    }
+
+    // =========================================================
+    // VISTA RECIBIR EQUIPO (COLUMNA DERECHA STICKY)
+    // =========================================================
+    function renderRecibirScreen() {
+      const servicesSum = receiveFormState.services.reduce((acc, s) => acc + (Number(s.price) || 0), 0);
+      const totalVal = Number(document.getElementById('rec-total-input')?.value || servicesSum || 0);
+      const abonoVal = Number(document.getElementById('rec-abono-input')?.value || 0);
+      const descPct = Number(document.getElementById('rec-desc-input')?.value || 0);
+      const afterDiscount = Math.max(0, totalVal - (totalVal * descPct / 100));
+      const saldoPendiente = Math.max(0, afterDiscount - abonoVal);
+
+      return `
+        <div class="space-y-4">
+          <div class="flex items-center justify-between gap-3 pb-1">
+            <div class="flex items-center gap-3">
+              <button type="button" onclick="navigate('inicio')" class="w-8 h-8 rounded-full bg-white border border-slate-200 hover:bg-slate-50 flex items-center justify-center text-slate-700 transition-colors">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              </button>
+              <div class="flex items-center gap-2">
+                <i data-lucide="smartphone" class="w-4 h-4 text-[#65A30D]"></i>
+                <span class="font-extrabold text-[15px] text-slate-900">Recibir Equipo</span>
+              </div>
+              <span class="text-[11px] text-slate-400 hidden sm:inline">* Campos obligatorios. Todo lo demás es opcional.</span>
+            </div>
+
+            <div class="flex items-center gap-2.5">
+              <button type="button" onclick="showToast('Completa los campos con * y presiona Guardar Orden')" class="w-8 h-8 rounded-full bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center hover:scale-105 transition-transform">
+                <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+              </button>
+              <button type="button" onclick="submitReceiveOrder()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold text-xs shadow-2xs transition-colors">
+                <i data-lucide="save" class="w-3.5 h-3.5"></i> Guardar Orden
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <div class="lg:col-span-8 space-y-4">
+              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Datos del Cliente</h2>
+                    <p class="text-[11px] text-slate-400">Información del cliente</p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <div class="flex-1 grid grid-cols-2 bg-slate-100/90 p-1 rounded-xl text-xs font-bold">
+                    <button type="button" onclick="receiveFormState.clientMode='Persona'; renderWorkspace();" class="py-1.5 rounded-lg transition-all ${receiveFormState.clientMode === 'Persona' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">Persona</button>
+                    <button type="button" onclick="receiveFormState.clientMode='Empresa'; renderWorkspace();" class="py-1.5 rounded-lg transition-all ${receiveFormState.clientMode === 'Empresa' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500'}">Empresa</button>
+                  </div>
+                  <button type="button" onclick="quickSearchClient()" class="w-9 h-9 rounded-xl bg-[#E9F5D8] hover:bg-[#D4F097] text-[#4D7C1F] flex items-center justify-center shrink-0 transition-colors" title="Cargar primer cliente">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tipo de documento</label>
+                  <div class="flex items-center gap-2">
+                    ${['CC', 'CE', 'Pasaporte'].map(dt => `
+                      <button type="button" onclick="receiveFormState.docType='${dt}'; renderWorkspace();" class="px-3.5 py-1 rounded-lg border text-xs font-semibold transition-colors ${
+                        receiveFormState.docType === dt
+                          ? 'border-[#84CC16] bg-[#F2FCE2] text-[#2F5211]'
+                          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                      }">${dt}</button>
+                    `).join('')}
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">${receiveFormState.docType}</label>
+                  <input id="rec-doc" type="text" placeholder="1023456789" class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre <span class="text-rose-500">*</span></label>
+                    <input id="rec-nombre" type="text" oninput="updateMissingBadges()" class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Apellido <span class="text-rose-500">*</span></label>
+                    <input id="rec-apellido" type="text" oninput="updateMissingBadges()" class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5">
+                  <div class="md:col-span-4">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Teléfono <span class="text-rose-500">*</span></label>
+                    <div class="flex items-center gap-1.5">
+                      <span class="px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-sky-600 shrink-0">+57</span>
+                      <input id="rec-telefono" type="text" oninput="updateMissingBadges()" placeholder="4141234567" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    </div>
+                  </div>
+                  <div class="md:col-span-4">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Dirección</label>
+                    <input id="rec-direccion" type="text" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  </div>
+                  <div class="md:col-span-4">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Correo (opcional)</label>
+                    <input id="rec-correo" type="email" placeholder="Para avisarle por correo cómo va su equipo" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  </div>
+                </div>
+
+                <button type="button" onclick="addSecondaryPhoneField()" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#4D7C1F] hover:underline">
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i> Agregar teléfono secundario
+                </button>
+                <div id="extra-phones-container" class="space-y-2"></div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3.5">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                    <i data-lucide="truck" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Modalidad del servicio</h2>
+                    <p class="text-[11px] text-slate-400">¿Dónde se atiende esta orden?</p>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5">
+                  ${[
+                    { id: 'En el taller', sub: 'El equipo queda aquí', icon: 'home' },
+                    { id: 'A domicilio / On-Site', sub: 'Voy donde el cliente', icon: 'map-pin' },
+                    { id: 'Recojo y entrega', sub: 'Lo busco y lo devuelvo', icon: 'package' },
+                    { id: 'Remoto', sub: 'Sin equipo físico', icon: 'monitor' }
+                  ].map(m => {
+                    const active = receiveFormState.modality === m.id;
+                    return `
+                      <button type="button" onclick="receiveFormState.modality='${m.id}'; renderWorkspace();" class="p-3 rounded-xl border text-left transition-all ${
+                        active ? 'border-[#84CC16] bg-[#F9FDF3]' : 'border-slate-200/80 bg-white hover:bg-slate-50'
+                      }">
+                        <div class="flex items-center gap-1.5 text-xs font-bold ${active ? 'text-[#2F5211]' : 'text-slate-800'}">
+                          <i data-lucide="${m.icon}" class="w-3.5 h-3.5 ${active ? 'text-[#65A30D]' : 'text-slate-400'}"></i>
+                          <span>${m.id}</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 mt-1">${m.sub}</div>
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div class="p-3 rounded-xl border border-[#84CC16] bg-[#F9FDF3]">
+                    <div class="flex items-center gap-1.5 text-xs font-bold text-[#2F5211]">
+                      <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#65A30D]"></i> Individual
+                    </div>
+                    <div class="text-[10px] text-[#4D7C1F] mt-0.5">Un cliente, una orden. Con fotos, seña y firma.</div>
+                  </div>
+                  <div onclick="showToast('Lote requiere plan activo')" class="p-3 rounded-xl border border-slate-200/80 bg-slate-50/50 cursor-pointer">
+                    <div class="flex items-center gap-1.5 text-xs font-bold text-slate-500">
+                      <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-400"></i> Lote
+                    </div>
+                    <div class="text-[10px] text-slate-400 mt-0.5">Requiere plan activo</div>
+                  </div>
+                </div>
+              </div>
+
+              <button type="button" onclick="showToast('Buscador de historial por IMEI / serie activado')" class="w-full py-2.5 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center gap-2 transition-colors">
+                <i data-lucide="search" class="w-3.5 h-3.5"></i> Buscar equipo por IMEI o serie
+              </button>
+
+              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                    <i data-lucide="smartphone" class="w-4 h-4"></i>
+                  </div>
+                  <h2 class="text-sm font-bold text-slate-900">Datos del Equipo</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Equipo (Opcional)</label>
+                    <input id="rec-tipo-equipo" type="text" placeholder="Ej: Consola, Laptop, Smartwatch..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Marca <span class="text-rose-500">*</span></label>
+                    <input id="rec-marca" type="text" oninput="updateMissingBadges()" placeholder="Ej: Samsung, Apple, Sony..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Modelo <span class="text-rose-500">*</span></label>
+                    <input id="rec-modelo" type="text" oninput="updateMissingBadges()" placeholder="Ej: Galaxy S24, iPhone 15 Pro..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Color</label>
+                    <input id="rec-color" type="text" placeholder="Negro, Blanco..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Serial (Opcional)</label>
+                    <input id="rec-serial" type="text" placeholder="IMEI / Nro. de serie" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="text-xs font-semibold text-slate-700">Contraseña (Opcional)</label>
+                    <div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg">
+                      <button type="button" onclick="receiveFormState.passPatternMode=false; renderWorkspace();" class="px-2 py-0.5 rounded text-[11px] font-bold ${!receiveFormState.passPatternMode ? 'bg-white text-slate-800 shadow-2xs' : 'text-slate-400'}">T</button>
+                      <button type="button" onclick="receiveFormState.passPatternMode=true; renderWorkspace();" class="px-2 py-0.5 rounded text-[11px] font-bold ${receiveFormState.passPatternMode ? 'bg-white text-slate-800 shadow-2xs' : 'text-slate-400'}">
+                        <i data-lucide="grid-3x3" class="w-3 h-3"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="relative">
+                    <input id="rec-pass" type="${receiveFormState.showPass ? 'text' : 'password'}" placeholder="${receiveFormState.passPatternMode ? 'Ej: 1-2-5-8-9 (patrón)' : 'PIN o contraseña alfanumérica'}" class="w-full px-3.5 py-2 pr-14 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <button type="button" onclick="receiveFormState.showPass=!receiveFormState.showPass; renderWorkspace();" class="text-[11px] font-semibold text-slate-500 hover:text-slate-800 absolute right-3 top-1/2 -translate-y-1/2">
+                      ${receiveFormState.showPass ? 'Ocultar' : 'Mostrar'}
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">1. Descripción de la Falla (Ingreso) <span class="text-rose-500">*</span></label>
+                    <textarea id="rec-falla" rows="3" oninput="updateMissingBadges()" placeholder="Describe detalladamente el problema reportado por el cliente..." class="w-full p-3 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]"></textarea>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Observaciones Internas (Opcional)</label>
+                    <textarea id="rec-obs" rows="3" placeholder="Notas para el técnico: daños previos, piezas faltantes..." class="w-full p-3 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <button type="button" onclick="addExtraDeviceBlock()" class="w-full py-2.5 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center gap-1.5 transition-colors">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i> + Agregar otro equipo
+              </button>
+              <div id="extra-devices-container" class="space-y-2"></div>
+
+              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3.5">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                    <i data-lucide="file-box" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Accesorios (Opcional)</h2>
+                    <p class="text-[11px] text-slate-400">Elementos incluidos</p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-5 text-xs text-slate-700 flex-wrap">
+                  ${['SIM', 'Memoria', 'Cargador', 'Funda'].map(acc => `
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" ${receiveFormState.accessoriesChecked.includes(acc) ? 'checked' : ''} onchange="toggleAccessoryCheck('${acc}')" class="rounded border-slate-300 text-[#65A30D] focus:ring-[#84CC16]" />
+                      <span>${acc}</span>
+                    </label>
+                  `).join('')}
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <input id="rec-acc-input" type="text" placeholder="Agregar accesorio (ej: Caja, Audífonos)" class="flex-1 px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  <button type="button" onclick="addCustomAccessory()" class="w-9 h-9 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold flex items-center justify-center shrink-0">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Accesorios Incluidos</label>
+                  <textarea id="rec-acc-notes" rows="2" placeholder="Ej: Control remoto, cable de poder..." class="w-full p-3 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]">${receiveFormState.customAccessories.join(', ')}</textarea>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                    <i data-lucide="check-square" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Checklist de Reparación (Opcional)</h2>
+                    <p class="text-[11px] text-slate-400">Componentes a revisar</p>
+                  </div>
+                </div>
+
+                <p class="text-xs text-slate-400">
+                  ${receiveFormState.checklistItems.length === 0
+                    ? 'Aún no tienes checklist configurado. Agrégalo abajo o desde Ajustes → Checklist de Reparación.'
+                    : receiveFormState.checklistItems.map(i => `• ${i}`).join(' · ')
+                  }
+                </p>
+
+                <div class="flex items-center gap-2">
+                  <input id="rec-chk-input" type="text" placeholder="Agregar ítem (ej: Pantalla, Batería)" class="flex-1 px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  <button type="button" onclick="addChecklistItem()" class="w-9 h-9 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold flex items-center justify-center shrink-0">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                    <i data-lucide="package" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Repuestos (Opcional)</h2>
+                    <p class="text-[11px] text-slate-400">Piezas a utilizar en la reparación</p>
+                  </div>
+                </div>
+
+                <button type="button" onclick="showToast('Catálogo de inventario disponible')" class="w-full py-2.5 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center gap-2 transition-colors">
+                  <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i> Agregar Repuestos del Inventario
+                </button>
+
+                <div class="pt-1 space-y-2.5">
+                  <div class="text-xs font-bold text-slate-800">
+                    Servicios / Mano de Obra <span class="text-[11px] font-normal text-slate-400">(sin stock)</span>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                    <input id="rec-srv-desc" type="text" placeholder="Descripción del servicio" class="sm:col-span-7 px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <input id="rec-srv-price" type="number" placeholder="Precio" class="sm:col-span-4 px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    <button type="button" onclick="addServiceLine()" class="sm:col-span-1 h-9 rounded-xl bg-[#84CC16] hover:bg-[#73B312] text-slate-950 font-bold flex items-center justify-center">
+                      <i data-lucide="plus" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                  <input id="rec-srv-detail" type="text" placeholder="Detalle (opcional)" class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                    <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Gastos de la Orden</h2>
+                    <p class="text-[11px] text-slate-400">Costos de reparacion (Opcional)</p>
+                  </div>
+                </div>
+                <p class="text-xs text-slate-400">Registra los costos que tuviste para reparar este equipo (pantalla, flex, etc.)</p>
+                <button type="button" onclick="openReceiveExpenseModal()" class="w-full py-2.5 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs transition-colors">
+                  + Agregar Gasto de la Orden
+                </button>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                    <i data-lucide="camera" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-sm font-bold text-slate-900 leading-tight">Evidencia Fotográfica</h2>
+                    <p class="text-[11px] text-slate-400">Evidencia fotográfica</p>
+                  </div>
+                </div>
+
+                <button type="button" onclick="attachReceivePhoto()" class="w-full py-3 rounded-xl border border-[#84CC16] bg-[#F9FDF3] hover:bg-[#E9F5D8] text-[#2F5211] font-bold text-xs flex items-center justify-center gap-2 transition-colors">
+                  <i data-lucide="image-plus" class="w-4 h-4"></i> Adjuntar Fotos
+                </button>
+
+                <button type="button" onclick="showToast('QR generado para subir fotos desde el celular (${receiveFormState.photosCount}/8)')" class="w-full py-2 rounded-xl border border-[#84CC16]/60 bg-[#F9FDF3]/60 hover:bg-[#E9F5D8] text-[#2F5211] font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors">
+                  <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Subir desde el teléfono
+                </button>
+
+                <div class="text-center text-[10px] text-slate-400">Máximo 8 fotos por orden. (${receiveFormState.photosCount}/8)</div>
+              </div>
+            </div>
+
+            <!-- COLUMNA DERECHA FIJA (STICKY) -->
+            <div class="lg:col-span-4 space-y-4 lg:sticky lg:top-4">
+              <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                  </div>
+                  <h3 class="text-sm font-bold text-slate-900">Días de Garantía (Opcional)</h3>
+                </div>
+
+                <div class="relative">
+                  <input id="rec-warranty-days" type="number" value="${receiveFormState.warrantyDays}" oninput="receiveFormState.warrantyDays = Number(this.value || 0)" class="w-full px-3.5 py-2 pr-12 text-xs font-medium text-slate-700 border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  <span class="text-xs text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2">días</span>
+                </div>
+
+                <div class="grid grid-cols-4 gap-1.5">
+                  ${[
+                    { label: 'Sin garantía', days: 0 },
+                    { label: '30', days: 30 },
+                    { label: '90', days: 90 },
+                    { label: '180', days: 180 }
+                  ].map(btn => `
+                    <button type="button" onclick="receiveFormState.warrantyDays=${btn.days}; renderWorkspace();" class="py-1.5 px-1 rounded-lg border text-[11px] font-semibold transition-colors ${
+                      receiveFormState.warrantyDays === btn.days
+                        ? 'border-[#84CC16] bg-[#F2FCE2] text-[#2F5211]'
+                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    }">${btn.label}</button>
+                  `).join('')}
+                </div>
+
+                <p class="text-[10px] text-slate-400 leading-relaxed">
+                  Si lo dejas vacío se usan los 30 días configurados en Ajustes. Con 0 la orden queda sin garantía y no se imprime nada. Cambiarlo acá afecta solo a esta orden.
+                </p>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-lg bg-[#E9F5D8] text-[#4D7C1F] flex items-center justify-center shrink-0">
+                    <i data-lucide="credit-card" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-bold text-slate-900 leading-tight">Finanzas</h3>
+                    <p class="text-[10px] text-slate-400">Costos y pagos</p>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Costo Total</label>
+                    <div class="relative">
+                      <span class="text-xs font-bold text-[#65A30D] absolute left-3 top-1/2 -translate-y-1/2">$</span>
+                      <input id="rec-total-input" type="number" value="${servicesSum || ''}" oninput="recalcReceiveFinance()" class="w-full pl-6 pr-2.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Abono</label>
+                    <div class="relative">
+                      <span class="text-xs font-bold text-[#65A30D] absolute left-3 top-1/2 -translate-y-1/2">$</span>
+                      <input id="rec-abono-input" type="number" oninput="recalcReceiveFinance()" class="w-full pl-6 pr-2.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-[10px] text-slate-400 leading-tight">
+                  Auto-sumado desde Servicios + Repuestos. Puedes ajustarlo.
+                </div>
+
+                <div class="grid grid-cols-12 gap-2">
+                  <div class="col-span-8">
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Nota de Pago (Opcional)</label>
+                    <input id="rec-pay-note" type="text" placeholder="Ej: Ref. Transferencia #" class="w-full px-2.5 py-2 text-[11px] border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                  </div>
+                  <div class="col-span-4">
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Descuento</label>
+                    <div class="relative">
+                      <span class="text-[11px] font-bold text-[#65A30D] absolute left-2.5 top-1/2 -translate-y-1/2">%</span>
+                      <input id="rec-desc-input" type="number" step="0.01" oninput="recalcReceiveFinance()" placeholder="0.00" class="w-full pl-6 pr-2 py-2 text-[11px] border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1">Fecha Estimada de Entrega (Opcional)</label>
+                  <input id="rec-est-date" type="date" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#84CC16]" />
+                </div>
+
+                <div class="p-3 rounded-xl bg-[#F2FCE2] border border-[#D4F097] flex items-center justify-between">
+                  <div>
+                    <div class="text-xs font-bold text-[#2F5211]">Saldo Pendiente:</div>
+                    <div class="text-[10px] text-[#4D7C1F]">Pendiente por cobrar</div>
+                  </div>
+                  <div id="rec-saldo-pendiente" class="text-sm font-extrabold text-[#4D7C1F]">${formatCOP(saldoPendiente)}</div>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-2.5">
+                <div class="text-xs font-bold text-slate-800">Para guardar hace falta</div>
+                <div id="missing-fields-pills" class="flex flex-wrap gap-1.5">
+                  ${['Nombre', 'Apellido', 'Teléfono', 'Marca', 'Modelo', 'Falla'].map(f => `
+                    <span data-missing="${f}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-slate-200 bg-white text-[11px] font-medium text-slate-600">
+                      <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span> ${f}
+                    </span>
+                  `).join('')}
+                </div>
+                <p class="text-[10px] text-slate-400">Lo demás es opcional: puedes completarlo después.</p>
+              </div>
+
+              <button type="button" onclick="submitReceiveOrder()" class="w-full py-3 rounded-xl bg-[#84CC16] hover:bg-[#73B312] active:scale-[0.99] text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-all">
+                <i data-lucide="save" class="w-4 h-4"></i> Guardar Orden
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function recalcReceiveFinance() {
+      const total = Number(document.getElementById('rec-total-input')?.value || 0);
+      const abono = Number(document.getElementById('rec-abono-input')?.value || 0);
+      const desc = Number(document.getElementById('rec-desc-input')?.value || 0);
+      const afterDesc = Math.max(0, total - (total * desc / 100));
+      const saldo = Math.max(0, afterDesc - abono);
+      const el = document.getElementById('rec-saldo-pendiente');
+      if (el) el.textContent = formatCOP(saldo);
+    }
+
+    function updateMissingBadges() {
+      const checks = {
+        'Nombre': !!(document.getElementById('rec-nombre')?.value || '').trim(),
+        'Apellido': !!(document.getElementById('rec-apellido')?.value || '').trim(),
+        'Teléfono': !!(document.getElementById('rec-telefono')?.value || '').trim(),
+        'Marca': !!(document.getElementById('rec-marca')?.value || '').trim(),
+        'Modelo': !!(document.getElementById('rec-modelo')?.value || '').trim(),
+        'Falla': !!(document.getElementById('rec-falla')?.value || '').trim()
+      };
+
+      document.querySelectorAll('[data-missing]').forEach(pill => {
+        const key = pill.getAttribute('data-missing');
+        const ok = checks[key];
+        const dot = pill.querySelector('span');
+        if (ok) {
+          pill.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-[#84CC16] bg-[#F2FCE2] text-[11px] font-semibold text-[#2F5211]';
+          if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-[#65A30D]';
+        } else {
+          pill.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-slate-200 bg-white text-[11px] font-medium text-slate-600';
+          if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-300';
+        }
+      });
+    }
+
+    function addSecondaryPhoneField() {
+      const container = document.getElementById('extra-phones-container');
+      if (!container) return;
+      const div = document.createElement('div');
+      div.className = 'flex items-center gap-2';
+      div.innerHTML = `<span class="px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-sky-600">+57</span><input type="text" placeholder="Teléfono secundario" class="flex-1 px-3 py-2 text-xs border border-slate-200 rounded-xl" />`;
+      container.appendChild(div);
+    }
+
+    function quickSearchClient() {
+      if (!state.clients.length) return;
+      const first = state.clients[0];
+      if (document.getElementById('rec-nombre')) document.getElementById('rec-nombre').value = first.firstName || first.fullName;
+      if (document.getElementById('rec-apellido')) document.getElementById('rec-apellido').value = first.lastName || '';
+      if (document.getElementById('rec-telefono')) document.getElementById('rec-telefono').value = (first.phone || '').replace(/^\+57/, '');
+      updateMissingBadges();
+      showToast(`Cliente cargado: ${first.fullName}`);
+    }
+
+    function toggleAccessoryCheck(acc) {
+      const idx = receiveFormState.accessoriesChecked.indexOf(acc);
+      if (idx >= 0) receiveFormState.accessoriesChecked.splice(idx, 1);
+      else receiveFormState.accessoriesChecked.push(acc);
+    }
+
+    function addCustomAccessory() {
+      const inp = document.getElementById('rec-acc-input');
+      const val = (inp?.value || '').trim();
+      if (!val) return;
+      receiveFormState.customAccessories.push(val);
+      inp.value = '';
+      const notes = document.getElementById('rec-acc-notes');
+      if (notes) notes.value = [...receiveFormState.accessoriesChecked, ...receiveFormState.customAccessories].join(', ');
+      showToast(`Accesorio agregado: ${val}`);
+    }
+
+    function addChecklistItem() {
+      const inp = document.getElementById('rec-chk-input');
+      const val = (inp?.value || '').trim();
+      if (!val) return;
+      receiveFormState.checklistItems.push(val);
+      renderWorkspace();
+      showToast(`Ítem agregado: ${val}`);
+    }
+
+    function addServiceLine() {
+      const desc = (document.getElementById('rec-srv-desc')?.value || '').trim();
+      const price = Number(document.getElementById('rec-srv-price')?.value || 0);
+      if (!desc) return;
+      receiveFormState.services.push({ desc, price });
+      renderWorkspace();
+      showToast(`Servicio agregado: ${desc}`);
+    }
+
+    function addExtraDeviceBlock() {
+      const c = document.getElementById('extra-devices-container');
+      if (!c) return;
+      const div = document.createElement('div');
+      div.className = 'bg-white rounded-2xl border border-slate-200/80 p-4 text-xs font-bold text-slate-700';
+      div.textContent = `Equipo adicional #${c.children.length + 2} agregado`;
+      c.appendChild(div);
+    }
+
+    function openReceiveExpenseModal() {
+      openQuickModal(`
+        <h3 class="font-bold text-sm text-slate-900 mb-2">Gasto de la Orden</h3>
+        <form onsubmit="saveReceiveExpense(event)" class="space-y-3 text-xs">
+          <input id="r-exp-label" type="text" placeholder="Concepto" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
+          <input id="r-exp-amt" type="number" placeholder="Valor en COP" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required />
+          <div class="flex justify-end gap-2">
+            <button type="button" onclick="closeQuickModal()" class="px-3 py-1.5 border border-slate-200 rounded-lg">Cancelar</button>
+            <button type="submit" class="px-4 py-1.5 bg-[#84CC16] font-semibold rounded-lg">Agregar</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function saveReceiveExpense(e) {
+      e.preventDefault();
+      receiveFormState.orderExpenses.push({
+        label: document.getElementById('r-exp-label').value,
+        amount: Number(document.getElementById('r-exp-amt').value)
+      });
+      closeQuickModal();
+      showToast('Gasto agregado');
+    }
+
+    function attachReceivePhoto() {
+      if (receiveFormState.photosCount >= 8) {
+        showToast('Máximo 8 fotos por orden');
+        return;
+      }
+      receiveFormState.photosCount += 1;
+      renderWorkspace();
+      showToast(`Foto adjuntada (${receiveFormState.photosCount}/8)`);
+    }
+
+    function submitReceiveOrder() {
+      const nombre = (document.getElementById('rec-nombre')?.value || '').trim();
+      const apellido = (document.getElementById('rec-apellido')?.value || '').trim();
+      const telRaw = (document.getElementById('rec-telefono')?.value || '').trim();
+      const marca = (document.getElementById('rec-marca')?.value || '').trim();
+      const modelo = (document.getElementById('rec-modelo')?.value || '').trim();
+      const falla = (document.getElementById('rec-falla')?.value || '').trim();
+
+      if (!nombre || !apellido || !telRaw || !marca || !modelo || !falla) {
+        updateMissingBadges();
+        showToast('Completa los campos obligatorios marcados con *');
+        return;
+      }
+
+      const fullName = `${nombre} ${apellido}`.toUpperCase();
+      const phone = telRaw.startsWith('+') ? telRaw : '+57' + telRaw;
+      const docNumber = (document.getElementById('rec-doc')?.value || '').trim();
+      const address = (document.getElementById('rec-direccion')?.value || '').trim() || 'N/A';
+      const color = (document.getElementById('rec-color')?.value || '').trim() || 'N/A';
+      const servicesSum = receiveFormState.services.reduce((a, s) => a + s.price, 0);
+      const total = Number(document.getElementById('rec-total-input')?.value || servicesSum || 0);
+      const abono = Number(document.getElementById('rec-abono-input')?.value || 0);
+
+      let clientObj = state.clients.find(c => c.fullName.toLowerCase() === fullName.toLowerCase());
+      if (!clientObj) {
+        clientObj = {
+          id: 'cli-' + Date.now(), type: receiveFormState.clientMode, firstName: nombre, lastName: apellido,
+          fullName, initials: getInitials(fullName), avatarBg: 'bg-emerald-100/80 text-emerald-700',
+          phone, docType: receiveFormState.docType, docNumber,
+          email: (document.getElementById('rec-correo')?.value || '').trim(),
+          address: address === 'N/A' ? '' : address, conflictive: false, isPosClient: false
+        };
+        state.clients.unshift(clientObj);
+      }
+
+      const nextNum = state.orders.reduce((m, o) => Math.max(m, o.number), 0) + 1;
+      state.orders.unshift({
+        number: nextNum,
+        clientId: clientObj.id,
+        device: `${marca} ${modelo}`,
+        color,
+        issue: falla,
+        technician: 'Sin asig.',
+        daysElapsed: '0d',
+        internalNotes: (document.getElementById('rec-obs')?.value || '').trim() || 'N/A',
+        accessories: [...receiveFormState.accessoriesChecked, ...receiveFormState.customAccessories].join(', ') || 'Ninguno',
+        statusIndex: 0,
+        isToday: true,
+        receivedDate: '25 nov 2026',
+        lastOrderText: 'hace un momento',
+        warrantyDays: receiveFormState.warrantyDays,
+        serviceModality: receiveFormState.modality,
+        client: { name: fullName, docId: docNumber || 'N/A', phone, address },
+        priceTotal: total,
+        paidAmount: abono,
+        extraQuotes: [],
+        expenses: [...receiveFormState.orderExpenses],
+        photos: receiveFormState.photosCount,
+        history: [{ status: 'Recibido', timeAgo: 'hace un momento', dateShort: '25 nov' }]
+      });
+
+      receiveFormState.services = [];
+      receiveFormState.orderExpenses = [];
+      receiveFormState.photosCount = 0;
+      receiveFormState.customAccessories = [];
+      receiveFormState.accessoriesChecked = [];
+      receiveFormState.checklistItems = [];
+
+      saveState();
+      state.activeRoute = 'inicio';
+      renderSidebar();
+      renderWorkspace();
+      showToast(`Orden #${nextNum} guardada`);
+    }
+
+    // =========================================================
+    // DETALLE DE ORDEN Y MODALES
+    // =========================================================
+    function openOrderDetail(idx) {
+      const o = state.orders[idx];
+      if (!o) return;
+      const overlay = document.getElementById('order-detail-overlay');
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+
+      document.getElementById('order-detail-header').innerHTML = `
+        <div class="flex items-center gap-3">
+          <button onclick="closeOrderDetail()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="font-bold text-[15px] text-slate-900">${o.device}</h2>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-600">${STEPS[o.statusIndex]}</span>
+            </div>
+            <p class="text-[11px] text-slate-400">#${o.number} · ${o.client.name} · recibida el ${o.receivedDate}</p>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('order-detail-body').innerHTML = `
+        <div class="bg-white rounded-2xl border border-slate-200/70 p-5 max-w-4xl space-y-2.5 text-xs">
+          <div class="font-bold text-sm text-slate-900">Detalle de Orden #${o.number}</div>
+          <div><strong>Cliente:</strong> ${o.client.name} (${o.client.phone})</div>
+          <div><strong>Equipo:</strong> ${o.device} — Color: ${o.color}</div>
+          <div><strong>Falla reportada:</strong> ${o.issue}</div>
+          <div><strong>Total:</strong> ${formatCOP(o.priceTotal)}</div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    function closeOrderDetail() {
+      const overlay = document.getElementById('order-detail-overlay');
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+    }
+
+    function openQuickModal(html) {
+      const modal = document.getElementById('quick-action-modal');
+      document.getElementById('quick-action-content').innerHTML = html;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeQuickModal() {
+      const modal = document.getElementById('quick-action-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    renderSidebar();
+    renderWorkspace();
+  </script>
+</body>
+</html>
